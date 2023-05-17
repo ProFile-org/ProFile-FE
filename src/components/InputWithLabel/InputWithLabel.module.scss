@@ -1,0 +1,14 @@
+.input ~ i {
+	margin-top: 0 !important;
+	transform: translateY(-50%);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+  right: 1.25rem !important;
+	svg {
+		width: 1.125rem;
+		height: 1.125rem;
+		color: #4f46e5;
+	}
+}

@@ -11,15 +11,18 @@ import 'primeicons/primeicons.css';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
+import AuthProvider from './context/authContext.tsx';
 
 const client = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
-		<BrowserRouter>
-			<QueryClientProvider client={client}>
-				<App />
-			</QueryClientProvider>
-		</BrowserRouter>
+		<AuthProvider>
+			<BrowserRouter>
+				<QueryClientProvider client={client}>
+					<App />
+				</QueryClientProvider>
+			</BrowserRouter>
+		</AuthProvider>
 	</React.StrictMode>
 );
