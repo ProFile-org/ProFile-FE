@@ -8,11 +8,13 @@ import Spinner from '@/components/Spinner/Spinner.component';
 const SIGNIN_INITIALS = {
 	email: '',
 	password: '',
+	error: '',
 };
 
 interface ISiginFormValues {
 	email: string;
 	password: string;
+	error: string;
 }
 
 const SignInForm = () => {
@@ -35,9 +37,9 @@ const SignInForm = () => {
 		return errors;
 	};
 
-	const onSubmit = (
+	const onSubmit = async (
 		values: ISiginFormValues,
-		{ setSubmitting }: FormikHelpers<ISiginFormValues>
+		{ setSubmitting, setErrors }: FormikHelpers<ISiginFormValues>
 	) => {
 		try {
 			const USER = {
@@ -47,18 +49,23 @@ const SignInForm = () => {
 				username: 'admin',
 				department: 'IT',
 			};
-			setTimeout(() => {
-				dispatch({
-					type: 'LOGIN',
-					payload: USER,
-				});
-				localStorage.setItem('user', JSON.stringify(USER));
-				setSubmitting(false);
-			}, 300);
+			// For testing only
+			await new Promise((resolve, reject) =>
+				setTimeout(() => {
+					// reject('TODO: Map this error');
+					dispatch({
+						type: 'LOGIN',
+						payload: USER,
+					});
+					localStorage.setItem('user', JSON.stringify(USER));
+					resolve(null);
+				}, 500)
+			);
 		} catch (error) {
 			console.error(error);
+			setErrors({ error: `${error}` });
 		} finally {
-			// setSubmitting(false);
+			setSubmitting(false);
 		}
 	};
 
@@ -67,8 +74,9 @@ const SignInForm = () => {
 			{({ errors, values, touched, handleChange, handleSubmit, handleBlur, isSubmitting }) => (
 				<form
 					onSubmit={handleSubmit}
-					className='w-full max-w-md p-5 lg:p-10 flex flex-col gap-8 bg-neutral-800 rounded-lg'
+					className='w-full max-w-md p-5 lg:p-10 flex flex-col gap-6 bg-neutral-800 rounded-lg'
 				>
+					<h1 className='text-white text-center font-bold text-xl'>Sign in to ProFile</h1>
 					<InputWithLabel
 						label='Email'
 						id='email'
@@ -76,7 +84,7 @@ const SignInForm = () => {
 						value={values.email}
 						onChange={handleChange}
 						onBlur={handleBlur}
-						error={touched.email && !!errors.email}
+						error={touched.email && (!!errors.email || !!errors.error)}
 						small={touched.email && errors.email ? errors.email : undefined}
 					/>
 					<InputWithLabel
@@ -86,10 +94,15 @@ const SignInForm = () => {
 						value={values.password}
 						onChange={handleChange}
 						onBlur={handleBlur}
-						error={touched.password && !!errors.password}
+						error={touched.password && (!!errors.password || !!errors.error)}
 						small={touched.password && errors.password ? errors.password : undefined}
 						type='password'
 					/>
+					{errors.error && (
+						<div className='bg-red-300 border-red-500 border-2 rounded-lg px-3 py-2'>
+							{errors.error}
+						</div>
+					)}
 					<Button
 						disabled={isSubmitting || Object.keys(errors).length > 0}
 						className='justify-center rounded-lg font-semibold'
