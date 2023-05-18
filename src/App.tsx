@@ -1,14 +1,44 @@
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { PrimeIcons } from 'primereact/api';
+import { useContext } from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import ROUTES from '@/constants/routes';
+import AuthGuard from '@/pages/Guards/AuthGuard';
+import SignInPage from '@/pages/SignInPage/SignInPage';
+import { AuthContext } from './context/authContext';
 
 function App() {
+	const { dispatch } = useContext(AuthContext);
 	return (
-		<div className='bg-neutral-900 p-5'>
-			<h1 className='text-primary'>Hello world</h1>
-			<InputText />
-			<Button label='Test' icon={PrimeIcons.SIGN_OUT} />
-		</div>
+		<Routes>
+			<Route
+				path={ROUTES.AUTH}
+				element={<AuthGuard authComponent={<Navigate to='/' />} unAuthComponent={<SignInPage />} />}
+			/>
+			<Route
+				path={ROUTES.HOME}
+				element={<AuthGuard authComponent={<Outlet />} unAuthComponent={<Navigate to='/auth' />} />}
+			>
+				<Route
+					index
+					element={
+						<div>
+							<button
+								className='text-white'
+								onClick={() => {
+									dispatch({
+										type: 'LOGOUT',
+										payload: null,
+									});
+									localStorage.removeItem('user');
+								}}
+							>
+								Log out
+							</button>
+						</div>
+					}
+				/>
+				<Route path='*' element={<div>Not Found</div>} />
+			</Route>
+		</Routes>
 	);
 }
 
