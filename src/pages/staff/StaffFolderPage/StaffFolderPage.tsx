@@ -5,7 +5,7 @@ import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 
-const StaffLockerPage = () => {
+const StaffFolderPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card w-full py-3 flex justify-between'>
@@ -21,14 +21,14 @@ const StaffLockerPage = () => {
 				<Table
 					value={[...Array(100)].map((_, index) => ({
 						id: index,
-						name: `Locker ${index}`,
+						name: `Folder ${index}`,
 						date: new Date().toLocaleTimeString() + ' - ' + new Date().toLocaleDateString(),
 					}))}
 				>
 					<Column
 						field='id'
 						header='ID'
-						body={(locker) => <Link to={`${locker.id}`}>{locker.id}</Link>}
+						body={(folder) => <Link to={`${folder.id}`}>{folder.id}</Link>}
 					/>
 					<Column field='name' header='Name' />
 					<Column field='date' header='Date' />
@@ -38,4 +38,4 @@ const StaffLockerPage = () => {
 	);
 };
 
-export default StaffLockerPage;
+export default StaffFolderPage;

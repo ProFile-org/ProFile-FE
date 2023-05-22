@@ -6,3 +6,6 @@ export { default as StaffDocumentDetailPage } from './StaffDocumentDetailPage/St
 export { default as StaffReturnsPage } from './StaffReturnPage/StaffReturnPage';
 export { default as StaffRequestDetailPage } from './StaffRequestDetailPage/StaffRequestDetailPage';
 export { default as StaffRequestPage } from './StaffRequestPage/StaffRequestPage';
+export { default as StaffLockerDetailPage } from './StaffLockerDetailPage/StaffLockerDetailPage';
+export { default as StaffFolderPage } from './StaffFolderPage/StaffFolderPage';
+export { default as StaffFolderDetailPage } from './StaffFolderDetailPage/StaffFolderDetailPage';

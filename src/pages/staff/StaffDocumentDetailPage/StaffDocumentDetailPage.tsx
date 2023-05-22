@@ -9,6 +9,16 @@ const StaffDocumentDetailPage = () => {
 	const { documentId } = useParams();
 	return (
 		<div className='flex flex-col gap-5'>
+			<div className='card'>
+				<h2 className='title flex gap-2'>
+					<span>/</span>
+					<Link to={`${AUTH_ROUTES.LOCKERS}/12`}>Locker 12</Link>
+					<span>/</span>
+					<Link to={`${AUTH_ROUTES.FOLDERS}/5`}>Folder 5</Link>
+					<span>/</span>
+					<span>Document {documentId}</span>
+				</h2>
+			</div>
 			<div className='flex gap-5 md:flex-row flex-col'>
 				<div className='flex flex-col gap-5 flex-1'>
 					<InformationPanel header='Employee information'>

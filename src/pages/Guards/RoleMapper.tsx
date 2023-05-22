@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+// This helps with performance, warning is for development only
 import { AUTH_ROUTES } from '@/constants/routes';
 import { lazy } from 'react';
 import { Navigate } from 'react-router';
@@ -14,6 +16,13 @@ const StaffRequestDetailPage = lazy(
 	() => import('@/pages/staff/StaffRequestDetailPage/StaffRequestDetailPage')
 );
 const StaffReturnsPage = lazy(() => import('@/pages/staff/StaffReturnPage/StaffReturnPage'));
+const StaffLockerDetailPage = lazy(
+	() => import('@/pages/staff/StaffLockerDetailPage/StaffLockerDetailPage')
+);
+const StaffFolderPage = lazy(() => import('@/pages/staff/StaffFolderPage/StaffFolderPage'));
+const StaffFolderDetailPage = lazy(
+	() => import('@/pages/staff/StaffFolderDetailPage/StaffFolderDetailPage')
+);
 
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
@@ -31,7 +40,7 @@ export const ROLE_MAPPER = {
 	},
 	[AUTH_ROUTES.LOCKER]: {
 		admin: () => <div>Admins</div>,
-		staff: () => <div>Staff</div>,
+		staff: () => <StaffLockerDetailPage />,
 	},
 	[AUTH_ROUTES.DOCUMENTS]: {
 		admin: () => <div>Admins</div>,
@@ -55,12 +64,12 @@ export const ROLE_MAPPER = {
 	},
 	[AUTH_ROUTES.FOLDERS]: {
 		admin: () => <div>Admins</div>,
-		staff: () => <div>Staff</div>,
+		staff: () => <StaffFolderPage />,
 		employee: () => <div>Employee</div>,
 	},
 	[AUTH_ROUTES.FOLDER]: {
 		admin: () => <div>Admins</div>,
-		staff: () => <div>Staff</div>,
+		staff: () => <StaffFolderDetailPage />,
 		employee: () => <div>Employee</div>,
 	},
 };
