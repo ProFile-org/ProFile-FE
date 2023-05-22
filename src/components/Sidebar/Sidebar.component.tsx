@@ -9,7 +9,7 @@ const Sidebar = () => {
 	const items = SIDEBAR_ROLES[role as Role];
 
 	return (
-		<nav className='md:flex flex-col gap-5 basis-2/12 hidden'>
+		<nav className='lg:flex flex-col gap-5 basis-2/12 hidden'>
 			{items.map((item, index) => (
 				<MenuItem item={item} key={item.label} index={index} />
 			))}

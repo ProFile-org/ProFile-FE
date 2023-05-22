@@ -18,7 +18,7 @@ const Navbar = () => {
 				<Layout>
 					<div className='flex py-3 justify-between items-center'>
 						<div className='flex gap-3'>
-							<button className='md:hidden' onClick={() => setOpen(true)}>
+							<button className='lg:hidden' onClick={() => setOpen(true)}>
 								<i className={clsx(PrimeIcons.BARS, 'text-white text-2xl')} />
 							</button>
 							<Link to='/' className='text-white font-bold text-2xl'>
@@ -26,7 +26,7 @@ const Navbar = () => {
 							</Link>
 						</div>
 						<div className='flex gap-5 items-center'>
-							<span className='text-white text-lg hidden md:inline'>
+							<span className='text-white text-lg hidden lg:inline'>
 								{user?.role} - {user?.department} - {user?.username}
 							</span>
 							<Button
@@ -39,8 +39,8 @@ const Navbar = () => {
 									localStorage.removeItem('user');
 								}}
 							>
-								<span className='hidden md:inline'>Sign out</span>
-								<i className={clsx(PrimeIcons.SIGN_OUT, 'text-white md:hidden')} />
+								<span className='hidden lg:inline'>Sign out</span>
+								<i className={clsx(PrimeIcons.SIGN_OUT, 'text-white lg:hidden')} />
 							</Button>
 						</div>
 					</div>

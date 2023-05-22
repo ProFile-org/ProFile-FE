@@ -14,7 +14,11 @@ const StaffDocumentDetailPage = () => {
 					<InformationPanel header='Employee information'>
 						<div className='flex gap-3'>
 							<InputWithLabel label='ID' wrapperClassName='flex-1' value='123456' readOnly />
-							<Button label='Detail' className='self-end bg-primary rounded-lg' type='button' />
+							<Button
+								label='Detail'
+								className='self-end bg-primary rounded-lg h-11'
+								type='button'
+							/>
 						</div>
 						<InputWithLabel label='Name' wrapperClassName='flex-1' value='Nguyen van a' readOnly />
 						<InputWithLabel

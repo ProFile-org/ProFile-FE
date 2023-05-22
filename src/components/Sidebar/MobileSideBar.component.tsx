@@ -18,11 +18,11 @@ const MobileSideBar: FC<IMobileSideBarProps> = ({ setOpen, open }) => {
 		<>
 			<Overlay
 				onExit={() => setOpen(false)}
-				className={clsx('md:hidden z-10', !open && 'invisible w-0 h-0')}
+				className={clsx('lg:hidden z-10', !open && 'invisible w-0 h-0')}
 			/>
 			<nav
 				className={clsx(
-					'flex flex-col gap-5 basis-2/12 transition-all md:hidden bg-neutral-900 h-full fixed top-0 pl-3 pr-5 pt-[78px] z-10',
+					'flex flex-col gap-5 basis-2/12 transition-all lg:hidden bg-neutral-900 h-full fixed top-0 pl-3 pr-5 pt-[78px] z-10',
 					open ? 'left-0' : '-left-full'
 				)}
 				style={{
