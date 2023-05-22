@@ -32,6 +32,10 @@ const StaffDocumentDetailPage = () => {
 						<InputWithLabel label='ID' wrapperClassName='flex-1' value={documentId} readOnly />
 						<InputWithLabel label='Types' value='Temp' readOnly />
 						<InputWithLabel label='Title' wrapperClassName='flex-1' value='title' readOnly />
+						<div className='flex gap-5'>
+							<InputWithLabel label='Locker' readOnly value='12' wrapperClassName='flex-1' />
+							<InputWithLabel label='Folder' readOnly value='5' wrapperClassName='flex-1' />
+						</div>
 					</InformationPanel>
 				</div>
 				<div className='flex flex-col gap-5'>

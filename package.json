@@ -17,6 +17,7 @@
 		"primereact": "^9.4.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-qr-reader": "^3.0.0-beta-1",
 		"react-query": "^3.39.3",
 		"react-router": "^6.11.1",
 		"react-router-dom": "^6.11.1"
@@ -25,6 +26,7 @@
 		"@types/node": "^20.1.7",
 		"@types/react": "^18.0.28",
 		"@types/react-dom": "^18.0.11",
+		"@types/react-qr-reader": "^2.1.4",
 		"@typescript-eslint/eslint-plugin": "^5.57.1",
 		"@typescript-eslint/parser": "^5.57.1",
 		"@vitejs/plugin-react": "^4.0.0",
