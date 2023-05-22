@@ -53,4 +53,14 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.RETURNS]: {
 		staff: () => <StaffReturnsPage />,
 	},
+	[AUTH_ROUTES.FOLDERS]: {
+		admin: () => <div>Admins</div>,
+		staff: () => <div>Staff</div>,
+		employee: () => <div>Employee</div>,
+	},
+	[AUTH_ROUTES.FOLDER]: {
+		admin: () => <div>Admins</div>,
+		staff: () => <div>Staff</div>,
+		employee: () => <div>Employee</div>,
+	},
 };

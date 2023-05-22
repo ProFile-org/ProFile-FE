@@ -18,6 +18,18 @@ const cities = [
 	{ name: 'Paris', code: 'PRS' },
 ];
 
+const folderOptions = [...Array(5)].map((_, i) => ({
+	name: `Folder ${i}`,
+	code: `${i}`,
+}));
+
+const lockerOptions = [...Array(5)].map((_, i) => ({
+	name: `Locker ${i}`,
+	code: `${i}`,
+	max: 60,
+	current: Math.round(Math.random() * 40),
+}));
+
 const initialFormValues = {
 	id: '',
 	department: '',
@@ -40,7 +52,14 @@ const ImportDocumentContainer = () => {
 		try {
 			console.log(values);
 			// await axiosClient.post('/documents', values);
-			navigate(AUTH_ROUTES.DOCUMENTS);
+			const data = {
+				id: '1',
+				name: 'Document 1',
+				type: 'pdf',
+				size: 100,
+				createdAt: new Date().toISOString(),
+			};
+			navigate(`${AUTH_ROUTES.DOCUMENTS}/${data.id}`);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -153,10 +172,7 @@ const ImportDocumentContainer = () => {
 							id='locker'
 							name='locker'
 							label='Lockers'
-							options={[...Array(5)].map((_, i) => ({
-								name: `Locker ${i}`,
-								code: `${i}`,
-							}))}
+							options={lockerOptions}
 							optionLabel='name'
 							onChange={(e) => {
 								setFieldValue('folder', '');
@@ -168,15 +184,17 @@ const ImportDocumentContainer = () => {
 							optionValue='code'
 							error={touched.locker && !!errors.locker}
 							small={touched.locker ? errors.locker : undefined}
+							itemTemplate={(option) => (
+								<div className='flex gap-2 items-center'>
+									{option.name} - {option.current}/{option.max}
+								</div>
+							)}
 						/>
 						<CustomDropdown
 							id='folder'
 							name='folder'
 							label='Folders'
-							options={[...Array(5)].map((_, i) => ({
-								name: `Folder ${i}`,
-								code: `${i}`,
-							}))}
+							options={folderOptions}
 							optionLabel='name'
 							onChange={handleChange}
 							onBlur={handleBlur}
@@ -185,6 +203,12 @@ const ImportDocumentContainer = () => {
 							disabled={!values.locker}
 							error={touched.folder && !!errors.folder}
 							small={touched.folder ? errors.folder : undefined}
+							itemTemplate={(option) => (
+								<div className='flex gap-2 items-center'>
+									<span>{option.name}</span>
+									<Progress wrapperClassName='w-full' max={60} current={Math.random() * 40} />
+								</div>
+							)}
 						/>
 						{values.folder && <Progress label='Available' showPercentage current={40} max={60} />}
 					</InformationPanel>
