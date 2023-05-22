@@ -10,6 +10,7 @@ interface IInputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
 	small?: string;
 	value?: string;
 	error?: boolean;
+	wrapperClassName?: string;
 }
 
 const InputWithLabel: FC<IInputWithLabelProps> = ({
@@ -19,11 +20,14 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 	error = false,
 	className,
 	type,
+	wrapperClassName,
 	...rest
 }) => {
 	return (
-		<div className={clsx('input-with-label-wrapper flex flex-col gap-3 text-white')}>
-			<label className='text-xl font-bold' htmlFor={id}>
+		<div
+			className={clsx('input-with-label-wrapper flex flex-col gap-3 text-white', wrapperClassName)}
+		>
+			<label className='header' htmlFor={id}>
 				{label}
 			</label>
 			{type === 'password' ? (
@@ -31,7 +35,7 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 					inputClassName={clsx(
 						className,
 						error && 'p-invalid',
-						'w-full bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg',
+						'input w-full h-11',
 						style['input']
 					)}
 					feedback={false}
@@ -42,16 +46,11 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 			) : (
 				<InputText
 					id={id}
-					className={clsx(
-						className,
-						error && 'p-invalid',
-						'bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg',
-						style['input']
-					)}
+					className={clsx(className, error && 'p-invalid', 'input w-full h-11', style['input'])}
 					{...rest}
 				/>
 			)}
-			{small && <small className={clsx(error && 'text-red-500 text-sm')}>{small}</small>}
+			{error && <small className={clsx('error-input')}>{small}</small>}
 		</div>
 	);
 };

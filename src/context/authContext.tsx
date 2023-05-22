@@ -6,6 +6,7 @@ interface IUser {
 	email: string;
 	role: string;
 	department: string;
+	roomId?: string; // only exist if staff
 }
 
 export const AuthContext = createContext<{

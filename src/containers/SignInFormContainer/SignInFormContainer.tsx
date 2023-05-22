@@ -45,9 +45,10 @@ const SignInForm = () => {
 			const USER = {
 				email: values.email,
 				id: Date.now().toString(),
-				role: 'admin',
-				username: 'admin',
-				department: 'IT',
+				role: 'staff',
+				username: 'Chien Gamer',
+				department: 'Accounting',
+				roomId: '1',
 			};
 			// For testing only
 			await new Promise((resolve, reject) =>
