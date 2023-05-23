@@ -7,11 +7,11 @@ const DashboardPage = () => {
 	return (
 		<div className='flex mt-5 gap-5 sm:gap-8 pb-3 sm:pb-5'>
 			<Sidebar />
-			<div className='flex-1 sm:basis-10/12 text-white overflow-hidden'>
+			<div className='flex-1 sm:basis-10/12 text-white overflow-hidden w-full sm:w-max'>
 				<Suspense
 					fallback={
-						<div className='flex items-center justify-center h-full'>
-							<Spinner size='5rem' borderTopColor='border-t-primary' />
+						<div className='flex items-center justify-center lg:h-full fixed w-screen lg:w-full right-0 top-0 h-screen lg:static'>
+							<Spinner size='4rem' borderTopColor='border-t-primary' />
 						</div>
 					}
 				>

@@ -11,6 +11,7 @@ export const AUTH_ROUTES = {
 	REQUEST: '/requests/:requestId',
 	RETURNS: '/returns',
 	IMPORT: '/import',
+	DRIVE: '/digital',
 };
 
 export const UNAUTH_ROUTES = {

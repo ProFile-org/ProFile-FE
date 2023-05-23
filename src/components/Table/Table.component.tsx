@@ -9,6 +9,7 @@ const Table: FC<DataTableProps<any>> = ({
 	children,
 	scrollHeight = '70vh',
 	scrollable = true,
+	resizableColumns = true,
 	...rest
 }) => {
 	return (
@@ -17,6 +18,7 @@ const Table: FC<DataTableProps<any>> = ({
 			{...rest}
 			scrollable={scrollable}
 			scrollHeight={scrollHeight}
+			resizableColumns={resizableColumns}
 		>
 			{children}
 		</DataTable>

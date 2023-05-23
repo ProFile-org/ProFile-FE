@@ -11,6 +11,7 @@ interface IInputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
 	value?: string;
 	error?: boolean;
 	wrapperClassName?: string;
+	sideComponent?: JSX.Element;
 }
 
 const InputWithLabel: FC<IInputWithLabelProps> = ({
@@ -21,6 +22,7 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 	className,
 	type,
 	wrapperClassName,
+	sideComponent,
 	...rest
 }) => {
 	return (
@@ -30,26 +32,34 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 			<label className='header' htmlFor={id}>
 				{label}
 			</label>
-			{type === 'password' ? (
-				<Password
-					inputClassName={clsx(
-						className,
-						error && 'p-invalid',
-						'input w-full h-11',
-						style['input']
-					)}
-					feedback={false}
-					toggleMask
-					id={id}
-					{...rest}
-				/>
-			) : (
-				<InputText
-					id={id}
-					className={clsx(className, error && 'p-invalid', 'input w-full h-11', style['input'])}
-					{...rest}
-				/>
-			)}
+			<div className='flex gap-3'>
+				{type === 'password' ? (
+					<Password
+						inputClassName={clsx(
+							className,
+							error && 'p-invalid',
+							'input w-full h-11 flex-1',
+							style['input']
+						)}
+						feedback={false}
+						toggleMask
+						id={id}
+						{...rest}
+					/>
+				) : (
+					<InputText
+						id={id}
+						className={clsx(
+							className,
+							error && 'p-invalid',
+							'input w-full h-11 flex-1',
+							style['input']
+						)}
+						{...rest}
+					/>
+				)}
+				{sideComponent}
+			</div>
 			{error && <small className={clsx('error-input')}>{small}</small>}
 		</div>
 	);

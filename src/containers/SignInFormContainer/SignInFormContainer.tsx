@@ -104,11 +104,71 @@ const SignInForm = () => {
 							{errors.error}
 						</div>
 					)}
-					<Button
+					{/* <Button
 						disabled={isSubmitting || Object.keys(errors).length > 0}
 						className='justify-center rounded-lg font-semibold'
 					>
 						{isSubmitting ? <Spinner size='1.5rem' /> : 'Sign in'}
+					</Button> */}
+					<Button
+						type='button'
+						onClick={() => {
+							const USER = {
+								email: values.email,
+								id: Date.now().toString(),
+								role: 'employee',
+								username: 'Chien Gamer',
+								department: 'Accounting',
+								roomId: 'dcd562a6-275f-4920-94d3-fb7002c35b60',
+							};
+							dispatch({
+								type: 'LOGIN',
+								payload: USER,
+							});
+							localStorage.setItem('user', JSON.stringify(USER));
+						}}
+					>
+						Employee
+					</Button>
+					<Button
+						type='button'
+						onClick={() => {
+							const USER = {
+								email: values.email,
+								id: 'e63f2cc9-c1c4-4df3-abc1-d558f3b1e248',
+								role: 'staff',
+								username: 'Chien Gamer',
+								department: 'Accounting',
+								roomId: 'dcd562a6-275f-4920-94d3-fb7002c35b60',
+							};
+							dispatch({
+								type: 'LOGIN',
+								payload: USER,
+							});
+							localStorage.setItem('user', JSON.stringify(USER));
+						}}
+					>
+						Staff
+					</Button>
+					<Button
+						type='button'
+						onClick={() => {
+							const USER = {
+								email: values.email,
+								id: Date.now().toString(),
+								role: 'admin',
+								username: 'Chien Gamer',
+								department: 'Accounting',
+								roomId: 'dcd562a6-275f-4920-94d3-fb7002c35b60',
+							};
+							dispatch({
+								type: 'LOGIN',
+								payload: USER,
+							});
+							localStorage.setItem('user', JSON.stringify(USER));
+						}}
+					>
+						Admin
 					</Button>
 				</form>
 			)}

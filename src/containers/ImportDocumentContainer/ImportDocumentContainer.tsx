@@ -7,31 +7,18 @@ import axiosClient from '@/utils/axiosClient';
 import { Formik, FormikHelpers } from 'formik';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext, useMemo } from 'react';
 import { AuthContext } from '@/context/authContext';
 import Overlay from '@/components/Overlay/Overlay.component';
-import { QrReader } from 'react-qr-reader';
 import QrScanner from '@/components/QrScanner/QrScanner.component';
-
-const cities = [
-	{ name: 'New York', code: 'NY' },
-	{ name: 'Rome', code: 'RM' },
-	{ name: 'London', code: 'LDN' },
-	{ name: 'Istanbul', code: 'IST' },
-	{ name: 'Paris', code: 'PRS' },
-];
-
-const folderOptions = [...Array(5)].map((_, i) => ({
-	name: `Folder ${i}`,
-	code: `${i}`,
-}));
-
-const lockerOptions = [...Array(5)].map((_, i) => ({
-	name: `Locker ${i}`,
-	code: `${i}`,
-	max: 60,
-	current: Math.round(Math.random() * 40),
-}));
+import {
+	GetConfigResponse,
+	GetDepartmentsResponse,
+	GetDocumentTypesResponse,
+	GetEmptyContainersResponse,
+} from '@/types/response';
+import { useQuery } from 'react-query';
+import { AxiosError } from 'axios';
 
 const initialFormValues = {
 	id: '',
@@ -46,26 +33,110 @@ type FormValues = typeof initialFormValues;
 
 type FormKeys = keyof FormValues;
 
+type DropdownOption = {
+	name: string;
+	id: string;
+};
+
+type LockerOption = {
+	max: number;
+	current: number;
+} & DropdownOption;
+
+type FolderOption = LockerOption;
+
 const ImportDocumentContainer = () => {
 	const navigate = useNavigate();
 	const { user } = useContext(AuthContext);
-	const [availableFolders, setAvailableFolders] = useState([]);
+
+	const { data: emptyContainers } = useQuery(
+		'emptyContainers',
+		async () =>
+			(
+				await axiosClient.post<GetEmptyContainersResponse>('/rooms/empty-containers', {
+					roomId: user?.roomId,
+					page: 1,
+					size: 20,
+				})
+			).data
+	);
+
+	const availableLockers: LockerOption[] | undefined = useMemo(
+		() =>
+			emptyContainers?.data.items.map((locker) => ({
+				name: locker.name,
+				id: locker.id,
+				current: 50 - locker.numberOfFreeFolders,
+				max: 50,
+			})),
+		[emptyContainers?.data.items]
+	);
+	// [{name: 'Locker 1', id: '1', max: 60, current: 40}
+	const availableFolders: { [key: string]: FolderOption[] } | undefined = useMemo(
+		() =>
+			emptyContainers?.data.items.reduce((acc, locker) => {
+				const folders = locker.folders.map((folder) => ({
+					name: folder.name,
+					id: folder.id,
+					current: folder.slot - 50,
+					max: folder.slot,
+				}));
+				return { ...acc, [locker.id]: folders };
+			}, {} as { [key: string]: FolderOption[] }),
+		[emptyContainers?.data.items]
+	);
+	// [{name: 'Folder 1', id: '1', max: 60, current: 40}
+
+	const { data: documentTypesResult } = useQuery(
+		'documentTypes',
+		async () => (await axiosClient.get<GetDocumentTypesResponse>('/documents/types')).data
+	);
+
+	const documentTypes: DropdownOption[] =
+		documentTypesResult?.data.map((type) => ({
+			name: type,
+			id: type,
+		})) || [];
+
+	const { data: departmentsResult } = useQuery(
+		'departments',
+		async () => (await axiosClient.get<GetDepartmentsResponse>('/departments')).data
+	);
+
+	const departments: DropdownOption[] =
+		departmentsResult?.data.map((department) => ({
+			name: department.name,
+			id: department.id,
+		})) || [];
+
 	const [openScan, setOpenScan] = useState(false);
 
-	const onSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+	const onSubmit = async (
+		values: FormValues,
+		{ setSubmitting, setFieldError, setFieldValue, setErrors }: FormikHelpers<FormValues>
+	) => {
 		try {
-			console.log(values);
-			// await axiosClient.post('/documents', values);
-			const data = {
-				id: '1',
-				name: 'Document 1',
-				type: 'pdf',
-				size: 100,
-				createdAt: new Date().toISOString(),
-			};
-			navigate(`${AUTH_ROUTES.DOCUMENTS}/${data.id}`);
+			const { data } = await axiosClient.post('/documents', {
+				title: values.title,
+				documentType: values.documentType,
+				importerId: values.id,
+				folderId: values.folder,
+			});
+			navigate(`${AUTH_ROUTES.DOCUMENTS}/${data.data.id}`);
 		} catch (error) {
-			console.log(error);
+			const axiosError = error as AxiosError<GetConfigResponse>;
+			const msg = axiosError.response?.data.message || 'Something went wrong';
+			const status = axiosError.response?.status;
+
+			if (status === 409) {
+				setFieldError('title', msg);
+			}
+			if (status === 400) {
+				// Note for future Jerry, calling setErrors or setFieldError will cause the form to be revalidated for whatever reason.
+				setErrors({ id: msg });
+				// DO NOT SAID FIELD VALUE TO ANYTHING BUT EMPTY STRING OR IT WILL REVALIDATE THE FORM EVEN WITH false AS THE THIRD PARAMETER
+				setFieldValue('id', '', false);
+			}
 		} finally {
 			setSubmitting(false);
 		}
@@ -78,24 +149,9 @@ const ImportDocumentContainer = () => {
 				errors[key as FormKeys] = 'This field is required';
 			}
 		});
+		console.log('fuck u?');
 		return errors;
 	};
-
-	useEffect(() => {
-		const getAvailableFolders = async () => {
-			try {
-				if (!user) return;
-				const { data } = await axiosClient.get('/rooms/empty-containers', {
-					// roomId: user.roomId,
-				});
-				setAvailableFolders(data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-
-		getAvailableFolders();
-	}, [user]);
 
 	return (
 		<>
@@ -110,120 +166,140 @@ const ImportDocumentContainer = () => {
 					setFieldValue,
 					setFieldTouched,
 					isSubmitting,
-				}) => (
-					<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
-						<div className='flex flex-col gap-5 flex-1'>
-							<InformationPanel header='Employee information'>
-								<div className='flex gap-3'>
+				}) => {
+					return (
+						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
+							<div className='flex flex-col gap-5 flex-1'>
+								<InformationPanel header='Employee information'>
 									<InputWithLabel
 										id='id'
 										name='id'
 										label='ID'
-										wrapperClassName='flex-1'
 										onChange={handleChange}
 										onBlur={handleBlur}
 										value={values.id}
 										error={touched.id && !!errors.id}
 										small={errors.id ? errors.id : undefined}
+										sideComponent={
+											<Button
+												label='Scan'
+												className='self-end bg-primary rounded-lg h-11'
+												type='button'
+												onClick={() => setOpenScan(true)}
+											/>
+										}
+									/>
+									<CustomDropdown
+										id='department'
+										name='department'
+										options={departments}
+										optionLabel='name'
+										optionValue='id'
+										label='Department'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.department}
+										error={touched.department && !!errors.department}
+										small={errors.department}
+									/>
+								</InformationPanel>
+								<InformationPanel header='Document information'>
+									<InputWithLabel
+										name='title'
+										id='title'
+										label='Title'
+										error={touched.title && !!errors.title}
+										small={touched.title ? errors.title : undefined}
+										value={values.title}
+										onChange={handleChange}
+										onBlur={handleBlur}
+									/>
+									<CustomDropdown
+										id='documentType'
+										name='documentType'
+										options={documentTypes}
+										optionLabel='name'
+										optionValue='id'
+										label='Document type'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.documentType}
+										error={touched.documentType && !!errors.documentType}
+										small={touched.documentType ? errors.documentType : undefined}
 									/>
 									<Button
-										label='Scan'
-										className='self-end bg-primary rounded-lg h-11'
-										type='button'
-										onClick={() => setOpenScan(true)}
+										label='Submit'
+										type='submit'
+										className='bg-primary mt-5 rounded-lg'
+										disabled={isSubmitting || Object.values(errors).length !== 0}
 									/>
-								</div>
+								</InformationPanel>
+							</div>
+							<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
 								<CustomDropdown
-									id='department'
-									name='department'
-									options={cities}
+									id='locker'
+									name='locker'
+									label='Lockers'
+									options={availableLockers}
 									optionLabel='name'
-									label='Department'
-									onChange={handleChange}
+									optionValue='id'
+									onChange={(e) => {
+										setFieldValue('folder', '');
+										setFieldTouched('folder', false);
+										handleChange(e);
+									}}
 									onBlur={handleBlur}
-									value={values.department}
-									error={touched.department && !!errors.department}
-									small={errors.department}
-								/>
-							</InformationPanel>
-							<InformationPanel header='Document information'>
-								<InputWithLabel
-									name='title'
-									id='title'
-									label='Title'
-									error={touched.title && !!errors.title}
-									small={touched.title ? errors.title : undefined}
-									value={values.title}
-									onChange={handleChange}
-									onBlur={handleBlur}
+									value={values.locker}
+									error={touched.locker && !!errors.locker}
+									small={touched.locker ? errors.locker : undefined}
+									itemTemplate={(option) => (
+										<div className='flex gap-2 items-center'>
+											{option.name} - {option.current}/{option.max}
+										</div>
+									)}
 								/>
 								<CustomDropdown
-									id='documentType'
-									name='documentType'
-									options={cities}
+									id='folder'
+									name='folder'
+									label='Folders'
+									options={availableFolders?.[values.locker] || []}
 									optionLabel='name'
-									label='Document type'
+									optionValue='id'
 									onChange={handleChange}
 									onBlur={handleBlur}
-									value={values.documentType}
-									error={touched.documentType && !!errors.documentType}
-									small={touched.documentType ? errors.documentType : undefined}
+									value={values.folder}
+									disabled={!values.locker}
+									error={touched.folder && !!errors.folder}
+									small={touched.folder ? errors.folder : undefined}
+									itemTemplate={(option) => (
+										<div className='flex gap-2 items-center'>
+											<span>{option.name}</span>
+											<Progress
+												wrapperClassName='w-full'
+												max={option.max}
+												current={option.current}
+											/>
+										</div>
+									)}
 								/>
-								<Button
-									label='Submit'
-									type='submit'
-									className='bg-primary mt-5 rounded-lg'
-									disabled={isSubmitting || Object.values(errors).length !== 0}
-								/>
+								{values.folder && availableFolders && (
+									<Progress
+										label='Available'
+										showPercentage
+										current={
+											availableFolders[values.locker].find((value) => value.id === values.folder)
+												?.current || 0
+										}
+										max={
+											availableFolders[values.locker].find((value) => value.id === values.folder)
+												?.max || 0
+										}
+									/>
+								)}
 							</InformationPanel>
-						</div>
-						<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
-							<CustomDropdown
-								id='locker'
-								name='locker'
-								label='Lockers'
-								options={lockerOptions}
-								optionLabel='name'
-								onChange={(e) => {
-									setFieldValue('folder', '');
-									setFieldTouched('folder', false);
-									handleChange(e);
-								}}
-								onBlur={handleBlur}
-								value={values.locker}
-								optionValue='code'
-								error={touched.locker && !!errors.locker}
-								small={touched.locker ? errors.locker : undefined}
-								itemTemplate={(option) => (
-									<div className='flex gap-2 items-center'>
-										{option.name} - {option.current}/{option.max}
-									</div>
-								)}
-							/>
-							<CustomDropdown
-								id='folder'
-								name='folder'
-								label='Folders'
-								options={folderOptions}
-								optionLabel='name'
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.folder}
-								optionValue='code'
-								disabled={!values.locker}
-								error={touched.folder && !!errors.folder}
-								small={touched.folder ? errors.folder : undefined}
-								itemTemplate={(option) => (
-									<div className='flex gap-2 items-center'>
-										<span>{option.name}</span>
-										<Progress wrapperClassName='w-full' max={60} current={Math.random() * 40} />
-									</div>
-								)}
-							/>
-							{values.folder && <Progress label='Available' showPercentage current={40} max={60} />}
-						</InformationPanel>
-					</form>
-				)}
+						</form>
+					);
+				}}
 			</Formik>
 			{openScan && (
 				<Overlay onExit={() => setOpenScan(false)} className='flex items-center justify-center'>

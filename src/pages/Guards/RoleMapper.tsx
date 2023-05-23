@@ -4,7 +4,9 @@ import { AUTH_ROUTES } from '@/constants/routes';
 import { lazy } from 'react';
 import { Navigate } from 'react-router';
 import { StaffDashboardPage } from '../staff';
+import { EmpDashboardPage } from '../emp';
 
+// Staff imports
 const StaffLockerPage = lazy(() => import('@/pages/staff/StaffLockerPage/StaffLockerPage'));
 const StaffDocumentPage = lazy(() => import('@/pages/staff/StaffDocumentPage/StaffDocumentPage'));
 const StaffImportPage = lazy(() => import('@/pages/staff/StaffImportPage/StaffImportPage'));
@@ -24,15 +26,19 @@ const StaffFolderDetailPage = lazy(
 	() => import('@/pages/staff/StaffFolderDetailPage/StaffFolderDetailPage')
 );
 
+// Employee imports
+const EmpDocumentPage = lazy(() => import('@/pages/emp/EmpDocumentPage/EmpDocumentPage'));
+
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <StaffDashboardPage />,
-		employee: () => <div>Employee</div>,
+		employee: () => <EmpDashboardPage />,
 	},
 	[AUTH_ROUTES.PHYSICAL]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <Navigate to={AUTH_ROUTES.LOCKERS} />,
+		employee: () => <EmpDocumentPage />,
 	},
 	[AUTH_ROUTES.LOCKERS]: {
 		admin: () => <div>Admins</div>,

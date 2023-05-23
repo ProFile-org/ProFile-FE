@@ -5,6 +5,7 @@ import { AUTH_ROUTES } from '@/constants/routes';
 export type Role = keyof (typeof ROLE_MAPPER)[string];
 
 export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
+	// Admin sidebar
 	admin: [
 		{
 			label: 'Home',
@@ -45,6 +46,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			path: AUTH_ROUTES.RETURNS,
 		},
 	],
+	// Staff sidebar
 	staff: [
 		{
 			label: 'Home',
@@ -89,6 +91,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			path: AUTH_ROUTES.RETURNS,
 		},
 	],
+	// Employee sidebar
 	employee: [
 		{
 			label: 'Home',
@@ -100,21 +103,11 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		},
 		{
 			label: 'Physical',
-			items: [
-				{
-					label: 'Lockers',
-					path: AUTH_ROUTES.LOCKERS,
-				},
-				{
-					label: 'Folders',
-					path: AUTH_ROUTES.FOLDERS,
-				},
-				{
-					label: 'Documents',
-					path: AUTH_ROUTES.DOCUMENTS,
-				},
-			],
 			path: AUTH_ROUTES.PHYSICAL,
+		},
+		{
+			label: 'Digital',
+			path: AUTH_ROUTES.DRIVE,
 		},
 		{
 			type: 'group',

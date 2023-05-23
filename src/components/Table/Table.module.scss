@@ -1,24 +1,104 @@
-.table:global(.p-datatable) :global(.p-datatable-table) {
-	:global(.p-datatable-thead) > tr > th {
-		background-color: var(--primary);
-		color: white;
+.table:global(.p-datatable) {
+	// Divider
+	:global(.p-column-resizer) {
+		width: 2px;
 		border: none;
-    position: sticky;
-    top: 0;
-		padding: 0.75rem 1rem;
+		background-color: #fff;
+		opacity: 0.5;
 	}
-	:global(.p-datatable-tbody) > tr {
-		background-color: var(--layer-700);
-		&:global(.p-row-odd) {
-			background-color: var(--layer-600);
-		}
-		&:hover {
-			background-color: var(--secondary);
-		}
-		& > td {
+	// Main table
+	:global(.p-datatable-table) {
+		// Header
+		:global(.p-datatable-thead) > tr > th {
+			background-color: var(--primary);
 			color: white;
 			border: none;
+			position: sticky;
+			top: 0;
 			padding: 0.75rem 1rem;
+			border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+		}
+		// Rows
+		:global(.p-datatable-tbody) > tr {
+			background-color: var(--layer-700);
+			&:global(.p-row-odd) {
+				background-color: var(--layer-600);
+			}
+			&:hover {
+				background-color: transparent !important;
+				opacity: 0.9;
+				cursor: pointer;
+			}
+			// Cells
+			& > td {
+				color: white;
+				border: none;
+				padding: 0.75rem 1rem;
+				position: relative;
+				&:not(:last-child)::after {
+					content: '';
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 2px;
+					height: 100%;
+					opacity: 0.5;
+					background-color: #fff;
+				}
+			}
+		}
+	}
+	// Paginator
+	:global(.p-paginator) {
+		background-color: var(--layer-700);
+		border-bottom: none;
+		border-top: 2px solid rgba(255, 255, 255, 0.5);
+		gap: 0.5rem;
+		& > button {
+			border-radius: 0.5rem;
+			background-color: var(--primary) !important;
+			color: #fff !important;
+			border: none;
+			&:hover {
+				opacity: 0.8;
+			}
+			&:disabled {
+				background-color: var(--layer-600) !important;
+			}
+		}
+		& > :global(.p-paginator-pages) {
+			& > button {
+				border-radius: 0.5rem;
+				margin-right: 0.5rem;
+				border: none;
+				background-color: var(--primary);
+				opacity: 0.5;
+				color: #fff !important;
+				&:global(.p-highlight) {
+					opacity: 1;
+				}
+				&:last-child {
+					margin-right: 0;
+				}
+				&:hover {
+					background-color: var(--primary) !important;
+					opacity: 1;
+				}
+			}
+		}
+		// Dropdown
+		:global(.p-dropdown) {
+			background-color: transparent;
+			border: 2px solid var(--primary);
+			outline: none !important;
+			box-shadow: none !important;
+		}
+		// Jump to page 
+		:global(.p-paginator-page-input) > input {
+			background-color: transparent;
+			border: 2px solid var(--primary);
+			max-width: 5rem;
+			text-align: center;
 		}
 	}
 }

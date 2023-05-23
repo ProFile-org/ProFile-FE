@@ -2,11 +2,16 @@ import InformationPanel from '@/components/InformationPanel/InformationPanel.com
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { AUTH_ROUTES } from '@/constants/routes';
 import { Button } from 'primereact/button';
+import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
 const StaffDocumentDetailPage = () => {
-	const { documentId } = useParams();
+	const { documentId = '' } = useParams<{ documentId: string }>();
+
+	// Todo: fetch document data
+	// const { data, isLoading } = useQuery(documentId, () => ({}));
+
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
