@@ -12,6 +12,9 @@
 		&:global(.p-row-odd) {
 			background-color: var(--layer-600);
 		}
+		&:hover {
+			background-color: var(--secondary);
+		}
 		& > td {
 			color: white;
 			border: none;

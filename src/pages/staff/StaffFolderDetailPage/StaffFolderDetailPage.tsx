@@ -14,7 +14,9 @@ const StaffFolderDetailPage = () => {
 			<div className='card'>
 				<h2 className='title flex gap-2'>
 					<span>/</span>
-					<Link to={`${AUTH_ROUTES.LOCKERS}/12`}>Locker 12</Link>
+					<Link to={`${AUTH_ROUTES.LOCKERS}/12`} className='link-underlined'>
+						Locker 12
+					</Link>
 					<span>/</span>
 					<span>Folder {folderId}</span>
 				</h2>

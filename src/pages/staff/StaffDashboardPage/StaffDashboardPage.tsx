@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const StaffDashboardPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
-			<Link to={AUTH_ROUTES.REQUESTS} className='header'>
+			<Link to={AUTH_ROUTES.REQUESTS} className='header link-underlined'>
 				Pending request &gt;
 			</Link>
 			<div className='flex gap-5'>
@@ -12,7 +12,7 @@ const StaffDashboardPage = () => {
 				<div className='card flex-1 h-40'></div>
 				<div className='card flex-1 h-40'></div>
 			</div>
-			<Link to={AUTH_ROUTES.LOCKERS} className='header'>
+			<Link to={AUTH_ROUTES.LOCKERS} className='header link-underlined'>
 				Lockers &gt;
 			</Link>
 			<div className='flex gap-5'>
@@ -22,7 +22,7 @@ const StaffDashboardPage = () => {
 					</div>
 				))}
 			</div>
-			<Link to={AUTH_ROUTES.FOLDERS} className='header'>
+			<Link to={AUTH_ROUTES.FOLDERS} className='header link-underlined'>
 				Folders &gt;
 			</Link>
 			<div className='flex gap-5'>
@@ -32,7 +32,7 @@ const StaffDashboardPage = () => {
 					</div>
 				))}
 			</div>
-			<Link to={AUTH_ROUTES.DOCUMENTS} className='header'>
+			<Link to={AUTH_ROUTES.DOCUMENTS} className='header link-underlined'>
 				Documents &gt;
 			</Link>
 			<div className='flex gap-5 overflow-x-auto max-w-full'>

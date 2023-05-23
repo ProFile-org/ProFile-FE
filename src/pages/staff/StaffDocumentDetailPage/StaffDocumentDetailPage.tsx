@@ -12,9 +12,13 @@ const StaffDocumentDetailPage = () => {
 			<div className='card'>
 				<h2 className='title flex gap-2'>
 					<span>/</span>
-					<Link to={`${AUTH_ROUTES.LOCKERS}/12`}>Locker 12</Link>
+					<Link to={`${AUTH_ROUTES.LOCKERS}/12`} className='link-underlined'>
+						Locker 12
+					</Link>
 					<span>/</span>
-					<Link to={`${AUTH_ROUTES.FOLDERS}/5`}>Folder 5</Link>
+					<Link to={`${AUTH_ROUTES.FOLDERS}/5`} className='link-underlined'>
+						Folder 5
+					</Link>
 					<span>/</span>
 					<span>Document {documentId}</span>
 				</h2>
