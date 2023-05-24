@@ -40,7 +40,7 @@ type DropdownOption = {
 
 type LockerOption = {
 	max: number;
-	current: number;
+	free: number;
 } & DropdownOption;
 
 type FolderOption = LockerOption;
@@ -66,8 +66,8 @@ const ImportDocumentContainer = () => {
 			emptyContainers?.data.items.map((locker) => ({
 				name: locker.name,
 				id: locker.id,
-				current: 50 - locker.numberOfFreeFolders,
-				max: 50,
+				free: locker.numberOfFreeFolders,
+				max: locker.numberOfFolders,
 			})),
 		[emptyContainers?.data.items]
 	);
@@ -78,8 +78,8 @@ const ImportDocumentContainer = () => {
 				const folders = locker.folders.map((folder) => ({
 					name: folder.name,
 					id: folder.id,
-					current: folder.slot - 50,
-					max: folder.slot,
+					free: folder.slot,
+					max: folder.capacity,
 				}));
 				return { ...acc, [locker.id]: folders };
 			}, {} as { [key: string]: FolderOption[] }),
@@ -152,6 +152,8 @@ const ImportDocumentContainer = () => {
 		console.log('fuck u?');
 		return errors;
 	};
+
+	console.log(availableFolders);
 
 	return (
 		<>
@@ -254,7 +256,7 @@ const ImportDocumentContainer = () => {
 									small={touched.locker ? errors.locker : undefined}
 									itemTemplate={(option) => (
 										<div className='flex gap-2 items-center'>
-											{option.name} - {option.current}/{option.max}
+											{option.name} - Free: {option.free}/{option.max}
 										</div>
 									)}
 								/>
@@ -273,12 +275,7 @@ const ImportDocumentContainer = () => {
 									small={touched.folder ? errors.folder : undefined}
 									itemTemplate={(option) => (
 										<div className='flex gap-2 items-center'>
-											<span>{option.name}</span>
-											<Progress
-												wrapperClassName='w-full'
-												max={option.max}
-												current={option.current}
-											/>
+											{option.name} - Free: {option.free}/{option.max}
 										</div>
 									)}
 								/>
@@ -288,7 +285,7 @@ const ImportDocumentContainer = () => {
 										showPercentage
 										current={
 											availableFolders[values.locker].find((value) => value.id === values.folder)
-												?.current || 0
+												?.free || 0
 										}
 										max={
 											availableFolders[values.locker].find((value) => value.id === values.folder)

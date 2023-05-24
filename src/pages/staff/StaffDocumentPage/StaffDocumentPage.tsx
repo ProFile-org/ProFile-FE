@@ -14,6 +14,8 @@ interface ILazyTableState {
 	first: number;
 	rows: number;
 	page: number;
+	// sortField?: string;
+	// sortOrder?: number;
 }
 
 const DEFAULT_ROWS = 10;
@@ -24,6 +26,8 @@ const StaffDocumentPage = () => {
 		page: 0,
 		rows: DEFAULT_ROWS,
 		first: 0,
+		// sortField: 'id',
+		// sortOrder: -1,
 	});
 
 	const { data, isLoading } = useQuery(
@@ -37,10 +41,14 @@ const StaffDocumentPage = () => {
 					},
 				})
 			).data
+		// {
+		// 	keepPreviousData: true, // Reduce fetching on already fetched data
+		// }
 	);
 
 	const documents =
 		data?.data.items.map((item, index) => ({ ...item, count: paginate.first + index + 1 })) || [];
+
 	const totalCount = data?.data.totalCount || 0;
 
 	return (
@@ -75,11 +83,30 @@ const StaffDocumentPage = () => {
 					rows={paginate.rows}
 					first={paginate.first}
 					paginatorTemplate='CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput'
+					// sortMode='single'
+					// onSort={(e) => {
+					// 	setPaginate((prev) => ({
+					// 		...prev,
+					// 		sortField: e.sortField,
+					// 		sortOrder: e.sortOrder || -1,
+					// 	}));
+					// }}
 				>
 					<Column field='count' header='No.' className='w-max' />
-					<Column field='id' header='ID' className='w-max break-keep  overflow-ellipsis' />
+					<Column field='id' header='ID' className='break-keep  overflow-ellipsis max-w-[5rem]' />
 					<Column field='title' header='Title' />
 					<Column field='documentType' header='Type' />
+					<Column field='department.name' header='Department' />
+					<Column field='importer.email' header='Importer' />
+					<Column
+						field='importer.created'
+						header='Imported at'
+						body={(document) =>
+							`${new Date(document.importer.created).toLocaleTimeString()} ${new Date(
+								document.importer.created
+							).toLocaleDateString()}`
+						}
+					/>
 				</Table>
 			</div>
 		</div>

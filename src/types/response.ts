@@ -1,4 +1,4 @@
-import { IDocument } from './item';
+import { IDocument, IImporter } from './item';
 
 export type GetConfigResponse = {
 	succeeded: boolean;
@@ -16,12 +16,14 @@ export type GetPaginationResponse = {
 export type GetDocumentTypesResponse = GetConfigResponse & {
 	data: string[];
 };
+
 export type GetDepartmentsResponse = GetConfigResponse & {
 	data: {
 		id: string;
 		name: string;
 	}[];
 };
+
 export type GetEmptyContainersResponse = GetConfigResponse & {
 	data: {
 		items: {
@@ -29,17 +31,24 @@ export type GetEmptyContainersResponse = GetConfigResponse & {
 			name: string;
 			description: string;
 			numberOfFreeFolders: number;
+			numberOfFolders: number;
 			folders: {
 				id: string;
 				name: string;
 				description: string;
 				slot: number;
+				capacity: number;
 			}[];
 		}[];
 	} & GetPaginationResponse;
 };
+
 export type GetDocumentsResponse = GetConfigResponse & {
 	data: {
 		items: IDocument[];
 	} & GetPaginationResponse;
+};
+
+export type GetDocumentByIdResponse = GetConfigResponse & {
+	data: IDocument;
 };
