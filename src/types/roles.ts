@@ -1,6 +1,7 @@
 import { ROLE_MAPPER } from '@/pages/Guards/RoleMapper';
 import { IItem } from './item';
 import { AUTH_ROUTES } from '@/constants/routes';
+import { PrimeIcons } from 'primereact/api';
 
 export type Role = keyof (typeof ROLE_MAPPER)[string];
 
@@ -51,6 +52,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Home',
 			path: AUTH_ROUTES.HOME,
+			icon: PrimeIcons.HOME,
 		},
 		{
 			type: 'group',
@@ -58,18 +60,22 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		},
 		{
 			label: 'Physical',
+			icon: PrimeIcons.FOLDER_OPEN,
 			items: [
 				{
 					label: 'Lockers',
 					path: AUTH_ROUTES.LOCKERS,
+					icon: PrimeIcons.LOCK,
 				},
 				{
 					label: 'Folders',
 					path: AUTH_ROUTES.FOLDERS,
+					icon: PrimeIcons.FOLDER,
 				},
 				{
 					label: 'Documents',
 					path: AUTH_ROUTES.DOCUMENTS,
+					icon: PrimeIcons.FILE,
 				},
 			],
 			path: AUTH_ROUTES.PHYSICAL,
@@ -77,6 +83,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Import',
 			path: AUTH_ROUTES.IMPORT,
+			icon: PrimeIcons.UPLOAD,
 		},
 		{
 			type: 'group',
@@ -85,10 +92,12 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Requests',
 			path: AUTH_ROUTES.REQUESTS,
+			icon: PrimeIcons.BELL,
 		},
 		{
 			label: 'Returns',
 			path: AUTH_ROUTES.RETURNS,
+			icon: PrimeIcons.REPLY,
 		},
 	],
 	// Employee sidebar
@@ -96,6 +105,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Home',
 			path: AUTH_ROUTES.HOME,
+			icon: PrimeIcons.HOME,
 		},
 		{
 			type: 'group',
@@ -104,10 +114,12 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Physical',
 			path: AUTH_ROUTES.PHYSICAL,
+			icon: PrimeIcons.FOLDER_OPEN,
 		},
 		{
 			label: 'Digital',
 			path: AUTH_ROUTES.DRIVE,
+			icon: PrimeIcons.CLOUD,
 		},
 		{
 			type: 'group',
@@ -116,10 +128,12 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		{
 			label: 'Requests',
 			path: AUTH_ROUTES.REQUESTS,
+			icon: PrimeIcons.BELL,
 		},
 		{
 			label: 'Returns',
 			path: AUTH_ROUTES.RETURNS,
+			icon: PrimeIcons.REPLY,
 		},
 	],
 };

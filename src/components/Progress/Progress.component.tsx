@@ -15,6 +15,7 @@ const Progress: FC<IProcessProps> = ({
 	className,
 	current = 0,
 	max = 0,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	value: _,
 	wrapperClassName,
 	showValue = false,

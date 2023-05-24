@@ -1,4 +1,4 @@
-import { IDocument, IImporter } from './item';
+import { IDocument } from './item';
 
 export type GetConfigResponse = {
 	succeeded: boolean;
