@@ -1,4 +1,4 @@
-import SignInForm from '@/containers/SignInForm/SignInFormContainer';
+import SignInForm from '@/containers/SignInFormContainer/SignInFormContainer';
 
 const SignInPage = () => {
 	return (

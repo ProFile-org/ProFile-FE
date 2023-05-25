@@ -10,6 +10,8 @@ interface IInputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
 	small?: string;
 	value?: string;
 	error?: boolean;
+	wrapperClassName?: string;
+	sideComponent?: JSX.Element;
 }
 
 const InputWithLabel: FC<IInputWithLabelProps> = ({
@@ -19,39 +21,46 @@ const InputWithLabel: FC<IInputWithLabelProps> = ({
 	error = false,
 	className,
 	type,
+	wrapperClassName,
+	sideComponent,
 	...rest
 }) => {
 	return (
-		<div className={clsx('input-with-label-wrapper flex flex-col gap-3 text-white')}>
-			<label className='text-xl font-bold' htmlFor={id}>
+		<div
+			className={clsx('input-with-label-wrapper flex flex-col gap-3 text-white', wrapperClassName)}
+		>
+			<label className='header' htmlFor={id}>
 				{label}
 			</label>
-			{type === 'password' ? (
-				<Password
-					inputClassName={clsx(
-						className,
-						error && 'p-invalid',
-						'w-full bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg',
-						style['input']
-					)}
-					feedback={false}
-					toggleMask
-					id={id}
-					{...rest}
-				/>
-			) : (
-				<InputText
-					id={id}
-					className={clsx(
-						className,
-						error && 'p-invalid',
-						'bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg',
-						style['input']
-					)}
-					{...rest}
-				/>
-			)}
-			{small && <small className={clsx(error && 'text-red-500 text-sm')}>{small}</small>}
+			<div className='flex gap-3'>
+				{type === 'password' ? (
+					<Password
+						inputClassName={clsx(
+							className,
+							error && 'p-invalid',
+							'input w-full h-11 flex-1',
+							style['input']
+						)}
+						feedback={false}
+						toggleMask
+						id={id}
+						{...rest}
+					/>
+				) : (
+					<InputText
+						id={id}
+						className={clsx(
+							className,
+							error && 'p-invalid',
+							'input w-full h-11 flex-1',
+							style['input']
+						)}
+						{...rest}
+					/>
+				)}
+				{sideComponent}
+			</div>
+			{error && <small className={clsx('error-input')}>{small}</small>}
 		</div>
 	);
 };

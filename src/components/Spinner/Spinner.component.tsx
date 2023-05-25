@@ -1,18 +1,24 @@
 import { FC } from 'react';
-import style from './spinner.module.scss';
+import style from './Spinner.module.scss';
 import clsx from 'clsx';
 
 interface ISpinnerProps {
 	size?: string;
+	borderColor?: string;
+	borderTopColor?: string;
 }
 
-const Spinner: FC<ISpinnerProps> = ({ size = '5rem' }) => {
+const Spinner: FC<ISpinnerProps> = ({
+	size = '5rem',
+	borderColor = 'border-neutral-100',
+	borderTopColor = 'border-t-black',
+}) => {
 	const borderSize = size.includes('px')
 		? +size.replace('px', '') * 0.1
 		: +size.replace(/r?em/, '') * 16 * 0.1;
 	return (
 		<div
-			className={clsx('rounded-full border-solid border-neutral-100 border-t-black', style.spinner)}
+			className={clsx('rounded-full border-solid', style.spinner, borderColor, borderTopColor)}
 			style={{
 				width: size,
 				height: size,

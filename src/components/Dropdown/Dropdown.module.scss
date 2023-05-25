@@ -1,0 +1,7 @@
+.dropdown:global(.p-component) {
+	border-color: var(--primary);
+  border-width: 2px;
+	&:not(.p-disabled):hover {
+		border-color: var(--primary);
+	}
+}
