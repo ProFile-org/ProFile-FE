@@ -63,3 +63,7 @@ body {
 .p-invalid {
 	border-color: var(--action) !important;
 }
+
+#password {
+	width: 100%;
+}

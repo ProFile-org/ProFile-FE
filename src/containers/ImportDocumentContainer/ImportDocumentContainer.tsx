@@ -41,6 +41,7 @@ type DropdownOption = {
 type LockerOption = {
 	max: number;
 	free: number;
+	description?: string;
 } & DropdownOption;
 
 type FolderOption = LockerOption;
@@ -68,6 +69,7 @@ const ImportDocumentContainer = () => {
 				id: locker.id,
 				free: locker.numberOfFreeFolders,
 				max: locker.numberOfFolders,
+				description: locker.description,
 			})),
 		[emptyContainers?.data.items]
 	);
@@ -80,6 +82,7 @@ const ImportDocumentContainer = () => {
 					id: folder.id,
 					free: folder.slot,
 					max: folder.capacity,
+					description: folder.description,
 				}));
 				return { ...acc, [locker.id]: folders };
 			}, {} as { [key: string]: FolderOption[] }),
@@ -172,6 +175,7 @@ const ImportDocumentContainer = () => {
 						if (!result) return;
 						console.log(result);
 						setFieldValue('id', result);
+						setFieldValue('department', '81377bd4-e1f5-4963-a0b8-68123f25923e');
 						setOpenScan(false);
 					};
 
@@ -235,6 +239,20 @@ const ImportDocumentContainer = () => {
 											value={values.documentType}
 											error={touched.documentType && !!errors.documentType}
 											small={touched.documentType ? errors.documentType : undefined}
+											editable
+											panelFooterTemplate={({ options, value }) =>
+												value === '' ? (
+													<div className='px-3 py-2'>No item selected</div>
+												) : options?.some((option) => option.id === value) ? (
+													<div className='px-3 py-2'>
+														<strong>{value}</strong> selected
+													</div>
+												) : (
+													<div className='px-3 py-2'>
+														<strong>{value}</strong> will be added
+													</div>
+												)
+											}
 										/>
 										<Button
 											label='Submit'
@@ -262,8 +280,11 @@ const ImportDocumentContainer = () => {
 										error={touched.locker && !!errors.locker}
 										small={touched.locker ? errors.locker : undefined}
 										itemTemplate={(option) => (
-											<div className='flex gap-2 items-center'>
-												{option.name} - Free: {option.free}/{option.max}
+											<div className='flex flex-col gap-3'>
+												<div>
+													{option.name} - Free: {option.free}/{option.max}
+												</div>
+												<div>{option.description}</div>
 											</div>
 										)}
 									/>

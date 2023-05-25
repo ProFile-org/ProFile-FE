@@ -14,8 +14,8 @@ interface ILazyTableState {
 	first: number;
 	rows: number;
 	page: number;
-	// sortField?: string;
-	// sortOrder?: number;
+	sortField: string;
+	sortOrder: 1 | -1;
 }
 
 const DEFAULT_ROWS = 10;
@@ -26,8 +26,8 @@ const StaffDocumentPage = () => {
 		page: 0,
 		rows: DEFAULT_ROWS,
 		first: 0,
-		// sortField: 'id',
-		// sortOrder: -1,
+		sortField: 'id',
+		sortOrder: 1,
 	});
 
 	const { data, isLoading } = useQuery(
@@ -38,6 +38,8 @@ const StaffDocumentPage = () => {
 					params: {
 						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
 						size: paginate.rows,
+						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),
+						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
 					},
 				})
 			).data
@@ -79,23 +81,32 @@ const StaffDocumentPage = () => {
 					}}
 					rowsPerPageOptions={[DEFAULT_ROWS, 20, 50, 100]}
 					totalRecords={totalCount}
+					// totalRecords={documents.length}
 					lazy
 					rows={paginate.rows}
 					first={paginate.first}
 					paginatorTemplate='CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput'
-					// sortMode='single'
-					// onSort={(e) => {
-					// 	setPaginate((prev) => ({
-					// 		...prev,
-					// 		sortField: e.sortField,
-					// 		sortOrder: e.sortOrder || -1,
-					// 	}));
-					// }}
+					sortMode='single'
+					onSort={(e) => {
+						console.log(e);
+						setPaginate((prev) => ({
+							...prev,
+							sortField: e.sortField,
+							sortOrder: e.sortOrder || 1,
+						}));
+					}}
+					sortField={paginate.sortField}
+					sortOrder={paginate.sortOrder}
 				>
 					<Column field='count' header='No.' className='w-max' />
-					<Column field='id' header='ID' className='break-keep  overflow-ellipsis max-w-[5rem]' />
-					<Column field='title' header='Title' />
-					<Column field='documentType' header='Type' />
+					<Column
+						field='id'
+						header='ID'
+						className='break-keep  overflow-ellipsis max-w-[5rem]'
+						sortable
+					/>
+					<Column field='title' header='Title' sortable />
+					<Column field='documentType' header='Type' sortable />
 					<Column field='folder.name' header='Folder' />
 					<Column field='folder.locker.name' header='Locker' />
 					<Column field='department.name' header='Department' />
