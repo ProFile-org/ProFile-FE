@@ -26,6 +26,9 @@
 	.link-underlined {
 		@apply hover:text-secondary transition-colors;
 	}
+	.skeleton {
+		@apply w-full h-10 bg-neutral-600 animate-pulse rounded-lg;
+	}
 }
 
 :root {

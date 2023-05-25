@@ -96,6 +96,8 @@ const StaffDocumentPage = () => {
 					<Column field='id' header='ID' className='break-keep  overflow-ellipsis max-w-[5rem]' />
 					<Column field='title' header='Title' />
 					<Column field='documentType' header='Type' />
+					<Column field='folder.name' header='Folder' />
+					<Column field='folder.locker.name' header='Locker' />
 					<Column field='department.name' header='Department' />
 					<Column field='importer.email' header='Importer' />
 					<Column

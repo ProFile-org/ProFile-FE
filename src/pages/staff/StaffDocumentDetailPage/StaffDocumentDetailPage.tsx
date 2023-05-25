@@ -9,6 +9,7 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
+import StaffDocumentDetailSkeleton from './StaffDocumentDetailSkeleton';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -28,7 +29,7 @@ const StaffDocumentDetailPage = () => {
 		}
 	);
 
-	if (isLoading || !data) return <div>Loading...</div>;
+	if (isLoading || !data) return <StaffDocumentDetailSkeleton />;
 
 	const {
 		title,

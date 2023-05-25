@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 //theme
@@ -16,13 +15,11 @@ import AuthProvider from './context/authContext.tsx';
 const client = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-	<React.StrictMode>
-		<AuthProvider>
-			<BrowserRouter>
-				<QueryClientProvider client={client}>
-					<App />
-				</QueryClientProvider>
-			</BrowserRouter>
-		</AuthProvider>
-	</React.StrictMode>
+	<AuthProvider>
+		<BrowserRouter>
+			<QueryClientProvider client={client}>
+				<App />
+			</QueryClientProvider>
+		</BrowserRouter>
+	</AuthProvider>
 );

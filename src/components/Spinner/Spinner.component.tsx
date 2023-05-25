@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import style from './spinner.module.scss';
+import style from './Spinner.module.scss';
 import clsx from 'clsx';
 
 interface ISpinnerProps {
