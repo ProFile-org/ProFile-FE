@@ -1,4 +1,4 @@
-import { IDocument } from './item';
+import { IDocument, IUser } from './item';
 
 export type GetConfigResponse = {
 	succeeded: boolean;
@@ -51,4 +51,8 @@ export type GetDocumentsResponse = GetConfigResponse & {
 
 export type GetDocumentByIdResponse = GetConfigResponse & {
 	data: IDocument;
+};
+
+export type LoginResponse = GetConfigResponse & {
+	data: IUser;
 };
