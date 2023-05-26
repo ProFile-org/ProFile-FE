@@ -43,6 +43,7 @@ const StaffDocumentPage = () => {
 					},
 				})
 			).data
+
 		// {
 		// 	keepPreviousData: true, // Reduce fetching on already fetched data
 		// }
@@ -88,7 +89,6 @@ const StaffDocumentPage = () => {
 					paginatorTemplate='CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput'
 					sortMode='single'
 					onSort={(e) => {
-						console.log(e);
 						setPaginate((prev) => ({
 							...prev,
 							sortField: e.sortField,

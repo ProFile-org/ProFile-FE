@@ -7,10 +7,24 @@ import { PrimeIcons } from 'primereact/api';
 import clsx from 'clsx';
 import DashboardPage from '@/pages/DashboardPage/DashboardPage';
 import MobileSideBar from '../Sidebar/MobileSideBar.component';
+import axiosClient from '@/utils/axiosClient';
 
 const Navbar = () => {
 	const { user, dispatch } = useContext(AuthContext);
 	const [open, setOpen] = useState(false);
+
+	const signOut = async () => {
+		try {
+			await axiosClient.post('/auth/logout');
+			dispatch({
+				type: 'LOGOUT',
+				payload: null,
+			});
+			localStorage.removeItem('user');
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<>
@@ -27,18 +41,10 @@ const Navbar = () => {
 						</div>
 						<div className='flex gap-5 items-center'>
 							<span className='text-white text-lg hidden lg:inline'>
-								{user?.role} - {user?.department} - {user?.username}
+								{user?.role} - {user?.department?.name && `${user?.department?.name} -`}{' '}
+								{user?.username}
 							</span>
-							<Button
-								className='text-white px-3 py-2 rounded-lg'
-								onClick={() => {
-									dispatch({
-										type: 'LOGOUT',
-										payload: null,
-									});
-									localStorage.removeItem('user');
-								}}
-							>
+							<Button className='text-white px-3 py-2 rounded-lg' onClick={signOut}>
 								<span className='hidden lg:inline'>Sign out</span>
 								<i className={clsx(PrimeIcons.SIGN_OUT, 'text-white lg:hidden')} />
 							</Button>

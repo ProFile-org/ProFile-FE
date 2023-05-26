@@ -51,8 +51,8 @@ const ImportDocumentContainer = () => {
 	const { user } = useContext(AuthContext);
 
 	const { data: emptyContainers } = useQuery(
-		'emptyContainers',
-		async () =>
+		'imports',
+		async () => 
 			(
 				await axiosClient.post<GetEmptyContainersResponse>('/rooms/empty-containers', {
 					roomId: user?.roomId,

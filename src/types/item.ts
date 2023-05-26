@@ -39,3 +39,18 @@ export interface IDocument {
 		};
 	};
 }
+
+export interface IUser {
+	id: string;
+	username: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	role: string;
+	position: string;
+	department?: {
+		id: string;
+		name: string;
+	};
+	roomId?: string;
+}
