@@ -53,7 +53,11 @@ const SignInForm = () => {
 				password,
 			});
 
-			const user = { ...data, role: data.role.toLowerCase() };
+			const user = {
+				...data,
+				role: data.role.toLowerCase(),
+				roomId: 'ccc66a64-a429-4500-9439-b66ab2f94404',
+			};
 			console.log(user);
 
 			dispatch({

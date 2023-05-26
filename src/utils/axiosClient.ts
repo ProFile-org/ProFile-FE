@@ -17,26 +17,31 @@ axiosClient.interceptors.response.use(
 
 		// Refresh token
 		const originalRequest = error.config;
+
 		return new Promise((resolve, reject) => {
 			if (error?.response?.status === 401) {
 				if (!originalRequest?.retry) {
 					originalRequest.retry = true;
 					axiosClient.post('/auth/refresh').then(() => {
 						if (originalRequest.url === '/auth/validate') {
+							console.log(originalRequest);
 							console.log('This should only refresh once and does not call validate again');
-							resolve('');
+							return resolve('');
 						}
 						// Call this again when not /auth/validate to refetch data
-						resolve(axiosClient(originalRequest));
+						console.log(originalRequest);
+						// return resolve(axiosClient(originalRequest));
 					});
 				} else {
 					// Already retry
-					localStorage.removeItem('user');
+					// localStorage.removeItem('user');
 				}
 			}
 			if (error?.response?.status === 400 && error?.config.url === '/auth/refresh') {
+				console.log(error);
 				localStorage.removeItem('user');
-				location.reload();
+				// location.reload();
+				return;
 			}
 			reject(error);
 		});
