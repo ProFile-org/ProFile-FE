@@ -141,7 +141,7 @@ const ImportDocumentContainer = () => {
 
 	const onSubmit = async (
 		values: FormValues,
-		{ setSubmitting, setFieldError, setFieldValue, setErrors }: FormikHelpers<FormValues>
+		{ setSubmitting, setFieldError }: FormikHelpers<FormValues>
 	) => {
 		try {
 			mutation.mutate(
@@ -157,17 +157,14 @@ const ImportDocumentContainer = () => {
 					},
 					onError: (error) => {
 						const axiosError = error as AxiosError<GetConfigResponse>;
-						const msg = axiosError.response?.data.message || 'Something went wrong';
+						const msg = axiosError.response?.data.message || 'Incorrect format';
 						const status = axiosError.response?.status;
 
 						if (status === 409) {
 							setFieldError('title', msg);
 						}
 						if (status === 400) {
-							// Note for future Jerry, calling setErrors or setFieldError will cause the form to be revalidated for whatever reason.
-							setErrors({ id: msg });
-							// DO NOT SAID FIELD VALUE TO ANYTHING BUT EMPTY STRING OR IT WILL REVALIDATE THE FORM EVEN WITH false AS THE THIRD PARAMETER
-							setFieldValue('id', '', false);
+							setFieldError('id', msg);
 						}
 					},
 				}
