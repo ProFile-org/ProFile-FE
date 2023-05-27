@@ -42,7 +42,7 @@ const StaffDocumentDetailPage = () => {
 				// room: { id: roomId, name: roomName },
 			},
 		},
-		department: { name: department },
+		// department: { name: department },
 		importer: { firstName, lastName, id: importerId },
 	} = data.data;
 
@@ -82,8 +82,8 @@ const StaffDocumentDetailPage = () => {
 						<InputWithLabel
 							label='Department'
 							wrapperClassName='flex-1'
-							value={department || 'this should be department'}
-							// value='this should be department'
+							// value={department || 'this should be department'}
+							value='this should be department'
 							readOnly
 						/>
 					</InformationPanel>
