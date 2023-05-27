@@ -13,15 +13,9 @@ let isRefreshing = false;
 function refresh() {
 	if (isRefreshing) return Promise.resolve();
 	isRefreshing = true;
-	return axiosClient
-		.post('/auth/refresh')
-		.then(() => {
-			isRefreshing = false;
-		})
-		.catch(() => {
-			isRefreshing = false;
-			localStorage.removeItem('user');
-		});
+	return axiosClient.post('/auth/refresh').then(() => {
+		isRefreshing = false;
+	});
 }
 
 axiosClient.interceptors.response.use(undefined, (error) => {
@@ -36,6 +30,12 @@ axiosClient.interceptors.response.use(undefined, (error) => {
 
 	// Refresh token
 	const originalRequest = error.config;
+
+	if (error?.response?.status === 400 && error?.config?.url === '/auth/refresh') {
+		isRefreshing = false;
+		localStorage.removeItem('user');
+		location.href = '/auth';
+	}
 
 	if (error?.response?.status === 401 && !originalRequest._retry) {
 		originalRequest._retry = true;
