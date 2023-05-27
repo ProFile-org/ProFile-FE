@@ -17,17 +17,21 @@ import { AxiosError, AxiosResponse } from 'axios';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
 import useDepartments from '@/hooks/useDepartments';
+import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 
-const initialFormValues = {
+const RequiredValues = {
 	id: '',
 	department: '',
 	title: '',
 	documentType: '',
 	locker: '',
 	folder: '',
+	description: '',
 };
 
-type FormValues = typeof initialFormValues;
+const NOT_REQUIRED = ['description'];
+
+type FormValues = typeof RequiredValues;
 
 type FormKeys = keyof FormValues;
 
@@ -36,6 +40,7 @@ type ImportDocumentBody = {
 	documentType: string;
 	importerId: string;
 	folderId: string;
+	description: string;
 };
 
 const ImportDocumentContainer = () => {
@@ -73,6 +78,7 @@ const ImportDocumentContainer = () => {
 					documentType: values.documentType,
 					importerId: values.id,
 					folderId: values.folder,
+					description: values.description,
 				},
 				{
 					onSuccess: (result) => {
@@ -102,7 +108,7 @@ const ImportDocumentContainer = () => {
 	const onValidate = (values: FormValues) => {
 		const errors: Partial<FormValues> = {};
 		Object.entries(values).forEach(([key, value]) => {
-			if (!value) {
+			if (!value && NOT_REQUIRED.indexOf(key) === -1) {
 				errors[key as FormKeys] = 'This field is required';
 			}
 		});
@@ -119,7 +125,7 @@ const ImportDocumentContainer = () => {
 	}, [containerRefetch, typesRefetch, departmentsRefetch]);
 
 	return (
-		<Formik initialValues={initialFormValues} onSubmit={onSubmit} validate={onValidate}>
+		<Formik initialValues={RequiredValues} onSubmit={onSubmit} validate={onValidate}>
 			{({
 				values,
 				errors,
@@ -145,39 +151,6 @@ const ImportDocumentContainer = () => {
 					<>
 						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 							<div className='flex flex-col gap-5 flex-1'>
-								<InformationPanel header='Employee information'>
-									<InputWithLabel
-										id='id'
-										name='id'
-										label='ID'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.id}
-										error={touched.id && !!errors.id}
-										small={errors.id ? errors.id : undefined}
-										sideComponent={
-											<Button
-												label='Scan'
-												className='self-end bg-primary rounded-lg h-11'
-												type='button'
-												onClick={() => setOpenScan(true)}
-											/>
-										}
-									/>
-									<CustomDropdown
-										id='department'
-										name='department'
-										options={departments}
-										optionLabel='name'
-										optionValue='id'
-										label='Department'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.department}
-										error={touched.department && !!errors.department}
-										small={errors.department}
-									/>
-								</InformationPanel>
 								<InformationPanel header='Document information'>
 									<InputWithLabel
 										name='title'
@@ -216,6 +189,78 @@ const ImportDocumentContainer = () => {
 											)
 										}
 									/>
+									<TextareaWithLabel
+										label='Description'
+										wrapperClassName='w-full'
+										id='description'
+										name='description'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.description}
+										error={touched.description && !!errors.description}
+										small={touched.description ? errors.description : undefined}
+										placeholder="Document's description"
+									/>
+								</InformationPanel>
+								<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
+									<CustomDropdown
+										id='locker'
+										name='locker'
+										label='Lockers'
+										options={availableLockers}
+										optionLabel='name'
+										optionValue='id'
+										onChange={(e) => {
+											setFieldValue('folder', '');
+											setFieldTouched('folder', false);
+											handleChange(e);
+										}}
+										onBlur={handleBlur}
+										value={values.locker}
+										error={touched.locker && !!errors.locker}
+										small={touched.locker ? errors.locker : undefined}
+										itemTemplate={(option) => (
+											<div className='flex flex-col gap-3'>
+												<div>
+													{option.name} - Free: {option.free}/{option.max}
+												</div>
+												<div>{option.description}</div>
+											</div>
+										)}
+									/>
+									<CustomDropdown
+										id='folder'
+										name='folder'
+										label='Folders'
+										options={availableFolders?.[values.locker] || []}
+										optionLabel='name'
+										optionValue='id'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.folder}
+										disabled={!values.locker}
+										error={touched.folder && !!errors.folder}
+										small={touched.folder ? errors.folder : undefined}
+										itemTemplate={(option) => (
+											<div className='flex gap-2 items-center'>
+												{option.name} - Free: {option.free}/{option.max}
+											</div>
+										)}
+									/>
+									{values.folder && availableFolders && (
+										<Progress
+											label='Available'
+											showPercentage
+											current={
+												availableFolders[values.locker].find((value) => value.id === values.folder)
+													?.free || 0
+											}
+											max={
+												availableFolders[values.locker].find((value) => value.id === values.folder)
+													?.max || 0
+											}
+										/>
+									)}
 									<Button
 										label='Submit'
 										type='submit'
@@ -224,65 +269,38 @@ const ImportDocumentContainer = () => {
 									/>
 								</InformationPanel>
 							</div>
-							<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
-								<CustomDropdown
-									id='locker'
-									name='locker'
-									label='Lockers'
-									options={availableLockers}
-									optionLabel='name'
-									optionValue='id'
-									onChange={(e) => {
-										setFieldValue('folder', '');
-										setFieldTouched('folder', false);
-										handleChange(e);
-									}}
-									onBlur={handleBlur}
-									value={values.locker}
-									error={touched.locker && !!errors.locker}
-									small={touched.locker ? errors.locker : undefined}
-									itemTemplate={(option) => (
-										<div className='flex flex-col gap-3'>
-											<div>
-												{option.name} - Free: {option.free}/{option.max}
-											</div>
-											<div>{option.description}</div>
-										</div>
-									)}
-								/>
-								<CustomDropdown
-									id='folder'
-									name='folder'
-									label='Folders'
-									options={availableFolders?.[values.locker] || []}
-									optionLabel='name'
-									optionValue='id'
+							<InformationPanel header='Employee information' className='flex-1 h-max'>
+								<InputWithLabel
+									id='id'
+									name='id'
+									label='ID'
 									onChange={handleChange}
 									onBlur={handleBlur}
-									value={values.folder}
-									disabled={!values.locker}
-									error={touched.folder && !!errors.folder}
-									small={touched.folder ? errors.folder : undefined}
-									itemTemplate={(option) => (
-										<div className='flex gap-2 items-center'>
-											{option.name} - Free: {option.free}/{option.max}
-										</div>
-									)}
+									value={values.id}
+									error={touched.id && !!errors.id}
+									small={errors.id ? errors.id : undefined}
+									sideComponent={
+										<Button
+											label='Scan'
+											className='self-end bg-primary rounded-lg h-11'
+											type='button'
+											onClick={() => setOpenScan(true)}
+										/>
+									}
 								/>
-								{values.folder && availableFolders && (
-									<Progress
-										label='Available'
-										showPercentage
-										current={
-											availableFolders[values.locker].find((value) => value.id === values.folder)
-												?.free || 0
-										}
-										max={
-											availableFolders[values.locker].find((value) => value.id === values.folder)
-												?.max || 0
-										}
-									/>
-								)}
+								<CustomDropdown
+									id='department'
+									name='department'
+									options={departments}
+									optionLabel='name'
+									optionValue='id'
+									label='Department'
+									onChange={handleChange}
+									onBlur={handleBlur}
+									value={values.department}
+									error={touched.department && !!errors.department}
+									small={errors.department}
+								/>
 							</InformationPanel>
 						</form>
 						{openScan && (

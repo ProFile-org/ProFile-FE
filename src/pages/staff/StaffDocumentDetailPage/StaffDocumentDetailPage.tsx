@@ -10,6 +10,7 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import StaffDocumentDetailSkeleton from './StaffDocumentDetailSkeleton';
+import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -43,6 +44,7 @@ const StaffDocumentDetailPage = () => {
 			},
 		},
 		// department: { name: department },
+		description,
 		importer: { firstName, lastName, id: importerId },
 	} = data.data;
 
@@ -91,6 +93,14 @@ const StaffDocumentDetailPage = () => {
 						<InputWithLabel label='ID' wrapperClassName='flex-1' value={documentId} readOnly />
 						<InputWithLabel label='Types' value={documentType} readOnly />
 						<InputWithLabel label='Title' wrapperClassName='flex-1' value={title} readOnly />
+						{description && (
+							<TextareaWithLabel
+								label='Description'
+								wrapperClassName='flex-1'
+								value={description}
+								readOnly
+							/>
+						)}
 						<div className='flex gap-5'>
 							<InputWithLabel
 								label='Locker'
