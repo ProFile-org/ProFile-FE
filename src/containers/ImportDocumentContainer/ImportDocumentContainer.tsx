@@ -29,10 +29,10 @@ const RequiredValues = {
 	locker: '',
 	folder: '',
 	description: '',
-	file: [] as File[],
+	files: [] as File[],
 };
 
-const NOT_REQUIRED = ['description'];
+const NOT_REQUIRED = ['description', 'files'];
 
 type FormValues = typeof RequiredValues;
 
@@ -110,6 +110,7 @@ const ImportDocumentContainer = () => {
 	};
 
 	const onValidate = (values: FormValues) => {
+		console.log(values);
 		const errors: { [key: string]: string } = {};
 		Object.entries(values).forEach(([key, value]) => {
 			if (!value && NOT_REQUIRED.indexOf(key) === -1) {
@@ -308,8 +309,20 @@ const ImportDocumentContainer = () => {
 									/>
 								</InformationPanel>
 								<InformationPanel header='Add digital copies'>
-									<ImagePreviewer images={data} setData={setData} />
-									<FileInput setData={setData} />
+									<ImagePreviewer
+										images={data}
+										setData={setData}
+										setFiles={(index) =>
+											setFieldValue('files', [
+												...values.files.slice(0, index),
+												...values.files.slice(index + 1),
+											])
+										}
+									/>
+									<FileInput
+										setData={setData}
+										setFiles={(file) => setFieldValue('files', [...values.files, file])}
+									/>
 									<Button label='Scan more' type='button' className='bg-primary rounded-lg h-11' />
 								</InformationPanel>
 							</div>

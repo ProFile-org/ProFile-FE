@@ -3,8 +3,9 @@ import { PrimeIcons } from 'primereact/api';
 import { ChangeEvent, FC, InputHTMLAttributes, SetStateAction, useState, useRef } from 'react';
 
 interface IFileInputProps extends InputHTMLAttributes<HTMLInputElement> {
-	setFiles?: React.Dispatch<SetStateAction<File[]>>;
 	setData?: React.Dispatch<SetStateAction<string[]>>;
+	files?: File[];
+	setFiles?: (file: File) => void;
 }
 
 const FileInput: FC<IFileInputProps> = ({ setFiles, setData, ...rest }) => {
@@ -15,7 +16,6 @@ const FileInput: FC<IFileInputProps> = ({ setFiles, setData, ...rest }) => {
 	const ref = useRef<HTMLInputElement>(null);
 
 	const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-		console.log(1);
 		if (!e.target.files) return;
 		const newFile = e.target.files[0];
 		if (!newFile) return;
@@ -28,14 +28,13 @@ const FileInput: FC<IFileInputProps> = ({ setFiles, setData, ...rest }) => {
 		}
 		const reader = new FileReader();
 		reader.readAsDataURL(newFile);
-		console.log(reader);
 		reader.onload = async () => {
 			setData && setData((prev) => [...prev, reader.result as string]);
 			const element = ref.current as HTMLInputElement;
 			element.value = '';
 			element.files = null;
 		};
-		setFiles && setFiles((prev) => [...prev, newFile]);
+		setFiles && setFiles(newFile);
 	};
 
 	return (

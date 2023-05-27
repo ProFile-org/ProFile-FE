@@ -7,9 +7,15 @@ interface IImagePreviewerProps {
 	images?: string[];
 	imagePerSlide?: number;
 	setData?: Dispatch<SetStateAction<string[]>>;
+	setFiles?: (index: number) => void;
 }
 
-const ImagePreviewer: FC<IImagePreviewerProps> = ({ images = [], imagePerSlide = 1, setData }) => {
+const ImagePreviewer: FC<IImagePreviewerProps> = ({
+	images = [],
+	imagePerSlide = 1,
+	setData,
+	setFiles,
+}) => {
 	const [current, setCurrent] = useState(0);
 	return (
 		<div className='flex flex-col gap-3'>
@@ -35,6 +41,7 @@ const ImagePreviewer: FC<IImagePreviewerProps> = ({ images = [], imagePerSlide =
 											const index = prev.indexOf(image);
 											return [...prev.slice(0, index), ...prev.slice(index + 1)];
 										});
+									setFiles && setFiles(index);
 								}}
 							>
 								<div className='absolute p-2 aspect-square group-hover:opacity-100 opacity-0 transition-opacity duration-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-lg flex items-center justify-items'>
