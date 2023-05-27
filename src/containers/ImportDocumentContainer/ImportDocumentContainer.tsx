@@ -7,7 +7,7 @@ import axiosClient from '@/utils/axiosClient';
 import { Formik, FormikHelpers } from 'formik';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router';
-import { useState, useContext, useMemo } from 'react';
+import { useState, useContext, useMemo, useEffect } from 'react';
 import { AuthContext } from '@/context/authContext';
 import Overlay from '@/components/Overlay/Overlay.component';
 import QrScanner from '@/components/QrScanner/QrScanner.component';
@@ -17,8 +17,8 @@ import {
 	GetDocumentTypesResponse,
 	GetEmptyContainersResponse,
 } from '@/types/response';
-import { useQuery } from 'react-query';
-import { AxiosError } from 'axios';
+import { useMutation, useQuery } from 'react-query';
+import { AxiosError, AxiosResponse } from 'axios';
 
 const initialFormValues = {
 	id: '',
@@ -49,9 +49,25 @@ type FolderOption = LockerOption;
 const ImportDocumentContainer = () => {
 	const navigate = useNavigate();
 	const { user } = useContext(AuthContext);
+	const mutation = useMutation<
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		AxiosResponse<{ data: { id: string } }, any>,
+		unknown,
+		{
+			title: string;
+			documentType: string;
+			importerId: string;
+			folderId: string;
+		}
+	>((document) => axiosClient.post('/documents', document), {
+		retry: (_, error) => {
+			if ((error as AxiosError).response?.status === 401) return true;
+			return false;
+		},
+	});
 
-	const { data: emptyContainers } = useQuery(
-		'emptyContainers',
+	const { data: emptyContainers, refetch: containerRefetch } = useQuery(
+		'imports',
 		async () =>
 			(
 				await axiosClient.post<GetEmptyContainersResponse>('/rooms/empty-containers', {
@@ -59,7 +75,10 @@ const ImportDocumentContainer = () => {
 					page: 1,
 					size: 20,
 				})
-			).data
+			).data,
+		{
+			enabled: false,
+		}
 	);
 
 	const availableLockers: LockerOption[] | undefined = useMemo(
@@ -90,9 +109,12 @@ const ImportDocumentContainer = () => {
 	);
 	// [{name: 'Folder 1', id: '1', max: 60, current: 40}
 
-	const { data: documentTypesResult } = useQuery(
-		'documentTypes',
-		async () => (await axiosClient.get<GetDocumentTypesResponse>('/documents/types')).data
+	const { data: documentTypesResult, refetch: typesRefetch } = useQuery(
+		['documentTypes'],
+		async () => (await axiosClient.get<GetDocumentTypesResponse>('/documents/types')).data,
+		{
+			enabled: false,
+		}
 	);
 
 	const documentTypes: DropdownOption[] =
@@ -101,9 +123,12 @@ const ImportDocumentContainer = () => {
 			id: type,
 		})) || [];
 
-	const { data: departmentsResult } = useQuery(
-		'departments',
-		async () => (await axiosClient.get<GetDepartmentsResponse>('/departments')).data
+	const { data: departmentsResult, refetch: departmentsRefetch } = useQuery(
+		['departments'],
+		async () => (await axiosClient.get<GetDepartmentsResponse>('/departments')).data,
+		{
+			enabled: false,
+		}
 	);
 
 	const departments: DropdownOption[] =
@@ -119,27 +144,36 @@ const ImportDocumentContainer = () => {
 		{ setSubmitting, setFieldError, setFieldValue, setErrors }: FormikHelpers<FormValues>
 	) => {
 		try {
-			const { data } = await axiosClient.post('/documents', {
-				title: values.title,
-				documentType: values.documentType,
-				importerId: values.id,
-				folderId: values.folder,
-			});
-			navigate(`${AUTH_ROUTES.DOCUMENTS}/${data.data.id}`);
-		} catch (error) {
-			const axiosError = error as AxiosError<GetConfigResponse>;
-			const msg = axiosError.response?.data.message || 'Something went wrong';
-			const status = axiosError.response?.status;
+			mutation.mutate(
+				{
+					title: values.title,
+					documentType: values.documentType,
+					importerId: values.id,
+					folderId: values.folder,
+				},
+				{
+					onSuccess: (result) => {
+						navigate(`${AUTH_ROUTES.DOCUMENTS}/${result.data.data.id}`);
+					},
+					onError: (error) => {
+						const axiosError = error as AxiosError<GetConfigResponse>;
+						const msg = axiosError.response?.data.message || 'Something went wrong';
+						const status = axiosError.response?.status;
 
-			if (status === 409) {
-				setFieldError('title', msg);
-			}
-			if (status === 400) {
-				// Note for future Jerry, calling setErrors or setFieldError will cause the form to be revalidated for whatever reason.
-				setErrors({ id: msg });
-				// DO NOT SAID FIELD VALUE TO ANYTHING BUT EMPTY STRING OR IT WILL REVALIDATE THE FORM EVEN WITH false AS THE THIRD PARAMETER
-				setFieldValue('id', '', false);
-			}
+						if (status === 409) {
+							setFieldError('title', msg);
+						}
+						if (status === 400) {
+							// Note for future Jerry, calling setErrors or setFieldError will cause the form to be revalidated for whatever reason.
+							setErrors({ id: msg });
+							// DO NOT SAID FIELD VALUE TO ANYTHING BUT EMPTY STRING OR IT WILL REVALIDATE THE FORM EVEN WITH false AS THE THIRD PARAMETER
+							setFieldValue('id', '', false);
+						}
+					},
+				}
+			);
+		} catch (error) {
+			console.log(error);
 		} finally {
 			setSubmitting(false);
 		}
@@ -154,6 +188,15 @@ const ImportDocumentContainer = () => {
 		});
 		return errors;
 	};
+
+	useEffect(() => {
+		const getConfigs = async () => {
+			await containerRefetch();
+			await typesRefetch();
+			await departmentsRefetch();
+		};
+		getConfigs();
+	}, [containerRefetch, typesRefetch, departmentsRefetch]);
 
 	return (
 		<>

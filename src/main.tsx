@@ -12,7 +12,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import AuthProvider from './context/authContext.tsx';
 
-const client = new QueryClient();
+const client = new QueryClient({
+	defaultOptions: {
+		queries: {
+			// retry: false,
+			// retryOnMount: false,
+		},
+	},
+});
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<AuthProvider>
