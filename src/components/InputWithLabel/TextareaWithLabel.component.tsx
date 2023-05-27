@@ -30,7 +30,7 @@ const TextareaWithLabel: FC<ITextareWithLabelProps> = ({
 				<InputTextarea
 					className={clsx(
 						className,
-						'w-full bg-transparent border-2 border-primary hover:!border-primary/80',
+						'w-full bg-transparent border-2 border-primary hover:!border-primary/80 rounded-lg',
 						error && 'p-invalid'
 					)}
 					{...rest}

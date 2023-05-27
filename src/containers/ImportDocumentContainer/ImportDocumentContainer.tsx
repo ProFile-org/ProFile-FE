@@ -18,6 +18,8 @@ import useEmptyContainers from '@/hooks/useEmptyContainers';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
 import useDepartments from '@/hooks/useDepartments';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
+import FileInput from '@/components/FileInput/FileInput.component';
+import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 
 const RequiredValues = {
 	id: '',
@@ -27,13 +29,14 @@ const RequiredValues = {
 	locker: '',
 	folder: '',
 	description: '',
+	file: [] as File[],
 };
 
 const NOT_REQUIRED = ['description'];
 
 type FormValues = typeof RequiredValues;
 
-type FormKeys = keyof FormValues;
+// type FormKeys = keyof FormValues;
 
 type ImportDocumentBody = {
 	title: string;
@@ -66,6 +69,7 @@ const ImportDocumentContainer = () => {
 	const { departments, departmentsRefetch } = useDepartments();
 
 	const [openScan, setOpenScan] = useState(false);
+	const [data, setData] = useState<string[]>([]);
 
 	const onSubmit = async (
 		values: FormValues,
@@ -106,10 +110,10 @@ const ImportDocumentContainer = () => {
 	};
 
 	const onValidate = (values: FormValues) => {
-		const errors: Partial<FormValues> = {};
+		const errors: { [key: string]: string } = {};
 		Object.entries(values).forEach(([key, value]) => {
 			if (!value && NOT_REQUIRED.indexOf(key) === -1) {
-				errors[key as FormKeys] = 'This field is required';
+				errors[key] = 'This field is required';
 			}
 		});
 		return errors;
@@ -269,39 +273,46 @@ const ImportDocumentContainer = () => {
 									/>
 								</InformationPanel>
 							</div>
-							<InformationPanel header='Employee information' className='flex-1 h-max'>
-								<InputWithLabel
-									id='id'
-									name='id'
-									label='ID'
-									onChange={handleChange}
-									onBlur={handleBlur}
-									value={values.id}
-									error={touched.id && !!errors.id}
-									small={errors.id ? errors.id : undefined}
-									sideComponent={
-										<Button
-											label='Scan'
-											className='self-end bg-primary rounded-lg h-11'
-											type='button'
-											onClick={() => setOpenScan(true)}
-										/>
-									}
-								/>
-								<CustomDropdown
-									id='department'
-									name='department'
-									options={departments}
-									optionLabel='name'
-									optionValue='id'
-									label='Department'
-									onChange={handleChange}
-									onBlur={handleBlur}
-									value={values.department}
-									error={touched.department && !!errors.department}
-									small={errors.department}
-								/>
-							</InformationPanel>
+							<div className='flex flex-col gap-5 flex-1'>
+								<InformationPanel header='Employee information' className='h-max'>
+									<InputWithLabel
+										id='id'
+										name='id'
+										label='ID'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.id}
+										error={touched.id && !!errors.id}
+										small={errors.id ? errors.id : undefined}
+										sideComponent={
+											<Button
+												label='Scan'
+												className='self-end bg-primary rounded-lg h-11'
+												type='button'
+												onClick={() => setOpenScan(true)}
+											/>
+										}
+									/>
+									<CustomDropdown
+										id='department'
+										name='department'
+										options={departments}
+										optionLabel='name'
+										optionValue='id'
+										label='Department'
+										onChange={handleChange}
+										onBlur={handleBlur}
+										value={values.department}
+										error={touched.department && !!errors.department}
+										small={errors.department}
+									/>
+								</InformationPanel>
+								<InformationPanel header='Add digital copies'>
+									<ImagePreviewer images={data} setData={setData} />
+									<FileInput setData={setData} />
+									<Button label='Scan more' type='button' className='bg-primary rounded-lg h-11' />
+								</InformationPanel>
+							</div>
 						</form>
 						{openScan && (
 							<Overlay
