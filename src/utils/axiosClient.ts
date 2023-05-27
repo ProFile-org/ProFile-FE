@@ -15,6 +15,11 @@ axiosClient.interceptors.response.use(
 		const user = localStorage.getItem('user');
 		if (!user) return Promise.reject(error);
 
+		// Ignore logout
+		if (error?.response?.status === 401 && error?.config?.url === '/auth/logout') {
+			return Promise.reject(error);
+		}
+
 		// Refresh token
 		const originalRequest = error.config;
 
@@ -24,23 +29,24 @@ axiosClient.interceptors.response.use(
 					originalRequest.retry = true;
 					axiosClient.post('/auth/refresh').then(() => {
 						if (originalRequest.url === '/auth/validate') {
-							console.log(originalRequest);
 							console.log('This should only refresh once and does not call validate again');
 							return resolve('');
 						}
 						// Call this again when not /auth/validate to refetch data
-						console.log(originalRequest);
-						// return resolve(axiosClient(originalRequest));
+						// console.log(originalRequest);
+						// return resolve(axiosClient(originalRequest)); // Not required when using React Query with retry
 					});
 				} else {
+					// NEVER REACH WHEN USING WITH REACT QUERY
 					// Already retry
 					// localStorage.removeItem('user');
 				}
 			}
-			if (error?.response?.status === 400 && error?.config.url === '/auth/refresh') {
-				console.log(error);
+			// This means that the refresh token is expired or invalid
+			if (error?.config.url === '/auth/refresh' && error?.response?.status === 400) {
+				// console.log(error);
 				localStorage.removeItem('user');
-				// location.reload();
+				location.reload();
 				return;
 			}
 			reject(error);

@@ -15,7 +15,6 @@ const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
 	const [qr, setQr] = useState('');
 
-	// Todo: fetch document data
 	const { data, isLoading } = useQuery(
 		documentId,
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
@@ -46,12 +45,6 @@ const StaffDocumentDetailPage = () => {
 		department: { name: department },
 		importer: { firstName, lastName, id: importerId },
 	} = data.data;
-
-	// const lockerName = 1,
-	// 	folderName = 5,
-	// 	title = 'title',
-	// 	lockerId = 12,
-	// 	folderId = 5;
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -89,7 +82,8 @@ const StaffDocumentDetailPage = () => {
 						<InputWithLabel
 							label='Department'
 							wrapperClassName='flex-1'
-							value={department}
+							value={department || 'this should be department'}
+							// value='this should be department'
 							readOnly
 						/>
 					</InformationPanel>
