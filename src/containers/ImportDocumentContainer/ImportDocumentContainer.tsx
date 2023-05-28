@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
@@ -79,7 +80,7 @@ const ImportDocumentContainer = () => {
 			mutation.mutate(
 				{
 					title: values.title,
-					documentType: values.documentType,
+					documentType: values.documentType.toUpperCase(),
 					importerId: values.id,
 					folderId: values.folder,
 					description: values.description,
@@ -180,19 +181,23 @@ const ImportDocumentContainer = () => {
 										error={touched.documentType && !!errors.documentType}
 										small={touched.documentType ? errors.documentType : undefined}
 										editable
-										panelFooterTemplate={({ options, value }) =>
-											value === '' ? (
-												<div className='px-3 py-2'>No item selected</div>
-											) : options?.some((option) => option.id === value) ? (
-												<div className='px-3 py-2'>
-													<strong>{value}</strong> selected
-												</div>
-											) : (
-												<div className='px-3 py-2'>
-													<strong>{value}</strong> will be added
-												</div>
-											)
-										}
+										panelFooterTemplate={({ options, value }) => (
+											<div className='px-3 py-2'>
+												{value === '' ? (
+													'No item selected'
+												) : options?.some(
+														(option) => option.id.toUpperCase() === value.toUpperCase()
+												  ) ? (
+													<>
+														<strong>{value.toUpperCase()}</strong> selected
+													</>
+												) : (
+													<>
+														<strong>{value.toUpperCase()}</strong> will be added
+													</>
+												)}
+											</div>
+										)}
 									/>
 									<TextareaWithLabel
 										label='Description'
