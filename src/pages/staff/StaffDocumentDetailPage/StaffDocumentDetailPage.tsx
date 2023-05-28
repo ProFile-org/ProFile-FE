@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import StaffDocumentDetailSkeleton from './StaffDocumentDetailSkeleton';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
+import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -48,9 +49,20 @@ const StaffDocumentDetailPage = () => {
 		importer: { firstName, lastName, id: importerId },
 	} = data.data;
 
+	// const title = 'title';
+	// const documentType = 'documentType';
+	// const folderId = 'folderId';
+	// const folderName = 'folderName';
+	// const lockerId = 'lockerId';
+	// const lockerName = 'lockerName';
+	// const description = 'description';
+	// const firstName = 'firstName';
+	// const lastName = 'lastName';
+	// const importerId = 'importerId';
+
 	return (
 		<div className='flex flex-col gap-5'>
-			<div className='card'>
+			<div className='card py-3'>
 				<h2 className='title flex gap-2'>
 					<span>/</span>
 					<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
@@ -117,8 +129,8 @@ const StaffDocumentDetailPage = () => {
 						</div>
 					</InformationPanel>
 				</div>
-				<div className='flex flex-col gap-5'>
-					<InformationPanel direction='row'>
+				<div className='flex flex-col gap-5 flex-1'>
+					<InformationPanel direction='row' className='h-max'>
 						{qr ? (
 							<img src={qr} className='rounded-lg w-48 aspect-square' />
 						) : (
@@ -136,7 +148,17 @@ const StaffDocumentDetailPage = () => {
 							</Link>
 						</div>
 					</InformationPanel>
-					{/* <InformationPanel header='History' className='flex-1'></InformationPanel> */}
+					<InformationPanel header='Digital copies' className='h-max'>
+						<ImagePreviewer
+							readOnly
+							images={[
+								'https://picsum.photos/200/300',
+								'https://picsum.photos/200/301',
+								'https://picsum.photos/200/302',
+							]}
+						/>
+					</InformationPanel>
+					<InformationPanel header='History' className='flex-1'></InformationPanel>
 				</div>
 			</div>
 		</div>

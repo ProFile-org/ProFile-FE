@@ -38,6 +38,14 @@ const StaffDocumentDetailSkeleton = () => {
 							<Skeleton />
 						</div>
 					</InformationPanel>
+					<InformationPanel>
+						<Skeleton className='h-80' />
+					</InformationPanel>
+					<InformationPanel header='History'>
+						<Skeleton />
+						<Skeleton />
+						<Skeleton />
+					</InformationPanel>
 				</div>
 			</div>
 		</div>
