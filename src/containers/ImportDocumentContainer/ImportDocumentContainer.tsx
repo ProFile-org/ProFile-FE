@@ -17,14 +17,13 @@ import { useMutation } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
-import useDepartments from '@/hooks/useDepartments';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import FileInput from '@/components/FileInput/FileInput.component';
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 
 const RequiredValues = {
 	id: '',
-	department: '',
+	name: '',
 	title: '',
 	documentType: '',
 	locker: '',
@@ -66,8 +65,6 @@ const ImportDocumentContainer = () => {
 	});
 
 	const { documentTypes, typesRefetch } = useDocumentTypes();
-
-	const { departments, departmentsRefetch } = useDepartments();
 
 	const [openScan, setOpenScan] = useState(false);
 	const [data, setData] = useState<string[]>([]);
@@ -125,10 +122,9 @@ const ImportDocumentContainer = () => {
 		const getConfigs = async () => {
 			await containerRefetch();
 			await typesRefetch();
-			await departmentsRefetch();
 		};
 		getConfigs();
-	}, [containerRefetch, typesRefetch, departmentsRefetch]);
+	}, [containerRefetch, typesRefetch]);
 
 	return (
 		<Formik initialValues={RequiredValues} onSubmit={onSubmit} validate={onValidate}>
@@ -167,6 +163,7 @@ const ImportDocumentContainer = () => {
 										value={values.title}
 										onChange={handleChange}
 										onBlur={handleBlur}
+										disabled={isSubmitting}
 									/>
 									<CustomDropdown
 										id='documentType'
@@ -180,6 +177,7 @@ const ImportDocumentContainer = () => {
 										value={values.documentType}
 										error={touched.documentType && !!errors.documentType}
 										small={touched.documentType ? errors.documentType : undefined}
+										disabled={isSubmitting}
 										editable
 										panelFooterTemplate={({ options, value }) => (
 											<div className='px-3 py-2'>
@@ -210,6 +208,7 @@ const ImportDocumentContainer = () => {
 										error={touched.description && !!errors.description}
 										small={touched.description ? errors.description : undefined}
 										placeholder="Document's description"
+										disabled={isSubmitting}
 									/>
 								</InformationPanel>
 								<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
@@ -229,6 +228,7 @@ const ImportDocumentContainer = () => {
 										value={values.locker}
 										error={touched.locker && !!errors.locker}
 										small={touched.locker ? errors.locker : undefined}
+										disabled={isSubmitting}
 										itemTemplate={(option) => (
 											<div className='flex flex-col gap-3'>
 												<div>
@@ -248,7 +248,7 @@ const ImportDocumentContainer = () => {
 										onChange={handleChange}
 										onBlur={handleBlur}
 										value={values.folder}
-										disabled={!values.locker}
+										disabled={!values.locker || isSubmitting}
 										error={touched.folder && !!errors.folder}
 										small={touched.folder ? errors.folder : undefined}
 										itemTemplate={(option) => (
@@ -290,27 +290,27 @@ const ImportDocumentContainer = () => {
 										value={values.id}
 										error={touched.id && !!errors.id}
 										small={errors.id ? errors.id : undefined}
+										disabled={isSubmitting}
 										sideComponent={
 											<Button
 												label='Scan'
 												className='self-end bg-primary rounded-lg h-11'
 												type='button'
 												onClick={() => setOpenScan(true)}
+												disabled={isSubmitting}
 											/>
 										}
 									/>
-									<CustomDropdown
-										id='department'
-										name='department'
-										options={departments}
-										optionLabel='name'
-										optionValue='id'
-										label='Department'
+									<InputWithLabel
+										label='Name'
+										name='name'
+										id='name'
 										onChange={handleChange}
 										onBlur={handleBlur}
-										value={values.department}
-										error={touched.department && !!errors.department}
-										small={errors.department}
+										value={values.name}
+										error={touched.name && !!errors.name}
+										small={errors.name ? errors.name : undefined}
+										disabled={isSubmitting}
 									/>
 								</InformationPanel>
 								<InformationPanel header='Add digital copies'>
@@ -328,7 +328,12 @@ const ImportDocumentContainer = () => {
 										setData={setData}
 										setFiles={(file) => setFieldValue('files', [...values.files, file])}
 									/>
-									<Button label='Scan more' type='button' className='bg-primary rounded-lg h-11' />
+									<Button
+										label='Scan more'
+										type='button'
+										className='bg-primary rounded-lg h-11'
+										disabled={isSubmitting}
+									/>
 								</InformationPanel>
 							</div>
 						</form>

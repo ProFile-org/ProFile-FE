@@ -9,6 +9,7 @@ export const AUTH_ROUTES = {
 	DOCUMENT: '/physical/documents/:documentId',
 	REQUESTS: '/requests',
 	REQUEST: '/requests/:requestId',
+	NEW_REQUEST: '/requests/create',
 	RETURNS: '/returns',
 	IMPORT: '/import',
 	DRIVE: '/digital',

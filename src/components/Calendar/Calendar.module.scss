@@ -1,0 +1,8 @@
+.calendar {
+	& > :global(.p-datepicker-trigger) {
+		background-color: var(--primary);
+		&:focus {
+			outline: none;
+		}
+	}
+}
