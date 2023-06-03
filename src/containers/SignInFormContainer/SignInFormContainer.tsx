@@ -68,10 +68,11 @@ const SignInForm = () => {
 		} catch (error) {
 			console.error(error);
 			const axiosError = error as AxiosError;
-
-			if (axiosError.response?.status === 401) {
-				setErrors({ error: 'Email or password is incorrect' });
-			}
+			const message =
+				(axiosError.response?.data as { message?: string }).message || 'Something went wrong';
+			setErrors({
+				error: message,
+			});
 		} finally {
 			setSubmitting(false);
 		}
