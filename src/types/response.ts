@@ -1,6 +1,7 @@
-import { IDocument, IUser } from './item';
+import { IDepartment, IDocument, IUser } from './item';
 
-export type GetConfigResponse = {
+export type BaseResponse<T = null> = {
+	data: T;
 	succeeded: boolean;
 	message: string | null;
 };
@@ -13,46 +14,32 @@ export type GetPaginationResponse = {
 	hasNextPage: boolean;
 };
 
-export type GetDocumentTypesResponse = GetConfigResponse & {
-	data: string[];
-};
+export type GetDocumentTypesResponse = BaseResponse<string[]>;
 
-export type GetDepartmentsResponse = GetConfigResponse & {
-	data: {
-		id: string;
-		name: string;
-	}[];
-};
+export type GetDepartmentsResponse = BaseResponse<IDepartment[]>;
 
-export type GetEmptyContainersResponse = GetConfigResponse & {
-	data: {
+export type GetEmptyContainersResponse = BaseResponse<
+	{
 		items: {
 			id: string;
 			name: string;
 			description: string;
-			numberOfFreeFolders: number;
+			capacity: number;
 			numberOfFolders: number;
+			numberOfFreeFolders: number;
 			folders: {
 				id: string;
 				name: string;
 				description: string;
-				slot: number;
 				capacity: number;
+				slot: number;
 			}[];
 		}[];
-	} & GetPaginationResponse;
-};
+	} & GetPaginationResponse
+>;
 
-export type GetDocumentsResponse = GetConfigResponse & {
-	data: {
-		items: IDocument[];
-	} & GetPaginationResponse;
-};
+export type GetDocumentsResponse = BaseResponse<{ items: IDocument[] } & GetPaginationResponse>;
 
-export type GetDocumentByIdResponse = GetConfigResponse & {
-	data: IDocument;
-};
+export type GetDocumentByIdResponse = BaseResponse<IDocument>;
 
-export type LoginResponse = GetConfigResponse & {
-	data: IUser;
-};
+export type LoginResponse = BaseResponse<IUser>;

@@ -4,11 +4,12 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { IDocument } from '@/types/item';
 import { GetDocumentsResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { useQuery } from 'react-query';
+import { AuthContext } from '@/context/authContext';
 
 interface ILazyTableState {
 	first: number;
@@ -29,6 +30,7 @@ const StaffDocumentPage = () => {
 		sortField: 'id',
 		sortOrder: 1,
 	});
+	const { user } = useContext(AuthContext);
 
 	const { data, isLoading } = useQuery(
 		['documents', paginate],
@@ -36,6 +38,7 @@ const StaffDocumentPage = () => {
 			(
 				await axiosClient.get<GetDocumentsResponse>('/documents', {
 					params: {
+						roomId: user?.department.roomId,
 						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
 						size: paginate.rows,
 						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),
@@ -110,16 +113,6 @@ const StaffDocumentPage = () => {
 					<Column field='folder.name' header='Folder' />
 					<Column field='folder.locker.name' header='Locker' />
 					<Column field='department.name' header='Department' />
-					<Column field='importer.email' header='Importer' />
-					<Column
-						field='importer.created'
-						header='Imported at'
-						body={(document) =>
-							`${new Date(document.importer.created).toLocaleTimeString()} ${new Date(
-								document.importer.created
-							).toLocaleDateString()}`
-						}
-					/>
 				</Table>
 			</div>
 		</div>

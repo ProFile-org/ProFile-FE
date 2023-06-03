@@ -6,14 +6,10 @@ export interface IItem {
 	icon?: string;
 }
 
-export interface IImporter {
+export interface IDepartment {
 	id: string;
-	username: string;
-	email: string;
-	firstName: string;
-	lastName: string;
-	role: string;
-	created: string;
+	name: string;
+	roomId: string;
 }
 
 export interface IDocument {
@@ -21,23 +17,40 @@ export interface IDocument {
 	title: string;
 	description: string;
 	documentType: string;
-	department: {
-		id: string;
-		name: string;
-	};
-	importer: IImporter;
-	folder: {
-		id: string;
-		name: string;
-		locker: {
-			id: string;
-			name: string;
-			room: {
-				id: string;
-				name: string;
-			};
-		};
-	};
+	department: IDepartment;
+	importer: IUser;
+	folder: IFolder;
+}
+
+export interface IRoom {
+	id: string;
+	name: string;
+	description: string;
+	staffId: string;
+	department: IDepartment;
+	capacity: number;
+	numberOfLockers: number;
+	isAvailable: boolean;
+}
+
+export interface ILocker {
+	id: string;
+	name: string;
+	description: string;
+	room: IRoom;
+	capacity: number;
+	numberOfFolders: number;
+	isAvailable: boolean;
+}
+
+export interface IFolder {
+	id: string;
+	name: string;
+	description: string;
+	locker: ILocker;
+	capacity: number;
+	numberOfDocuments: number;
+	isAvailable: boolean;
 }
 
 export interface IUser {
@@ -46,11 +59,13 @@ export interface IUser {
 	email: string;
 	firstName: string;
 	lastName: string;
+	department: IDepartment;
 	role: string;
 	position: string;
-	department?: {
-		id: string;
-		name: string;
-	};
-	roomId?: string;
+	isActive: boolean;
+	isActivated: boolean;
+	created: string;
+	createdBy: string;
+	lastModified: string;
+	lastModifiedBy: string;
 }

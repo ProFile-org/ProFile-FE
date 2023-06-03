@@ -12,7 +12,7 @@ import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '@/context/authContext';
 import Overlay from '@/components/Overlay/Overlay.component';
 import QrScanner from '@/components/QrScanner/QrScanner.component';
-import { GetConfigResponse, GetDocumentByIdResponse } from '@/types/response';
+import { BaseResponse, GetDocumentByIdResponse } from '@/types/response';
 import { useMutation } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
@@ -61,7 +61,7 @@ const ImportDocumentContainer = () => {
 	});
 
 	const { availableFolders, availableLockers, containerRefetch } = useEmptyContainers({
-		roomId: user?.roomId || '',
+		roomId: user?.department.roomId || '',
 	});
 
 	const { documentTypes, typesRefetch } = useDocumentTypes();
@@ -87,7 +87,7 @@ const ImportDocumentContainer = () => {
 						navigate(`${AUTH_ROUTES.DOCUMENTS}/${result.data.data.id}`);
 					},
 					onError: (error) => {
-						const axiosError = error as AxiosError<GetConfigResponse>;
+						const axiosError = error as AxiosError<BaseResponse>;
 						const msg = axiosError.response?.data.message || 'Incorrect format';
 						const status = axiosError.response?.status;
 

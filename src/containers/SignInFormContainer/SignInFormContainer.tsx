@@ -53,11 +53,18 @@ const SignInForm = () => {
 				password,
 			});
 
+			// console.log(data);
+
 			const user = {
 				...data,
 				role: data.role.toLowerCase(),
-				roomId: 'ccc66a64-a429-4500-9439-b66ab2f94404',
+				department: {
+					id: 'f2760dcd-6830-4541-9e99-d80bce9e6980',
+					name: 'Accounting',
+					roomId: 'f2760dcd-6830-4541-9e99-d80bce9e6980',
+				},
 			};
+			
 			console.log(user);
 
 			dispatch({

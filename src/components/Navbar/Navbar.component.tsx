@@ -16,13 +16,14 @@ const Navbar = () => {
 	const signOut = async () => {
 		try {
 			await axiosClient.post('/auth/logout');
+		} catch (error) {
+			console.log(error);
+		} finally {
 			dispatch({
 				type: 'LOGOUT',
 				payload: null,
 			});
 			localStorage.removeItem('user');
-		} catch (error) {
-			console.log(error);
 		}
 	};
 
