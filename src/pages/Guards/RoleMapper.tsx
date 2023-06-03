@@ -28,6 +28,16 @@ const StaffFolderDetailPage = lazy(
 
 // Employee imports
 const EmpDocumentPage = lazy(() => import('@/pages/emp/EmpDocumentPage/EmpDocumentPage'));
+const EmpRequestPage = lazy(() => import('@/pages/emp/EmpRequestPage/EmpRequestPage'));
+const EmpRequestDetailPage = lazy(
+	() => import('@/pages/emp/EmpRequestDetailPage/EmpRequestDetailPage')
+);
+const EmpRequestCreatePage = lazy(
+	() => import('@/pages/emp/EmpRequestCreatePage/EmpRequestCreatePage')
+);
+const EmpDocumentDetailPage = lazy(
+	() => import('@/pages/emp/EmpDocumentDetailPage/EmpDocumentDetailPage')
+);
 
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
@@ -38,7 +48,7 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.PHYSICAL]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <Navigate to={AUTH_ROUTES.LOCKERS} />,
-		employee: () => <EmpDocumentPage />,
+		employee: () => <Navigate to={AUTH_ROUTES.DOCUMENTS} />,
 	},
 	[AUTH_ROUTES.LOCKERS]: {
 		admin: () => <div>Admins</div>,
@@ -51,19 +61,25 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.DOCUMENTS]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <StaffDocumentPage />,
-		employee: () => <div>Employee</div>,
+		employee: () => <EmpDocumentPage />,
 	},
 	[AUTH_ROUTES.IMPORT]: {
 		staff: () => <StaffImportPage />,
 	},
 	[AUTH_ROUTES.DOCUMENT]: {
 		staff: () => <StaffDocumentDetailPage />,
+		employee: () => <EmpDocumentDetailPage />,
 	},
 	[AUTH_ROUTES.REQUESTS]: {
 		staff: () => <StaffRequestPage />,
+		employee: () => <EmpRequestPage />,
 	},
 	[AUTH_ROUTES.REQUEST]: {
 		staff: () => <StaffRequestDetailPage />,
+		employee: () => <EmpRequestDetailPage />,
+	},
+	[AUTH_ROUTES.NEW_REQUEST]: {
+		employee: () => <EmpRequestCreatePage />,
 	},
 	[AUTH_ROUTES.RETURNS]: {
 		staff: () => <StaffReturnsPage />,

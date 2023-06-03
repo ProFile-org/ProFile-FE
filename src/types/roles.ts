@@ -130,10 +130,5 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			path: AUTH_ROUTES.REQUESTS,
 			icon: PrimeIcons.BELL,
 		},
-		{
-			label: 'Returns',
-			path: AUTH_ROUTES.RETURNS,
-			icon: PrimeIcons.REPLY,
-		},
 	],
 };
