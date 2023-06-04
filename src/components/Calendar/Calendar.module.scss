@@ -5,4 +5,7 @@
 			outline: none;
 		}
 	}
+	&:global(.p-invalid.p-component) > :global(.p-inputtext) {
+		border-color: var(--action);
+	}
 }

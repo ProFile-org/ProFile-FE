@@ -15,8 +15,11 @@ import AuthProvider from './context/authContext.tsx';
 const client = new QueryClient({
 	defaultOptions: {
 		queries: {
-			// retry: false,
-			// retryOnMount: false,
+			retry: false,
+			retryOnMount: false,
+			refetchOnMount: false,
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
 		},
 	},
 });

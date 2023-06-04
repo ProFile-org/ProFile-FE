@@ -1,7 +1,7 @@
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
-import Skeleton from '@/components/Skeleton/Skeleton.component';
+import { Skeleton } from '.';
 
-const StaffDocumentDetailSkeleton = () => {
+const SkeletonPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
@@ -52,4 +52,4 @@ const StaffDocumentDetailSkeleton = () => {
 	);
 };
 
-export default StaffDocumentDetailSkeleton;
+export default SkeletonPage;

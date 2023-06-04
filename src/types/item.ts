@@ -69,3 +69,14 @@ export interface IUser {
 	lastModified: string;
 	lastModifiedBy: string;
 }
+
+export interface IBorrowRequest {
+	id: string;
+	borrowerId: string;
+	documentId: string;
+	borrowTime: string;
+	dueTime: string;
+	actualReturnTime: string;
+	reason: string;
+	status: string;
+}

@@ -110,16 +110,6 @@ const EmpDocumentPage = () => {
 					<Column field='folder.name' header='Folder' />
 					<Column field='folder.locker.name' header='Locker' />
 					<Column field='department.name' header='Department' />
-					<Column field='importer.email' header='Importer' />
-					<Column
-						field='importer.created'
-						header='Imported at'
-						body={(document) =>
-							`${new Date(document.importer.created).toLocaleTimeString()} ${new Date(
-								document.importer.created
-							).toLocaleDateString()}`
-						}
-					/>
 				</Table>
 			</div>
 		</div>

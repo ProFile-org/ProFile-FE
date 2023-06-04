@@ -1,13 +1,23 @@
+import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
 import { AUTH_ROUTES } from '@/constants/routes';
-import clsx from 'clsx';
+import { GetRequestsResponse } from '@/types/response';
+import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
+import { useQuery } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 
 const EmpRequestPage = () => {
 	const navigate = useNavigate();
+	const { data, isLoading } = useQuery(
+		'requests',
+		async () => await (await axiosClient.get<GetRequestsResponse>('/borrows/employees')).data
+	);
+
+	const requests = data?.data.items.map((item, index) => ({ ...item, count: index + 1 })) || [];
+
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card w-full py-3 flex justify-between'>
@@ -22,40 +32,18 @@ const EmpRequestPage = () => {
 			<h2 className='header'>Requests</h2>
 			<div className='card'>
 				<Table
-					value={[...Array(10)].map((_, i) => ({
-						id: i,
-						name: 'John Doe',
-						documentId: '123456789',
-						documentTitle: 'Document Title',
-						documentType: 'Document Type',
-						status: Math.random() > 0.7 ? 'Pending' : Math.random() < 0.3 ? 'Approved' : 'Rejected',
-					}))}
+					loading={isLoading}
+					value={requests}
 					onSelectionChange={(e) =>
 						navigate(`${AUTH_ROUTES.REQUESTS}/${(e.value as { id: string }).id}`)
 					}
 					selectionMode='single'
 				>
-					<Column field='id' header='ID' />
-					<Column field='name' header='Name' />
-					{/* <Column field='documentId' header='Request ID' /> */}
-					<Column field='documentTitle' header='Title' />
-					<Column field='documentType' header='Type' />
-					<Column
-						field='status'
-						header='Status'
-						body={(request) => (
-							<span
-								className={clsx(
-									'px-2 py-1 rounded-lg text-white text-center',
-									request.status === 'Pending' && 'bg-yellow-500',
-									request.status === 'Approved' && 'bg-green-500',
-									request.status === 'Rejected' && 'bg-red-500'
-								)}
-							>
-								{request.status}
-							</span>
-						)}
-					/>
+					<Column field='count' header='No.' />
+					<Column field='id' header='Request ID' />
+					<Column field='status' header='Status' body={(request) => <Status request={request} />} />
+					<Column field='borrowTime' header='From' />
+					<Column field='dueTime' header='To' />
 				</Table>
 			</div>
 		</div>
