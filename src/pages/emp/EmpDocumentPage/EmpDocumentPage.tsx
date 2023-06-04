@@ -110,8 +110,8 @@ const EmpDocumentPage = () => {
 					/>
 					<Column field='title' header='Title' sortable />
 					<Column field='documentType' header='Type' sortable />
-					<Column field='folder.name' header='Folder' />
-					<Column field='folder.locker.name' header='Locker' />
+					<Column field='folder.name' header='Folder' sortable />
+					<Column field='folder.locker.name' header='Locker' sortable />
 					<Column field='department.name' header='Department' />
 				</Table>
 			</div>
