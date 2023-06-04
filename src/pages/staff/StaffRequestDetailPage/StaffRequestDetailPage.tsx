@@ -2,6 +2,7 @@ import InformationPanel from '@/components/InformationPanel/InformationPanel.com
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import { AUTH_ROUTES } from '@/constants/routes';
+import { REQUEST_STATUS } from '@/constants/status';
 import {
 	GetDocumentByIdResponse,
 	GetRequestByIdResponse,
@@ -12,6 +13,14 @@ import { Button } from 'primereact/button';
 import { useQuery } from 'react-query';
 import { Navigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
+
+const NO_ACTIONS = [
+	REQUEST_STATUS.CANCELLED,
+	REQUEST_STATUS.REJECTED,
+	REQUEST_STATUS.CHECKED_OUT,
+	REQUEST_STATUS.NOT_PROCESSABLE,
+	REQUEST_STATUS.RETURNED,
+];
 
 const StaffRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
@@ -111,9 +120,7 @@ const StaffRequestDetailPage = () => {
 					<InputWithLabel label='Reasons' value={reason} readOnly />
 				</InformationPanel>
 				<InformationPanel direction='row'>
-					{status === 'Cancelled' ||
-					status === 'Rejected' ||
-					status === 'CheckedOut' ? null : status === 'Approved' ? (
+					{NO_ACTIONS.indexOf(status) !== -1 ? null : status === 'Approved' ? (
 						<Button label='Checkout' className='h-11 rounded-l flex-1' onClick={onCheckout} />
 					) : (
 						<>
@@ -127,8 +134,8 @@ const StaffRequestDetailPage = () => {
 						</>
 					)}
 					{/* Add return home outlined */}
-					<Link to={AUTH_ROUTES.REQUESTS} className='flex-1'>
-						<Button label='Return home' className='h-11 rounded-lg btn-outlined w-full' outlined />
+					<Link to={AUTH_ROUTES.REQUESTS} className='flex-1 flex-shrink-0'>
+						<Button label='Return home' className='h-11 rounded-lg btn-outlined w-max' outlined />
 					</Link>
 				</InformationPanel>
 			</div>

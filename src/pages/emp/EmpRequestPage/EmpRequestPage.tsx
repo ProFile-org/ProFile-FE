@@ -13,7 +13,14 @@ const EmpRequestPage = () => {
 	const navigate = useNavigate();
 	const { data, isLoading } = useQuery(
 		'requests',
-		async () => await (await axiosClient.get<GetRequestsResponse>('/borrows/employees')).data
+		async () => await (await axiosClient.get<GetRequestsResponse>('/borrows/employees')).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 	);
 
 	const requests = data?.data.items.map((item, index) => ({ ...item, count: index + 1 })) || [];

@@ -20,7 +20,7 @@ const StaffDocumentDetailPage = () => {
 	const [editMode, setEditMode] = useState(false);
 
 	const { data, isLoading } = useQuery(
-		documentId,
+		['document', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
 			onSuccess: async (data) => {

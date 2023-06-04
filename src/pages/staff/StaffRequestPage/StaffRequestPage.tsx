@@ -11,7 +11,22 @@ const StaffRequestPage = () => {
 	const navigate = useNavigate();
 	const { data, isLoading } = useQuery(
 		'requests',
-		async () => (await axiosClient.get<GetRequestsResponse>('/borrows/staffs')).data
+		async () =>
+			(
+				await axiosClient.get<GetRequestsResponse>('/borrows/staffs', {
+					params: {
+						page: 1,
+						size: 10,
+					},
+				})
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 	);
 
 	const requests = data?.data.items.map((item, index) => ({ ...item, count: index + 1 })) || [];

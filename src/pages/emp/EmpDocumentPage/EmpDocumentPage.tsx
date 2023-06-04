@@ -42,11 +42,14 @@ const EmpDocumentPage = () => {
 						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
 					},
 				})
-			).data
-
-		// {
-		// 	keepPreviousData: true, // Reduce fetching on already fetched data
-		// }
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 	);
 
 	const documents =

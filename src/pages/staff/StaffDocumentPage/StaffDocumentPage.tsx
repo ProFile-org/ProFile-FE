@@ -45,7 +45,14 @@ const StaffDocumentPage = () => {
 						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
 					},
 				})
-			).data
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 
 		// {
 		// 	keepPreviousData: true, // Reduce fetching on already fetched data

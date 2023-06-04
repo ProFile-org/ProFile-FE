@@ -18,7 +18,7 @@ const EmpDocumentDetailPage = () => {
 	const [qr, setQr] = useState('');
 
 	const { data, isLoading } = useQuery(
-		documentId,
+		['document', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
 			onSuccess: async (data) => {
@@ -48,17 +48,6 @@ const EmpDocumentDetailPage = () => {
 		description,
 		importer: { firstName, lastName, id: importerId },
 	} = data.data;
-
-	// const title = 'title';
-	// const documentType = 'documentType';
-	// const folderId = 'folderId';
-	// const folderName = 'folderName';
-	// const lockerId = 'lockerId';
-	// const lockerName = 'lockerName';
-	// const description = 'description';
-	// const firstName = 'firstName';
-	// const lastName = 'lastName';
-	// const importerId = 'importerId';
 
 	return (
 		<div className='flex flex-col gap-5'>
