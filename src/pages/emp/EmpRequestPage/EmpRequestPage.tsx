@@ -13,7 +13,12 @@ const EmpRequestPage = () => {
 	const navigate = useNavigate();
 	const { data, isLoading } = useQuery(
 		'requests',
-		async () => await (await axiosClient.get<GetRequestsResponse>('/borrows/employees')).data,
+		async () => await (await axiosClient.get<GetRequestsResponse>('/borrows/employees', {
+			params: {
+				page: 1,
+				size: 10,
+			}
+		})).data,
 		{
 			refetchOnReconnect: true,
 			refetchOnWindowFocus: true,
