@@ -1,4 +1,4 @@
-import { IDepartment, IDocument, IUser } from './item';
+import { IBorrowRequest, IDepartment, IDocument, IUser } from './item';
 
 export type BaseResponse<T = null> = {
 	data: T;
@@ -43,3 +43,15 @@ export type GetDocumentsResponse = BaseResponse<{ items: IDocument[] } & GetPagi
 export type GetDocumentByIdResponse = BaseResponse<IDocument>;
 
 export type LoginResponse = BaseResponse<IUser>;
+
+export type PostRequestResponse = BaseResponse<IBorrowRequest>;
+
+export type GetRequestsResponse = BaseResponse<
+	{
+		items: IBorrowRequest[];
+	} & GetPaginationResponse
+>;
+
+export type GetRequestByIdResponse = BaseResponse<IBorrowRequest>;
+
+export type GetUserByIdResponse = BaseResponse<IUser>;

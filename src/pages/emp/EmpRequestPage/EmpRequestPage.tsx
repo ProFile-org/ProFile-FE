@@ -1,13 +1,45 @@
+import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
 import { AUTH_ROUTES } from '@/constants/routes';
-import clsx from 'clsx';
+import usePagination, { DEFAULT_ROWS, ROWS_PER_PAGE_OPTIONS } from '@/hooks/usePagination';
+import { GetRequestsResponse } from '@/types/response';
+import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
+import { useQuery } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 
 const EmpRequestPage = () => {
 	const navigate = useNavigate();
+	const { paginate, setPaginate } = usePagination();
+
+	const { data, isLoading } = useQuery(
+		['requests', paginate],
+		async () =>
+			await (
+				await axiosClient.get<GetRequestsResponse>('/borrows/employees', {
+					params: {
+						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
+						size: paginate.rows,
+						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),
+						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
+					},
+				})
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
+	);
+
+	const requests = data?.data.items.map((item, index) => ({ ...item, count: index + 1 })) || [];
+
+	const totalCount = data?.data.totalCount || 0;
+
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card w-full py-3 flex justify-between'>
@@ -22,40 +54,48 @@ const EmpRequestPage = () => {
 			<h2 className='header'>Requests</h2>
 			<div className='card'>
 				<Table
-					value={[...Array(10)].map((_, i) => ({
-						id: i,
-						name: 'John Doe',
-						documentId: '123456789',
-						documentTitle: 'Document Title',
-						documentType: 'Document Type',
-						status: Math.random() > 0.7 ? 'Pending' : Math.random() < 0.3 ? 'Approved' : 'Rejected',
-					}))}
+					loading={isLoading}
+					value={requests}
 					onSelectionChange={(e) =>
 						navigate(`${AUTH_ROUTES.REQUESTS}/${(e.value as { id: string }).id}`)
 					}
 					selectionMode='single'
+					onPage={(e) => {
+						setPaginate((prev) => ({
+							...prev,
+							page: e.page || 0,
+							rows: e.rows || DEFAULT_ROWS,
+							first: e.first || 0,
+						}));
+					}}
+					rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+					totalRecords={totalCount}
+					paginator
+					lazy
+					rows={paginate.rows}
+					first={paginate.first}
+					paginatorTemplate='CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput'
+					sortMode='single'
+					onSort={(e) => {
+						setPaginate((prev) => ({
+							...prev,
+							sortField: e.sortField,
+							sortOrder: e.sortOrder || 1,
+						}));
+					}}
+					sortField={paginate.sortField}
+					sortOrder={paginate.sortOrder}
 				>
-					<Column field='id' header='ID' />
-					<Column field='name' header='Name' />
-					{/* <Column field='documentId' header='Request ID' /> */}
-					<Column field='documentTitle' header='Title' />
-					<Column field='documentType' header='Type' />
+					<Column field='count' header='No.' />
+					<Column field='id' header='Request ID' sortable />
 					<Column
 						field='status'
 						header='Status'
-						body={(request) => (
-							<span
-								className={clsx(
-									'px-2 py-1 rounded-lg text-white text-center',
-									request.status === 'Pending' && 'bg-yellow-500',
-									request.status === 'Approved' && 'bg-green-500',
-									request.status === 'Rejected' && 'bg-red-500'
-								)}
-							>
-								{request.status}
-							</span>
-						)}
+						body={(request) => <Status request={request} />}
+						sortable
 					/>
+					<Column field='borrowTime' header='From' sortable />
+					<Column field='dueTime' header='To' sortable />
 				</Table>
 			</div>
 		</div>

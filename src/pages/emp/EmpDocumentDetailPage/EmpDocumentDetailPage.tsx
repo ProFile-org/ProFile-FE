@@ -9,56 +9,45 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
-// import StaffDocumentDetailSkeleton from './StaffDocumentDetailSkeleton';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+import { SkeletonPage } from '@/components/Skeleton';
 
 const EmpDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
 	const [qr, setQr] = useState('');
 
-	// const { data, isLoading } = useQuery(
-	// 	documentId,
-	// 	async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
-	// 	{
-	// 		onSuccess: async (data) => {
-	// 			const { id } = data?.data || { id: '' };
-	// 			if (!id) return;
-	// 			const qrCode = await QRCode.toDataURL(id);
-	// 			setQr(qrCode);
-	// 		},
-	// 	}
-	// );
+	const { data, isLoading } = useQuery(
+		['document', documentId],
+		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
+		{
+			onSuccess: async (data) => {
+				const { id } = data?.data || { id: '' };
+				if (!id) return;
+				const qrCode = await QRCode.toDataURL(id);
+				setQr(qrCode);
+			},
+		}
+	);
 
-	// if (isLoading || !data) return <StaffDocumentDetailSkeleton />;
+	if (isLoading || !data) return <SkeletonPage />;
 
-	// const {
-	// 	title,
-	// 	documentType,
-	// 	folder: {
-	// 		id: folderId,
-	// 		name: folderName,
-	// 		locker: {
-	// 			id: lockerId,
-	// 			name: lockerName,
-	// 			// room: { id: roomId, name: roomName },
-	// 		},
-	// 	},
-	// 	// department: { name: department },
-	// 	description,
-	// 	importer: { firstName, lastName, id: importerId },
-	// } = data.data;
-
-	const title = 'title';
-	const documentType = 'documentType';
-	const folderId = 'folderId';
-	const folderName = 'folderName';
-	const lockerId = 'lockerId';
-	const lockerName = 'lockerName';
-	const description = 'description';
-	const firstName = 'firstName';
-	const lastName = 'lastName';
-	const importerId = 'importerId';
+	const {
+		title,
+		documentType,
+		folder: {
+			id: folderId,
+			name: folderName,
+			locker: {
+				id: lockerId,
+				name: lockerName,
+				// room: { id: roomId, name: roomName },
+			},
+		},
+		// department: { name: department },
+		description,
+		importer: { firstName, lastName, id: importerId },
+	} = data.data;
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -139,7 +128,7 @@ const EmpDocumentDetailPage = () => {
 						<div className='flex flex-col justify-between flex-1'>
 							<Button label='Print QR' className='h-11 rounded-lg' severity='info' />
 							<Link
-								to={`${AUTH_ROUTES.NEW_REQUEST}?title=${title}&documentType=${documentType}&locker=${lockerId}&folder=${folderId}`}
+								to={`${AUTH_ROUTES.NEW_REQUEST}?title=${title}&documentType=${documentType}&locker=${lockerName}&folder=${folderName}&id=${documentId}`}
 								className='w-full'
 							>
 								<Button label='Request' className='h-11 rounded-lg w-full' />

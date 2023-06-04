@@ -42,11 +42,14 @@ const EmpDocumentPage = () => {
 						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
 					},
 				})
-			).data
-
-		// {
-		// 	keepPreviousData: true, // Reduce fetching on already fetched data
-		// }
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 	);
 
 	const documents =
@@ -107,19 +110,9 @@ const EmpDocumentPage = () => {
 					/>
 					<Column field='title' header='Title' sortable />
 					<Column field='documentType' header='Type' sortable />
-					<Column field='folder.name' header='Folder' />
-					<Column field='folder.locker.name' header='Locker' />
+					<Column field='folder.name' header='Folder' sortable />
+					<Column field='folder.locker.name' header='Locker' sortable />
 					<Column field='department.name' header='Department' />
-					<Column field='importer.email' header='Importer' />
-					<Column
-						field='importer.created'
-						header='Imported at'
-						body={(document) =>
-							`${new Date(document.importer.created).toLocaleTimeString()} ${new Date(
-								document.importer.created
-							).toLocaleDateString()}`
-						}
-					/>
 				</Table>
 			</div>
 		</div>

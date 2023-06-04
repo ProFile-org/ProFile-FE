@@ -9,10 +9,10 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
-import StaffDocumentDetailSkeleton from './StaffDocumentDetailSkeleton';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
+import { SkeletonPage } from '@/components/Skeleton';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -20,7 +20,7 @@ const StaffDocumentDetailPage = () => {
 	const [editMode, setEditMode] = useState(false);
 
 	const { data, isLoading } = useQuery(
-		documentId,
+		['document', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
 			onSuccess: async (data) => {
@@ -32,7 +32,7 @@ const StaffDocumentDetailPage = () => {
 		}
 	);
 
-	if (isLoading || !data) return <StaffDocumentDetailSkeleton />;
+	if (isLoading || !data) return <SkeletonPage />;
 
 	const {
 		title,

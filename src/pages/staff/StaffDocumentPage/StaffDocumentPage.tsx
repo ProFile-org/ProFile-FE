@@ -4,32 +4,17 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { IDocument } from '@/types/item';
 import { GetDocumentsResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { useQuery } from 'react-query';
 import { AuthContext } from '@/context/authContext';
-
-interface ILazyTableState {
-	first: number;
-	rows: number;
-	page: number;
-	sortField: string;
-	sortOrder: 1 | -1;
-}
-
-const DEFAULT_ROWS = 10;
+import usePagination, { DEFAULT_ROWS, ROWS_PER_PAGE_OPTIONS } from '@/hooks/usePagination';
 
 const StaffDocumentPage = () => {
 	const navigate = useNavigate();
-	const [paginate, setPaginate] = useState<ILazyTableState>({
-		page: 0,
-		rows: DEFAULT_ROWS,
-		first: 0,
-		sortField: 'id',
-		sortOrder: 1,
-	});
+	const { paginate, setPaginate } = usePagination();
 	const { user } = useContext(AuthContext);
 
 	const { data, isLoading } = useQuery(
@@ -45,7 +30,14 @@ const StaffDocumentPage = () => {
 						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
 					},
 				})
-			).data
+			).data,
+		{
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+			refetchOnMount: true,
+			retry: true,
+			retryOnMount: true,
+		}
 
 		// {
 		// 	keepPreviousData: true, // Reduce fetching on already fetched data
@@ -83,7 +75,7 @@ const StaffDocumentPage = () => {
 							first: e.first || 0,
 						}));
 					}}
-					rowsPerPageOptions={[DEFAULT_ROWS, 20, 50, 100]}
+					rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
 					totalRecords={totalCount}
 					// totalRecords={documents.length}
 					lazy
@@ -110,8 +102,8 @@ const StaffDocumentPage = () => {
 					/>
 					<Column field='title' header='Title' sortable />
 					<Column field='documentType' header='Type' sortable />
-					<Column field='folder.name' header='Folder' />
-					<Column field='folder.locker.name' header='Locker' />
+					<Column field='folder.name' header='Folder' sortable />
+					<Column field='folder.locker.name' header='Locker' sortable />
 					<Column field='department.name' header='Department' />
 				</Table>
 			</div>
