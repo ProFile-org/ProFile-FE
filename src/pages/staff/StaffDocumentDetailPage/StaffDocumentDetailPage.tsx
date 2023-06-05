@@ -81,8 +81,6 @@ const StaffDocumentDetailPage = () => {
 		return errors;
 	};
 
-	console.log(editMode);
-
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card py-3'>

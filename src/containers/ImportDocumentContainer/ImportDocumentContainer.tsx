@@ -142,7 +142,6 @@ const ImportDocumentContainer = () => {
 				const onScan = (e: any) => {
 					const result = e?.getText();
 					if (!result) return;
-					console.log(result);
 					setFieldValue('id', result);
 					setFieldValue('department', '81377bd4-e1f5-4963-a0b8-68123f25923e');
 					setOpenScan(false);
