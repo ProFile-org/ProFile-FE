@@ -11,6 +11,16 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { SkeletonPage } from '@/components/Skeleton';
 import CustomCalendar from '@/components/Calendar/Calendar.component';
+import { REQUEST_STATUS } from '@/constants/status';
+
+const NO_ACTIONS = [
+	REQUEST_STATUS.CANCELLED,
+	REQUEST_STATUS.CHECKED_OUT,
+	REQUEST_STATUS.RETURNED,
+	REQUEST_STATUS.REJECTED,
+	REQUEST_STATUS.LOST,
+	REQUEST_STATUS.NOT_PROCESSABLE,
+];
 
 const EmpRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
@@ -102,7 +112,7 @@ const EmpRequestDetailPage = () => {
 					) : (
 						<div className='aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 					)}
-					{status !== 'Cancelled' && (
+					{NO_ACTIONS.indexOf(status) === -1 && (
 						<Button
 							label='Cancel'
 							className='w-full h-11 rounded-lg'
