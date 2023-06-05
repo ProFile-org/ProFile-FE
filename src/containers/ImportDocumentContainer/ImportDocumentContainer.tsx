@@ -108,7 +108,6 @@ const ImportDocumentContainer = () => {
 	};
 
 	const onValidate = (values: FormValues) => {
-		console.log(values);
 		const errors: { [key: string]: string } = {};
 		Object.entries(values).forEach(([key, value]) => {
 			if (!value && NOT_REQUIRED.indexOf(key) === -1) {

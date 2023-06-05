@@ -74,7 +74,6 @@ const EmpRequestCreatePage = () => {
 			setFieldError('dates', 'Missing information');
 			return;
 		}
-		console.log(values);
 		try {
 			const { data } = await axiosClient.post<PostRequestResponse>('/borrows', {
 				documentId: id,
@@ -154,7 +153,6 @@ const EmpRequestCreatePage = () => {
 					const onScan = async (e: any) => {
 						const result = e?.getText();
 						if (!result) return;
-						console.log(result);
 						setFieldValue('id', result);
 						handleIdChange(result, setFieldValue, setFieldError);
 						setOpenScan(false);

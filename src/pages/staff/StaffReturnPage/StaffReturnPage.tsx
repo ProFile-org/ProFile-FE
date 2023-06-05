@@ -34,8 +34,6 @@ const StaffReturnsPage = () => {
 
 	const { borrowerDepartment, borrowerId, borrowerName, folder, id, locker, title, types } = values;
 
-	console.log(id);
-
 	const getDocumentsById = async (id: string) => {
 		if (!id) return;
 		try {
@@ -135,21 +133,23 @@ const StaffReturnsPage = () => {
 					className='h-11 rounded-lg'
 					onClick={() => setOpenScan((prev) => !prev)}
 				/>
-				<div className='flex gap-5'>
-					<Button
-						label='Approve'
-						className='h-11 rounded-lg flex-1'
-						disabled={!id}
-						onClick={onApprove}
-					/>
-					<Button
-						label='Deny'
-						severity='danger'
-						className='h-11 rounded-lg flex-1'
-						disabled={!id}
-						onClick={onDeny}
-					/>
-				</div>
+				{id !== 'N/A' && (
+					<div className='flex gap-5'>
+						<Button
+							label='Approve'
+							className='h-11 rounded-lg flex-1'
+							disabled={!id}
+							onClick={onApprove}
+						/>
+						<Button
+							label='Deny'
+							severity='danger'
+							className='h-11 rounded-lg flex-1'
+							disabled={!id}
+							onClick={onDeny}
+						/>
+					</div>
+				)}
 				{error && <div className='text-red-500'>{error}</div>}
 			</InformationPanel>
 		</div>

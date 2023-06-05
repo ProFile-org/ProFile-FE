@@ -53,8 +53,6 @@ const SignInForm = () => {
 				password,
 			});
 
-			// console.log(data);
-
 			const user = {
 				...data,
 				role: data.role.toLowerCase(),
