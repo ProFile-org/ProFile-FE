@@ -20,6 +20,7 @@ import useDocumentTypes from '@/hooks/useDocumentTypes';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import FileInput from '@/components/FileInput/FileInput.component';
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+import { getUser } from '@/utils/services/getUser';
 
 const RequiredValues = {
 	id: '',
@@ -117,6 +118,18 @@ const ImportDocumentContainer = () => {
 		return errors;
 	};
 
+	const handleIdChange = async (
+		id: string,
+		setFieldError: (id: string, name: string) => void,
+		setFieldValue: (id: string, value: string, revalidate?: boolean) => void
+	) => {
+		const user = await getUser(id);
+		if (!user) {
+			setFieldError('id', 'User not found');
+			setFieldValue('name', '', false);
+		} else setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, false);
+	};
+
 	useEffect(() => {
 		const getConfigs = async () => {
 			await containerRefetch();
@@ -136,14 +149,21 @@ const ImportDocumentContainer = () => {
 				handleSubmit,
 				setFieldValue,
 				setFieldTouched,
+				setFieldError,
 				isSubmitting,
 			}) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const onScan = (e: any) => {
+				const onScan = async (e: any) => {
 					const result = e?.getText();
 					if (!result) return;
 					setFieldValue('id', result);
-					setFieldValue('department', '81377bd4-e1f5-4963-a0b8-68123f25923e');
+					const user = await getUser(result);
+					if (!user) {
+						setFieldError('id', 'User not found');
+						setFieldValue('name', '', false);
+					} else {
+						setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, false);
+					}
 					setOpenScan(false);
 				};
 
@@ -283,8 +303,15 @@ const ImportDocumentContainer = () => {
 										id='id'
 										name='id'
 										label='ID'
-										onChange={handleChange}
-										onBlur={handleBlur}
+										onChange={(e) => {
+											handleChange(e);
+											handleIdChange(e.target.value, setFieldError, setFieldValue);
+										}}
+										onBlur={(e) => {
+											if (errors.id && e.target.value !== '') return;
+											// handleBlur will call validate, if an error exists, aka not found, don't revalidate
+											handleBlur(e);
+										}}
 										value={values.id}
 										error={touched.id && !!errors.id}
 										small={errors.id ? errors.id : undefined}
@@ -299,17 +326,7 @@ const ImportDocumentContainer = () => {
 											/>
 										}
 									/>
-									<InputWithLabel
-										label='Name'
-										name='name'
-										id='name'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.name}
-										error={touched.name && !!errors.name}
-										small={errors.name ? errors.name : undefined}
-										disabled={isSubmitting}
-									/>
+									<InputWithLabel label='Name' name='name' id='name' readOnly value={values.name} />
 								</InformationPanel>
 								<InformationPanel header='Add digital copies'>
 									<ImagePreviewer
