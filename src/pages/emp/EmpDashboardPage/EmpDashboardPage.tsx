@@ -44,8 +44,6 @@ const EmpDashboardPage = () => {
 		}))
 	);
 
-	console.log(documents);
-
 	return (
 		<div className='flex flex-col gap-5'>
 			<Link to={AUTH_ROUTES.DRIVE} className='header link-underlined'>
