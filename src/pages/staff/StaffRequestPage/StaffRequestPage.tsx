@@ -1,86 +1,34 @@
 import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
-import { AUTH_ROUTES } from '@/constants/routes';
-import usePagination, { DEFAULT_ROWS, ROWS_PER_PAGE_OPTIONS } from '@/hooks/usePagination';
-import { GetRequestsResponse } from '@/types/response';
-import axiosClient from '@/utils/axiosClient';
+import useNavigateSelect from '@/hooks/useNavigateSelect';
+import usePagination from '@/hooks/usePagination';
+import { IBorrowRequest } from '@/types/item';
 import { Column } from 'primereact/column';
-import { useQuery } from 'react-query';
-import { useNavigate } from 'react-router-dom';
 
 const StaffRequestPage = () => {
-	const navigate = useNavigate();
-	const { paginate, setPaginate } = usePagination();
+	const { getPaginatedTableProps } = usePagination<IBorrowRequest>({
+		key: 'requests',
+		url: '/borrows/staffs',
+	});
 
-	const { data, isLoading } = useQuery(
-		['requests', paginate],
-		async () =>
-			(
-				await axiosClient.get<GetRequestsResponse>('/borrows/staffs', {
-					params: {
-						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
-						size: paginate.rows,
-						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),
-						sortOrder: paginate.sortOrder === 1 ? 'asc' : 'desc',
-					},
-				})
-			).data,
-		{
-			refetchOnReconnect: true,
-			refetchOnWindowFocus: true,
-			refetchOnMount: true,
-			retry: true,
-			retryOnMount: true,
-		}
-	);
-
-	const requests = data?.data.items.map((item, index) => ({ ...item, count: index + 1 })) || [];
-
-	const totalCount = data?.data.totalCount || 0;
+	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });
 
 	return (
 		<div className='flex flex-col gap-5'>
 			<h2 className='header'>Pending requests</h2>
 			<div className='card'>
-				<Table
-					loading={isLoading}
-					value={requests}
-					onSelectionChange={(e) =>
-						navigate(`${AUTH_ROUTES.REQUESTS}/${(e.value as { id: string }).id}`)
-					}
-					selectionMode='single'
-					onPage={(e) => {
-						setPaginate((prev) => ({
-							...prev,
-							page: e.page || 0,
-							rows: e.rows || DEFAULT_ROWS,
-							first: e.first || 0,
-						}));
-					}}
-					rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-					totalRecords={totalCount}
-					paginator
-					lazy
-					rows={paginate.rows}
-					first={paginate.first}
-					paginatorTemplate='CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput'
-					sortMode='single'
-					onSort={(e) => {
-						setPaginate((prev) => ({
-							...prev,
-							sortField: e.sortField,
-							sortOrder: e.sortOrder || 1,
-						}));
-					}}
-					sortField={paginate.sortField}
-					sortOrder={paginate.sortOrder}
-				>
+				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
 					<Column field='count' header='No.' />
-					<Column field='id' header='Request ID' sortable />
+					<Column
+						field='id'
+						header='ID'
+						sortable
+						className='break-keep overflow-ellipsis max-w-[5rem]'
+					/>
 					<Column
 						field='status'
 						header='Status'
-						body={(request) => <Status request={request} />}
+						body={(request) => <Status type='request' item={request} />}
 						sortable
 					/>
 					<Column field='borrowTime' header='From' sortable />

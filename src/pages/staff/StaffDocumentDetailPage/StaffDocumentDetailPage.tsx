@@ -5,7 +5,7 @@ import { GetDocumentByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
@@ -13,14 +13,16 @@ import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.com
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
+import Status from '@/components/Status/Status.component';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
 	const [qr, setQr] = useState('');
 	const [editMode, setEditMode] = useState(false);
+	const queryClient = useQueryClient();
 
 	const { data, isLoading } = useQuery(
-		['document', documentId],
+		['documents', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
 			onSuccess: async (data) => {
@@ -42,22 +44,9 @@ const StaffDocumentDetailPage = () => {
 			locker: {
 				id: lockerId,
 				name: lockerName,
-				// room: { id: roomId, name: roomName },
 			},
 		},
-		// department: { name: department },
 	} = data.data;
-
-	// const title = 'title';
-	// const documentType = 'documentType';
-	// const folderId = 'folderId';
-	// const folderName = 'folderName';
-	// const lockerId = 'lockerId';
-	// const lockerName = 'lockerName';
-	// const description = 'description';
-	// const firstName = 'firstName';
-	// const lastName = 'lastName';
-	// const importerId = 'importerId';
 
 	const initialValues = data.data;
 
@@ -67,6 +56,7 @@ const StaffDocumentDetailPage = () => {
 		setEditMode(false);
 		try {
 			await axiosClient.put(`/documents/${documentId}`, values);
+			queryClient.invalidateQueries(['documents']);
 		} catch (error) {
 			setValues(initialValues);
 		}
@@ -130,17 +120,12 @@ const StaffDocumentDetailPage = () => {
 								/>
 							</InformationPanel>
 							<InformationPanel header='Document information'>
-								<InputWithLabel label='ID' wrapperClassName='flex-1' value={values.id} readOnly />
 								<InputWithLabel
-									label='Types'
-									id='documentType'
-									name='documentType'
-									value={values.documentType}
-									readOnly={!editMode}
-									onChange={handleChange}
-									onBlur={handleBlur}
-									error={touched.documentType && !!errors.documentType}
-									small={touched.documentType ? errors.documentType : undefined}
+									label='ID'
+									wrapperClassName='flex-1'
+									value={values.id}
+									readOnly
+									sideComponent={<Status item={values} type='document' />}
 								/>
 								<InputWithLabel
 									label='Title'
@@ -153,6 +138,17 @@ const StaffDocumentDetailPage = () => {
 									onBlur={handleBlur}
 									error={touched.title && !!errors.title}
 									small={touched.title ? errors.title : undefined}
+								/>
+								<InputWithLabel
+									label='Types'
+									id='documentType'
+									name='documentType'
+									value={values.documentType}
+									readOnly={!editMode}
+									onChange={handleChange}
+									onBlur={handleBlur}
+									error={touched.documentType && !!errors.documentType}
+									small={touched.documentType ? errors.documentType : undefined}
 								/>
 								<TextareaWithLabel
 									label='Description'
