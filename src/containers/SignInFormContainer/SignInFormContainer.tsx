@@ -62,8 +62,6 @@ const SignInForm = () => {
 					roomId: 'f2760dcd-6830-4541-9e99-d80bce9e6980',
 				},
 			};
-			
-			console.log(user);
 
 			dispatch({
 				type: 'LOGIN',

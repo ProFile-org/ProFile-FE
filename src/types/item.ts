@@ -1,3 +1,5 @@
+import { DOCUMENT_STATUS_KEY, REQUEST_STATUS_KEY } from '@/constants/status';
+
 export interface IItem {
 	label: string;
 	type?: 'item' | 'group';
@@ -20,6 +22,7 @@ export interface IDocument {
 	department: IDepartment;
 	importer: IUser;
 	folder: IFolder;
+	status: DOCUMENT_STATUS_KEY;
 }
 
 export interface IRoom {
@@ -78,5 +81,5 @@ export interface IBorrowRequest {
 	dueTime: string;
 	actualReturnTime: string;
 	reason: string;
-	status: string;
+	status: REQUEST_STATUS_KEY;
 }

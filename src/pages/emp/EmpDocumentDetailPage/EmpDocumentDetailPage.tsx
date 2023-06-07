@@ -12,13 +12,14 @@ import QRCode from 'qrcode';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { SkeletonPage } from '@/components/Skeleton';
+import Status from '@/components/Status/Status.component';
 
 const EmpDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
 	const [qr, setQr] = useState('');
 
-	const { data, isLoading } = useQuery(
-		['document', documentId],
+	const { data: doc, isLoading } = useQuery(
+		['documents', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
 			onSuccess: async (data) => {
@@ -30,7 +31,7 @@ const EmpDocumentDetailPage = () => {
 		}
 	);
 
-	if (isLoading || !data) return <SkeletonPage />;
+	if (isLoading || !doc) return <SkeletonPage />;
 
 	const {
 		title,
@@ -38,16 +39,11 @@ const EmpDocumentDetailPage = () => {
 		folder: {
 			id: folderId,
 			name: folderName,
-			locker: {
-				id: lockerId,
-				name: lockerName,
-				// room: { id: roomId, name: roomName },
-			},
+			locker: { id: lockerId, name: lockerName },
 		},
-		// department: { name: department },
 		description,
 		importer: { firstName, lastName, id: importerId },
-	} = data.data;
+	} = doc.data;
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -91,9 +87,15 @@ const EmpDocumentDetailPage = () => {
 						/>
 					</InformationPanel>
 					<InformationPanel header='Document information'>
-						<InputWithLabel label='ID' wrapperClassName='flex-1' value={documentId} readOnly />
-						<InputWithLabel label='Types' value={documentType} readOnly />
+						<InputWithLabel
+							label='ID'
+							wrapperClassName='flex-1'
+							value={documentId}
+							readOnly
+							sideComponent={<Status type='document' item={doc.data} />}
+						/>
 						<InputWithLabel label='Title' wrapperClassName='flex-1' value={title} readOnly />
+						<InputWithLabel label='Types' value={documentType} readOnly />
 						{description && (
 							<TextareaWithLabel
 								label='Description'

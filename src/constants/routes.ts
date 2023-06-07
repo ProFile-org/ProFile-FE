@@ -18,3 +18,5 @@ export const AUTH_ROUTES = {
 export const UNAUTH_ROUTES = {
 	AUTH: '/auth',
 };
+
+export type AUTH_ROUTES_KEY = keyof typeof AUTH_ROUTES;

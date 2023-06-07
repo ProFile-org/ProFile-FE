@@ -1,38 +1,75 @@
-import { REQUEST_STATUS } from '@/constants/status';
-import { IBorrowRequest } from '@/types/item';
+import { DOCUMENT_STATUS, REQUEST_STATUS } from '@/constants/status';
+import { IBorrowRequest, IDocument, IFolder, ILocker } from '@/types/item';
 import clsx from 'clsx';
-import { FC } from 'react';
+import { FC, HTMLAttributes } from 'react';
 
-interface IStatusProps {
-	request: IBorrowRequest;
+interface IStatusBorrowProps {
+	item: IBorrowRequest;
+	type: 'request';
 }
 
-const Status: FC<IStatusProps> = ({ request }) => {
-	let statusClass = '';
+interface IStatusDocumentProps {
+	item: IDocument;
+	type: 'document';
+}
 
-	switch (request.status) {
-		case REQUEST_STATUS.PENDING:
-			statusClass = 'bg-yellow-500';
-			break;
-		case REQUEST_STATUS.APPROVED:
-			statusClass = 'bg-green-500';
-			break;
-		case REQUEST_STATUS.REJECTED:
-			statusClass = 'bg-red-500';
-			break;
-		case REQUEST_STATUS.CANCELLED:
-			statusClass = 'bg-orange-500';
-			break;
-		case REQUEST_STATUS.CHECKED_OUT:
-			statusClass = 'bg-blue-500';
-			break;
-		default:
-			statusClass = 'bg-primary';
-	}
+interface IStatusLockerProps {
+	item: ILocker;
+	type: 'locker';
+}
+
+interface IStatusFolderProps {
+	item: IFolder;
+	type: 'folder';
+}
+
+type IStatusProps = (
+	| IStatusBorrowProps
+	| IStatusDocumentProps
+	| IStatusLockerProps
+	| IStatusFolderProps
+) &
+	HTMLAttributes<HTMLSpanElement>;
+
+const Status: FC<IStatusProps> = ({ item, type, className, ...rest }) => {
+	if (type === 'document')
+		return (
+			<span
+				className={clsx(
+					'px-2 py-1 rounded-lg text-white text-center flex items-center justify-center',
+					DOCUMENT_STATUS[item.status].color,
+					className
+				)}
+				{...rest}
+			>
+				{item.status}
+			</span>
+		);
+
+	if (type === 'request')
+		return (
+			<span
+				className={clsx(
+					'px-2 py-1 rounded-lg text-white text-center flex items-center justify-center',
+					REQUEST_STATUS[item.status].color,
+					className
+				)}
+				{...rest}
+			>
+				{item.status}
+			</span>
+		);
 
 	return (
-		<span className={clsx('px-2 py-1 rounded-lg text-white text-center', statusClass)}>
-			{request.status}
+		<span
+			className={clsx(
+				'px-2 py-1 rounded-lg text-white text-center flex items-center justify-center',
+				item.isAvailable ? 'bg-green-500' : 'bg-red-500',
+				className
+			)}
+			{...rest}
+		>
+			{item.isAvailable ? 'Available' : 'Not available'}
 		</span>
 	);
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { SkeletonPage } from '@/components/Skeleton';
@@ -18,17 +19,17 @@ import { Navigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
 const NO_ACTIONS = [
-	REQUEST_STATUS.CANCELLED,
-	REQUEST_STATUS.CHECKED_OUT,
-	REQUEST_STATUS.NOT_PROCESSABLE,
-	REQUEST_STATUS.RETURNED,
+	REQUEST_STATUS.Cancelled.status,
+	REQUEST_STATUS.CheckedOut.status,
+	REQUEST_STATUS.NotProcessable.status,
+	REQUEST_STATUS.Returned.status,
 ];
 
 const StaffRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
 	const [error, setError] = useState('');
 	const { data, refetch } = useQuery(
-		['request', requestId],
+		['requests', requestId],
 		async () => (await axiosClient.get<GetRequestByIdResponse>(`/borrows/${requestId}`)).data,
 		{
 			enabled: !!requestId,
@@ -133,12 +134,13 @@ const StaffRequestDetailPage = () => {
 				</InformationPanel>
 				<InformationPanel>
 					<div className='flex flex-row gap-4'>
-						{NO_ACTIONS.indexOf(status) !== -1 ? null : status === 'Approved' ? (
+						{NO_ACTIONS.indexOf(status) !== -1 ? null : status ===
+						  REQUEST_STATUS.Approved.status ? (
 							<Button label='Checkout' className='h-11 rounded-l flex-1' onClick={onCheckout} />
 						) : (
 							<>
 								<Button label='Approve' className='h-11 rounded-lg flex-1' onClick={onApprove} />
-								{status === REQUEST_STATUS.REJECTED ? null : (
+								{status === REQUEST_STATUS.Rejected.status ? null : (
 									<Button
 										label='Deny'
 										severity='danger'

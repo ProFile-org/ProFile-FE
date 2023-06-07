@@ -1,17 +1,15 @@
-import { FC } from 'react';
-import { DataTable, DataTableProps } from 'primereact/datatable';
+import { DataTable, DataTableProps, DataTableValueArray } from 'primereact/datatable';
 import style from './Table.module.scss';
 import clsx from 'clsx';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Table: FC<DataTableProps<any>> = ({
+const Table = <T extends DataTableValueArray>({
 	className,
 	children,
-	scrollHeight = '70vh',
+	scrollHeight = '80vh',
 	scrollable = true,
 	resizableColumns = true,
 	...rest
-}) => {
+}: DataTableProps<T>) => {
 	return (
 		<DataTable
 			className={clsx(style['table'], className)}

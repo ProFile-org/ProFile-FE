@@ -1,4 +1,4 @@
-import { IBorrowRequest, IDepartment, IDocument, IUser } from './item';
+import { IBorrowRequest, IDepartment, IDocument, IFolder, ILocker, IUser } from './item';
 
 export type BaseResponse<T = null> = {
 	data: T;
@@ -55,3 +55,11 @@ export type GetRequestsResponse = BaseResponse<
 export type GetRequestByIdResponse = BaseResponse<IBorrowRequest>;
 
 export type GetUserByIdResponse = BaseResponse<IUser>;
+
+export type GetLockersResponse = BaseResponse<{ items: ILocker[] } & GetPaginationResponse>;
+
+export type GetLockerByIdResponse = BaseResponse<ILocker>;
+
+export type GetFoldersResponse = BaseResponse<{ items: IFolder[] } & GetPaginationResponse>;
+
+export type GetFolderByIdResponse = BaseResponse<IFolder>;

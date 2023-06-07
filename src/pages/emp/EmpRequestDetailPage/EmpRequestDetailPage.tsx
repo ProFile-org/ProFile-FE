@@ -14,19 +14,19 @@ import CustomCalendar from '@/components/Calendar/Calendar.component';
 import { REQUEST_STATUS } from '@/constants/status';
 
 const NO_ACTIONS = [
-	REQUEST_STATUS.CANCELLED,
-	REQUEST_STATUS.CHECKED_OUT,
-	REQUEST_STATUS.RETURNED,
-	REQUEST_STATUS.REJECTED,
-	REQUEST_STATUS.LOST,
-	REQUEST_STATUS.NOT_PROCESSABLE,
+	REQUEST_STATUS.Cancelled.status,
+	REQUEST_STATUS.CheckedOut.status,
+	REQUEST_STATUS.Returned.status,
+	REQUEST_STATUS.Rejected.status,
+	REQUEST_STATUS.Lost.status,
+	REQUEST_STATUS.NotProcessable.status,
 ];
 
 const EmpRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
 	const [qr, setQr] = useState('');
 	const { data, refetch: refetchRequest } = useQuery(
-		['request', requestId],
+		['requests', requestId],
 		async () => (await axiosClient.get<GetRequestByIdResponse>(`/borrows/${requestId}`)).data,
 		{
 			enabled: !!requestId,
