@@ -23,6 +23,7 @@ const NO_ACTIONS = [
 	REQUEST_STATUS.CheckedOut.status,
 	REQUEST_STATUS.NotProcessable.status,
 	REQUEST_STATUS.Returned.status,
+	REQUEST_STATUS.Lost.status,
 ];
 
 const StaffRequestDetailPage = () => {
