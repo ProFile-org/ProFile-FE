@@ -151,6 +151,7 @@ const ImportDocumentContainer = () => {
 				setFieldTouched,
 				setFieldError,
 				isSubmitting,
+				isValid,
 			}) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				const onScan = async (e: any) => {
@@ -293,7 +294,7 @@ const ImportDocumentContainer = () => {
 										label='Submit'
 										type='submit'
 										className='bg-primary mt-5 rounded-lg'
-										disabled={isSubmitting || Object.values(errors).length !== 0}
+										disabled={isSubmitting || isValid}
 									/>
 								</InformationPanel>
 							</div>
