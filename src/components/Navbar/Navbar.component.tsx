@@ -41,10 +41,11 @@ const Navbar = () => {
 							</Link>
 						</div>
 						<div className='flex gap-5 items-center'>
-							<span className='text-white text-lg hidden lg:inline'>
-								{user?.role} - {user?.department?.name && `${user?.department?.name} -`}{' '}
-								{user?.username}
-							</span>
+							<span className='text-white text-lg'>{`${user?.role
+								.slice(0, 1)
+								.toUpperCase()}${user?.role.slice(1)}`}</span>
+							<span className='text-white text-lg'>-</span>
+							<span className='text-white text-lg'>{user?.firstName}</span>
 							<Button className='text-white px-3 py-2 rounded-lg' onClick={signOut}>
 								<span className='hidden lg:inline'>Sign out</span>
 								<i className={clsx(PrimeIcons.SIGN_OUT, 'text-white lg:hidden')} />

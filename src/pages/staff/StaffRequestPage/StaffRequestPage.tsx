@@ -3,6 +3,7 @@ import Table from '@/components/Table/Table.component';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import usePagination from '@/hooks/usePagination';
 import { IBorrowRequest } from '@/types/item';
+import { dateFormatter } from '@/utils/formatter';
 import { Column } from 'primereact/column';
 
 const StaffRequestPage = () => {
@@ -31,8 +32,26 @@ const StaffRequestPage = () => {
 						body={(request) => <Status type='request' item={request} />}
 						sortable
 					/>
-					<Column field='borrowTime' header='From' sortable />
-					<Column field='dueTime' header='To' sortable />
+					<Column
+						field='borrowTime'
+						body={(request) =>
+							dateFormatter(new Date(request.borrowTime), undefined, {
+								dateStyle: 'full',
+							})
+						}
+						header='From'
+						sortable
+					/>
+					<Column
+						field='dueTime'
+						body={(request) =>
+							dateFormatter(new Date(request.dueTime), undefined, {
+								dateStyle: 'full',
+							})
+						}
+						header='To'
+						sortable
+					/>
 				</Table>
 			</div>
 		</div>

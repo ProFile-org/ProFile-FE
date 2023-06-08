@@ -116,8 +116,8 @@ const EmpRequestCreatePage = () => {
 		setFieldError: (field: string, value: string) => void
 	) => {
 		try {
-			const data = await getDocumentById(id);
-			if (!data) {
+			const doc = await getDocumentById(id);
+			if (!doc) {
 				setFieldValue('title', '', false);
 				setFieldValue('documentType', '', false);
 				setFieldValue('locker', '', false);
@@ -125,10 +125,10 @@ const EmpRequestCreatePage = () => {
 				setFieldError('id', 'Document not found');
 				return;
 			}
-			setFieldValue('title', data.data.title);
-			setFieldValue('documentType', data.data.documentType);
-			setFieldValue('locker', data.data.folder.locker.name);
-			setFieldValue('folder', data.data.folder.name);
+			setFieldValue('title', doc.data.title);
+			setFieldValue('documentType', doc.data.documentType);
+			setFieldValue('locker', doc.data.folder.locker.name);
+			setFieldValue('folder', doc.data.folder.name);
 			setFieldError('id', '');
 		} catch (error) {
 			console.log(error);
@@ -171,8 +171,8 @@ const EmpRequestCreatePage = () => {
 											handleIdChange(e.target.value, setFieldValue, setFieldError);
 										}}
 										onBlur={handleBlur}
-										error={touched.id && !!errors.id}
-										small={touched.id ? errors.id : undefined}
+										error={!!errors.id}
+										small={errors.id || undefined}
 										sideComponent={
 											<Button
 												label='Scan'

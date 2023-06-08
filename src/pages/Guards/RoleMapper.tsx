@@ -87,11 +87,9 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.FOLDERS]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <StaffFolderPage />,
-		employee: () => <div>Employee</div>,
 	},
 	[AUTH_ROUTES.FOLDER]: {
 		admin: () => <div>Admins</div>,
 		staff: () => <StaffFolderDetailPage />,
-		employee: () => <div>Employee</div>,
 	},
 };
