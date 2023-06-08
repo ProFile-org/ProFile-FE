@@ -14,7 +14,7 @@
 	.title {
 		@apply text-2xl font-bold;
 	}
-	.input {
+	.input, .p-inputnumber-input {
 		@apply bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg;
 	}
 	.error-input {

@@ -14,6 +14,8 @@ import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
+import { AxiosError } from 'axios';
+import ErrorTemplate from '@/components/ErrorTemplate/ErrorTemplate.component';
 
 const StaffDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -21,7 +23,7 @@ const StaffDocumentDetailPage = () => {
 	const [editMode, setEditMode] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data, isLoading } = useQuery(
+	const { data, isLoading, error } = useQuery(
 		['documents', documentId],
 		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
 		{
@@ -34,17 +36,17 @@ const StaffDocumentDetailPage = () => {
 		}
 	);
 
-	if (isLoading || !data) return <SkeletonPage />;
+	if (isLoading) return <SkeletonPage />;
+
+	if ((error as AxiosError)?.response?.status === 404 || !data)
+		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
 	const {
 		title,
 		folder: {
 			id: folderId,
 			name: folderName,
-			locker: {
-				id: lockerId,
-				name: lockerName,
-			},
+			locker: { id: lockerId, name: lockerName },
 		},
 	} = data.data;
 
@@ -53,10 +55,14 @@ const StaffDocumentDetailPage = () => {
 	type FormValues = typeof initialValues;
 
 	const onSubmit = async (values: FormValues, { setValues }: FormikHelpers<FormValues>) => {
-		setEditMode(false);
+		if (JSON.stringify(values) === JSON.stringify(initialValues)) return setEditMode(false);
 		try {
-			await axiosClient.put(`/documents/${documentId}`, values);
-			queryClient.invalidateQueries(['documents']);
+			await axiosClient.put(`/documents/${documentId}`, {
+				...values,
+				documentType: values.documentType.toUpperCase(),
+			});
+			queryClient.invalidateQueries('documents');
+			setEditMode(false);
 		} catch (error) {
 			setValues(initialValues);
 		}
@@ -88,7 +94,18 @@ const StaffDocumentDetailPage = () => {
 				</h2>
 			</div>
 			<Formik initialValues={initialValues} onSubmit={onSubmit} validate={validate}>
-				{({ values, touched, errors, handleChange, handleBlur, handleSubmit, submitForm }) => (
+				{({
+					values,
+					touched,
+					errors,
+					handleChange,
+					handleBlur,
+					handleSubmit,
+					submitForm,
+					resetForm,
+					isSubmitting,
+					isValid,
+				}) => (
 					<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 						<div className='flex flex-col gap-5 flex-1'>
 							<InformationPanel header='Employee information'>
@@ -138,27 +155,30 @@ const StaffDocumentDetailPage = () => {
 									onBlur={handleBlur}
 									error={touched.title && !!errors.title}
 									small={touched.title ? errors.title : undefined}
+									disabled={isSubmitting}
 								/>
 								<InputWithLabel
 									label='Types'
 									id='documentType'
 									name='documentType'
-									value={values.documentType}
+									value={values.documentType.toUpperCase()}
 									readOnly={!editMode}
 									onChange={handleChange}
 									onBlur={handleBlur}
 									error={touched.documentType && !!errors.documentType}
 									small={touched.documentType ? errors.documentType : undefined}
+									disabled={isSubmitting}
 								/>
 								<TextareaWithLabel
 									label='Description'
 									wrapperClassName='flex-1'
 									id='description'
 									name='description'
-									value={values.description || 'N/A'}
+									value={editMode ? values.description : values.description || 'No description'}
 									readOnly={!editMode}
 									onChange={handleChange}
 									onBlur={handleBlur}
+									disabled={isSubmitting}
 								/>
 								<div className='flex gap-5'>
 									<InputWithLabel
@@ -184,16 +204,31 @@ const StaffDocumentDetailPage = () => {
 									<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 								)}
 								<div className='flex flex-col justify-between flex-1'>
-									<Button
-										label='Print QR'
-										className='h-11 rounded-lg'
-										severity='info'
-										type='button'
-									/>
+									{editMode ? (
+										<Button
+											label='Cancelled'
+											severity='danger'
+											className='h-11 rounded-lg'
+											type='button'
+											disabled={isSubmitting}
+											onClick={() => {
+												resetForm();
+												setEditMode(false);
+											}}
+										/>
+									) : (
+										<Button
+											label='Print QR'
+											className='h-11 rounded-lg'
+											severity='info'
+											type='button'
+										/>
+									)}
 									<Button
 										label={editMode ? 'Save' : 'Edit'}
 										className='h-11 rounded-lg bg-primary'
 										type='button'
+										disabled={!isValid || isSubmitting}
 										onClick={() => {
 											if (!editMode) {
 												setEditMode(true);
