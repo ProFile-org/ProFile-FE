@@ -2,7 +2,9 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-ENV VITE_API_ENDPOINT http://localhost:8888/api/v1
+ARG API_URL
+
+ENV VITE_API_ENDPOINT=${API_URL:-http://localhost:8888/api/v1}
 
 COPY package.json package.json
 
