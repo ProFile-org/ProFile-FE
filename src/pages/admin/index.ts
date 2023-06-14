@@ -1,0 +1,17 @@
+export { default as AdminDashboardPage } from './AdminDashboardPage/AdminDashboardPage';
+export { default as AdminDocumentDetailPage } from './AdminDocumentDetailPage/AdminDocumentDetailPage';
+export { default as AdminDocumentPage } from './AdminDocumentPage/AdminDocumentPage';
+export { default as AdminFolderDetailPage } from './AdminFolderDetailPage/AdminFolderDetailPage';
+export { default as AdminFolderPage } from './AdminFolderPage/AdminFolderPage';
+export { default as AdminLockerDetailPage } from './AdminLockerDetailPage/AdminLockerDetailPage';
+export { default as AdminLockerPage } from './AdminLockerPage/AdminLockerPage';
+export { default as AdminRequestDetailPage } from './AdminRequestDetailPage/AdminRequestDetailPage';
+export { default as AdminRequestPage } from './AdminRequestPage/AdminRequestPage';
+export { default as AdminEmployeePage } from './AdminEmployeePage/AdminEmployeePage';
+export { default as AdminEmployeeCreatePage } from './AdminEmployeeCreatePage/AdminEmployeeCreatePage';
+export { default as AdminEmployeeDetailPage } from './AdminEmployeeDetailPage/AdminEmployeeDetailPage';
+export { default as AdminStaffPage } from './AdminStaffPage/AdminStaffPage';
+export { default as AdminLockerCreatePage } from './AdminLockerCreatePage/AdminLockerCreatePage';
+export { default as AdminRoomCreatePage } from './AdminRoomCreatePage/AdminRoomCreatePage';
+export { default as AdminFolderCreatePage } from './AdminFolderCreatePage/AdminFolderCreatePage';
+export { default as AdminRoomPage } from './AdminRoomPage/AdminRoomPage';

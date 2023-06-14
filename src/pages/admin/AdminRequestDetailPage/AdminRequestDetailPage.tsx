@@ -26,7 +26,7 @@ const NO_ACTIONS = [
 	REQUEST_STATUS.Lost.status,
 ];
 
-const StaffRequestDetailPage = () => {
+const AdminRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
 	const [error, setError] = useState('');
 	const { data, refetch } = useQuery(
@@ -163,4 +163,4 @@ const StaffRequestDetailPage = () => {
 	);
 };
 
-export default StaffRequestDetailPage;
+export default AdminRequestDetailPage;

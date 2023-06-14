@@ -3,10 +3,11 @@
 import { AUTH_ROUTES } from '@/constants/routes';
 import { lazy } from 'react';
 import { Navigate } from 'react-router';
-import { StaffDashboardPage } from '../staff';
-import { EmpDashboardPage } from '../emp';
 
 // Staff imports
+const StaffDashboardPage = lazy(
+	() => import('@/pages/staff/StaffDashboardPage/StaffDashboardPage')
+);
 const StaffLockerPage = lazy(() => import('@/pages/staff/StaffLockerPage/StaffLockerPage'));
 const StaffDocumentPage = lazy(() => import('@/pages/staff/StaffDocumentPage/StaffDocumentPage'));
 const StaffImportPage = lazy(() => import('@/pages/staff/StaffImportPage/StaffImportPage'));
@@ -27,6 +28,7 @@ const StaffFolderDetailPage = lazy(
 );
 
 // Employee imports
+const EmpDashboardPage = lazy(() => import('@/pages/emp/EmpDashboardPage/EmpDashboardPage'));
 const EmpDocumentPage = lazy(() => import('@/pages/emp/EmpDocumentPage/EmpDocumentPage'));
 const EmpRequestPage = lazy(() => import('@/pages/emp/EmpRequestPage/EmpRequestPage'));
 const EmpRequestDetailPage = lazy(
@@ -39,27 +41,69 @@ const EmpDocumentDetailPage = lazy(
 	() => import('@/pages/emp/EmpDocumentDetailPage/EmpDocumentDetailPage')
 );
 
+// Admin imports
+const AdminDashboardPage = lazy(
+	() => import('@/pages/admin/AdminDashboardPage/AdminDashboardPage')
+);
+const AdminLockerPage = lazy(() => import('@/pages/admin/AdminLockerPage/AdminLockerPage'));
+const AdminLockerDetailPage = lazy(
+	() => import('@/pages/admin/AdminLockerDetailPage/AdminLockerDetailPage')
+);
+const AdminFolderPage = lazy(() => import('@/pages/admin/AdminFolderPage/AdminFolderPage'));
+const AdminFolderDetailPage = lazy(
+	() => import('@/pages/admin/AdminFolderDetailPage/AdminFolderDetailPage')
+);
+const AdminDocumentPage = lazy(() => import('@/pages/admin/AdminDocumentPage/AdminDocumentPage'));
+const AdminDocumentDetailPage = lazy(
+	() => import('@/pages/admin/AdminDocumentDetailPage/AdminDocumentDetailPage')
+);
+const AdminRequestPage = lazy(() => import('@/pages/admin/AdminRequestPage/AdminRequestPage'));
+const AdminRequestDetailPage = lazy(
+	() => import('@/pages/admin/AdminRequestDetailPage/AdminRequestDetailPage')
+);
+const AdminRoomPage = lazy(() => import('@/pages/admin/AdminRoomPage/AdminRoomPage'));
+const AdminRoomDetailPage = lazy(
+	() => import('@/pages/admin/AdminRoomDetailPage/AdminRoomDetailPage')
+);
+const AdminEmployeePage = lazy(() => import('@/pages/admin/AdminEmployeePage/AdminEmployeePage'));
+const AdminEmployeeCreatePage = lazy(
+	() => import('@/pages/admin/AdminEmployeeCreatePage/AdminEmployeeCreatePage')
+);
+const AdminEmployeeDetailPage = lazy(
+	() => import('@/pages/admin/AdminEmployeeDetailPage/AdminEmployeeDetailPage')
+);
+const AdminStaffPage = lazy(() => import('@/pages/admin/AdminStaffPage/AdminStaffPage'));
+const AdminLockerCreatePage = lazy(
+	() => import('@/pages/admin/AdminLockerCreatePage/AdminLockerCreatePage')
+);
+const AdminRoomCreatePage = lazy(
+	() => import('@/pages/admin/AdminRoomCreatePage/AdminRoomCreatePage')
+);
+const AdminFolderCreatePage = lazy(
+	() => import('@/pages/admin/AdminFolderCreatePage/AdminFolderCreatePage')
+);
+
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminDashboardPage />,
 		staff: () => <StaffDashboardPage />,
 		employee: () => <EmpDashboardPage />,
 	},
 	[AUTH_ROUTES.PHYSICAL]: {
-		admin: () => <div>Admins</div>,
-		staff: () => <Navigate to={AUTH_ROUTES.LOCKERS} />,
-		employee: () => <Navigate to={AUTH_ROUTES.DOCUMENTS} />,
+		admin: () => <Navigate to={AUTH_ROUTES.ROOMS} replace />,
+		staff: () => <Navigate to={AUTH_ROUTES.LOCKERS} replace />,
+		employee: () => <Navigate to={AUTH_ROUTES.DOCUMENTS} replace />,
 	},
 	[AUTH_ROUTES.LOCKERS]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminLockerPage />,
 		staff: () => <StaffLockerPage />,
 	},
 	[AUTH_ROUTES.LOCKER]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminLockerDetailPage />,
 		staff: () => <StaffLockerDetailPage />,
 	},
 	[AUTH_ROUTES.DOCUMENTS]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminDocumentPage />,
 		staff: () => <StaffDocumentPage />,
 		employee: () => <EmpDocumentPage />,
 	},
@@ -67,14 +111,17 @@ export const ROLE_MAPPER = {
 		staff: () => <StaffImportPage />,
 	},
 	[AUTH_ROUTES.DOCUMENT]: {
+		admin: () => <AdminDocumentDetailPage />,
 		staff: () => <StaffDocumentDetailPage />,
 		employee: () => <EmpDocumentDetailPage />,
 	},
 	[AUTH_ROUTES.REQUESTS]: {
+		admin: () => <AdminRequestPage />,
 		staff: () => <StaffRequestPage />,
 		employee: () => <EmpRequestPage />,
 	},
 	[AUTH_ROUTES.REQUEST]: {
+		admin: () => <AdminRequestDetailPage />,
 		staff: () => <StaffRequestDetailPage />,
 		employee: () => <EmpRequestDetailPage />,
 	},
@@ -85,11 +132,50 @@ export const ROLE_MAPPER = {
 		staff: () => <StaffReturnsPage />,
 	},
 	[AUTH_ROUTES.FOLDERS]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminFolderPage />,
 		staff: () => <StaffFolderPage />,
 	},
 	[AUTH_ROUTES.FOLDER]: {
-		admin: () => <div>Admins</div>,
+		admin: () => <AdminFolderDetailPage />,
 		staff: () => <StaffFolderDetailPage />,
+	},
+	[AUTH_ROUTES.ROOMS]: {
+		admin: () => <AdminRoomPage />,
+	},
+	[AUTH_ROUTES.ROOM]: {
+		admin: () => <AdminRoomDetailPage />,
+	},
+	[AUTH_ROUTES.EMPLOYEES]: {
+		admin: () => <Navigate to={AUTH_ROUTES.EMPLOYEES_MANAGE} replace />,
+	},
+	[AUTH_ROUTES.EMPLOYEES_MANAGE]: {
+		admin: () => <AdminEmployeePage />,
+	},
+	[AUTH_ROUTES.EMPLOYEE]: {
+		admin: () => <AdminEmployeeDetailPage />,
+	},
+	[AUTH_ROUTES.STAFFS]: {
+		admin: () => <Navigate to={AUTH_ROUTES.STAFFS_MANAGE} replace />,
+	},
+	[AUTH_ROUTES.STAFFS_MANAGE]: {
+		admin: () => <AdminStaffPage />,
+	},
+	[AUTH_ROUTES.NEW_DEPARTMENT]: {
+		// admin: () => <AdminCreatePage />,
+	},
+	[AUTH_ROUTES.NEW_ROOM]: {
+		admin: () => <AdminRoomCreatePage />,
+	},
+	[AUTH_ROUTES.NEW_LOCKER]: {
+		admin: () => <AdminLockerCreatePage />,
+	},
+	[AUTH_ROUTES.NEW_FOLDER]: {
+		admin: () => <AdminFolderCreatePage />,
+	},
+	[AUTH_ROUTES.NEW_STAFF]: {
+		// admin: () => <AdminCreatePage />,
+	},
+	[AUTH_ROUTES.NEW_EMP]: {
+		admin: () => <AdminEmployeeCreatePage />,
 	},
 };

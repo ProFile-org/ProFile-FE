@@ -17,7 +17,7 @@ import Status from '@/components/Status/Status.component';
 import { AxiosError } from 'axios';
 import ErrorTemplate from '@/components/ErrorTemplate/ErrorTemplate.component';
 
-const StaffDocumentDetailPage = () => {
+const AdminDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
 	const [qr, setQr] = useState('');
 	const [editMode, setEditMode] = useState(false);
@@ -46,7 +46,11 @@ const StaffDocumentDetailPage = () => {
 		folder: {
 			id: folderId,
 			name: folderName,
-			locker: { id: lockerId, name: lockerName },
+			locker: {
+				id: lockerId,
+				name: lockerName,
+				room: { id: roomId, name: roomName },
+			},
 		},
 	} = data.data;
 
@@ -82,6 +86,10 @@ const StaffDocumentDetailPage = () => {
 		<div className='flex flex-col gap-5'>
 			<div className='card py-3'>
 				<h2 className='title flex gap-2'>
+					<span>/</span>
+					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
+						{roomName}
+					</Link>
 					<span>/</span>
 					<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
 						{lockerName}
@@ -267,4 +275,4 @@ const StaffDocumentDetailPage = () => {
 	);
 };
 
-export default StaffDocumentDetailPage;
+export default AdminDocumentDetailPage;

@@ -22,7 +22,7 @@ import InputNumberWithLabel from '@/components/InputWithLabel/InputNumberWithLab
 
 const NOT_REQUIRED = ['description'];
 
-const StaffLockerDetailPage = () => {
+const AdminLockerDetailPage = () => {
 	const { user } = useContext(AuthContext);
 	const { lockerId } = useParams<{ lockerId: string }>();
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'FOLDERS' });
@@ -70,7 +70,14 @@ const StaffLockerDetailPage = () => {
 	if ((axiosError as AxiosError)?.response?.status === 404 || !locker)
 		return <ErrorTemplate code={404} message='Locker not found' url={AUTH_ROUTES.LOCKERS} />;
 
-	const { name: lockerName, capacity, numberOfFolders, description, isAvailable } = locker.data;
+	const {
+		name: lockerName,
+		capacity,
+		numberOfFolders,
+		description,
+		isAvailable,
+		room: { name: roomName },
+	} = locker.data;
 
 	const foldersWithId = folders?.data.items.map((folder, index) => ({
 		count: index + 1,
@@ -137,6 +144,10 @@ const StaffLockerDetailPage = () => {
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
 				<h2 className='title flex gap-2'>
+					<span>/</span>
+					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
+						{roomName}
+					</Link>
 					<span>/</span>
 					<span>{lockerName}</span>
 				</h2>
@@ -306,4 +317,4 @@ const StaffLockerDetailPage = () => {
 	);
 };
 
-export default StaffLockerDetailPage;
+export default AdminLockerDetailPage;
