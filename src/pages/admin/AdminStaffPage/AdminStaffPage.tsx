@@ -35,7 +35,7 @@ const AdminEmployeePage = () => {
 					<InputText
 						className='input'
 						onChange={(e) => (query.current = e.target.value)}
-						placeholder='locker a'
+						placeholder='staff a'
 					/>
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>

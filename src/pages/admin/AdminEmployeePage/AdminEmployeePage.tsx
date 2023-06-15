@@ -15,6 +15,7 @@ const AdminEmployeePage = () => {
 	const { getPaginatedTableProps, refetch } = usePagination<IUser>({
 		key: 'employees',
 		url: '/users',
+		query: query.current,
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'EMPLOYEES_MANAGE' });
@@ -32,7 +33,7 @@ const AdminEmployeePage = () => {
 					<InputText
 						className='input'
 						onChange={(e) => (query.current = e.target.value)}
-						placeholder='locker a'
+						placeholder='employee a'
 					/>
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>
