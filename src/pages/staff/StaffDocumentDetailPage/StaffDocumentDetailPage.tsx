@@ -52,8 +52,6 @@ const StaffDocumentDetailPage = () => {
 		// },
 	} = data.data;
 
-	console.log(data.data.folder);
-
 	const folder = data.data.folder || {
 		id: '',
 		name: '',

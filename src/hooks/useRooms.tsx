@@ -50,8 +50,6 @@ const useRooms = (groupByDepartment = false, departmentId = '') => {
 			  }))
 		: [];
 
-	console.log(rooms);
-
 	return {
 		rooms,
 		roomsRefetch,
