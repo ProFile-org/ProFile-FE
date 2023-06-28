@@ -1,5 +1,4 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import Overlay from '@/components/Overlay/Overlay.component';

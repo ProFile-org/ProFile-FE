@@ -3,35 +3,23 @@ import InformationPanel from '@/components/InformationPanel/InformationPanel.com
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import { AUTH_ROUTES } from '@/constants/routes';
-import { REQUEST_STATUS } from '@/constants/status';
 import {
-	BaseResponse,
 	GetDocumentByIdResponse,
 	GetRequestByIdResponse,
 	GetUserByIdResponse,
 } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
-import { AxiosError } from 'axios';
 import { Button } from 'primereact/button';
-import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { Navigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
-const NO_ACTIONS = [
-	REQUEST_STATUS.Cancelled.status,
-	REQUEST_STATUS.CheckedOut.status,
-	REQUEST_STATUS.NotProcessable.status,
-	REQUEST_STATUS.Returned.status,
-	REQUEST_STATUS.Lost.status,
-];
-
 const AdminRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
-	const [error, setError] = useState('');
-	const { data, refetch } = useQuery(
+	const { data } = useQuery(
 		['requests', requestId],
-		async () => (await axiosClient.get<GetRequestByIdResponse>(`/borrows/${requestId}`)).data,
+		async () =>
+			(await axiosClient.get<GetRequestByIdResponse>(`/documents/borrows/${requestId}`)).data,
 		{
 			enabled: !!requestId,
 		}
@@ -70,43 +58,7 @@ const AdminRequestDetailPage = () => {
 
 	const { id: employeeId, lastName, firstName } = employee.data;
 
-	const { borrowTime, dueTime, reason, status } = data.data;
-
-	const onApprove = async () => {
-		try {
-			await axiosClient.post(`/borrows/approve/${requestId}`);
-			await refetch();
-		} catch (error) {
-			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
-			console.log(error);
-			setError(message);
-		}
-	};
-
-	const onDeny = async () => {
-		try {
-			await axiosClient.post(`/borrows/reject/${requestId}`);
-			await refetch();
-		} catch (error) {
-			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
-			console.log(error);
-			setError(message);
-		}
-	};
-
-	const onCheckout = async () => {
-		try {
-			await axiosClient.post(`/borrows/checkout/${requestId}`);
-			await refetch();
-		} catch (error) {
-			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
-			console.log(error);
-			setError(message);
-		}
-	};
+	const { borrowTime, dueTime, borrowReason, status } = data.data;
 
 	return (
 		<div className='flex gap-5 flex-col md:flex-row'>
@@ -131,32 +83,15 @@ const AdminRequestDetailPage = () => {
 					<InputWithLabel label='Status' value={status} readOnly />
 					<InputWithLabel label='Borrow date' value={borrowTime} readOnly />
 					<InputWithLabel label='Return date' value={dueTime} readOnly />
-					<InputWithLabel label='Reasons' value={reason} readOnly />
+					<InputWithLabel label='Reasons' value={borrowReason} readOnly />
 				</InformationPanel>
 				<InformationPanel>
 					<div className='flex flex-row gap-4'>
-						{NO_ACTIONS.indexOf(status) !== -1 ? null : status ===
-						  REQUEST_STATUS.Approved.status ? (
-							<Button label='Checkout' className='h-11 rounded-l flex-1' onClick={onCheckout} />
-						) : (
-							<>
-								<Button label='Approve' className='h-11 rounded-lg flex-1' onClick={onApprove} />
-								{status === REQUEST_STATUS.Rejected.status ? null : (
-									<Button
-										label='Deny'
-										severity='danger'
-										className='h-11 rounded-lg flex-1'
-										onClick={onDeny}
-									/>
-								)}
-							</>
-						)}
 						{/* Add return home outlined */}
 						<Link to={AUTH_ROUTES.REQUESTS} className='flex-1 flex-shrink-0'>
 							<Button label='Return home' className='h-11 rounded-lg btn-outlined w-max' outlined />
 						</Link>
 					</div>
-					{error && <div className='text-red-500'>{error}</div>}
 				</InformationPanel>
 			</div>
 		</div>

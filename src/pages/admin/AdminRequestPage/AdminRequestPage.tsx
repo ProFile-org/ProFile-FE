@@ -18,11 +18,7 @@ const AdminRequestPage = () => {
 		<div className='flex flex-col gap-5'>
 			<h2 className='header'>Pending requests</h2>
 			<div className='card'>
-				<Table
-					sortMode='single'
-					// {...getNavigateOnSelectProps()}
-					{...getPaginatedTableProps()}
-				>
+				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
 					<Column field='count' header='No.' />
 					<Column
 						field='id'
