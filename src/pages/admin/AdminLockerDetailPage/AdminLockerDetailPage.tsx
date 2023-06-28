@@ -9,9 +9,8 @@ import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { useQuery, useQueryClient } from 'react-query';
-import { Link, useParams } from 'react-router-dom';
-import { useContext, useState } from 'react';
-import { AuthContext } from '@/context/authContext';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import { IFolder } from '@/types/item';
 import Status from '@/components/Status/Status.component';
@@ -23,14 +22,12 @@ import InputNumberWithLabel from '@/components/InputWithLabel/InputNumberWithLab
 const NOT_REQUIRED = ['description'];
 
 const AdminLockerDetailPage = () => {
-	const { user } = useContext(AuthContext);
 	const { lockerId } = useParams<{ lockerId: string }>();
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'FOLDERS' });
 	const queryClient = useQueryClient();
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
-
-	const roomId = user?.department.roomId || '';
+	const navigate = useNavigate();
 
 	const {
 		data: locker,
@@ -41,12 +38,14 @@ const AdminLockerDetailPage = () => {
 		async () => (await axiosClient.get<GetLockerByIdResponse>(`/lockers/${lockerId}`)).data
 	);
 
+	const roomId = locker?.data.room.id;
+
 	const { data: folders, isLoading: isFoldersLoading } = useQuery(
 		[
 			'folders',
 			{
-				roomId,
 				lockerId,
+				roomId,
 			},
 		],
 		async () =>
@@ -96,11 +95,12 @@ const AdminLockerDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/lockers/disable/${lockerId}`);
-			} else {
-				await axiosClient.put(`/lockers/enable/${lockerId}`);
-			}
+			await axiosClient.put(`/lockers/${lockerId}`, {
+				isAvailable: !isAvailable,
+				name: lockerName,
+				description,
+				capacity,
+			});
 			queryClient.invalidateQueries('lockers');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -140,10 +140,21 @@ const AdminLockerDetailPage = () => {
 		}
 	};
 
+	const onDelete = async () => {
+		try {
+			await axiosClient.delete(`/lockers/${lockerId}`);
+			queryClient.invalidateQueries('lockers');
+			navigate(AUTH_ROUTES.LOCKERS);
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			setError(axiosError.response?.data.message || 'Something went wrong');
+		}
+	};
+
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
 						{roomName}
@@ -279,16 +290,23 @@ const AdminLockerDetailPage = () => {
 												disabled={editMode || isSubmitting || !isValid}
 											/>
 										)}
-										<Link to={AUTH_ROUTES.FOLDERS}>
-											<Button
-												type='button'
-												label='Return home'
-												className='w-full h-11 rounded-lg btn-outlined'
-												outlined
-												disabled={isSubmitting}
-											/>
-										</Link>
+										<Button
+											label='Delete'
+											className='h-11 rounded-lg flex-1 btn-outlined !border-red-500 hover:!bg-red-500'
+											type='button'
+											outlined
+											onClick={onDelete}
+										/>
 									</div>
+									<Link to={AUTH_ROUTES.FOLDERS}>
+										<Button
+											type='button'
+											label='Return home'
+											className='w-full h-11 rounded-lg btn-outlined'
+											outlined
+											disabled={isSubmitting}
+										/>
+									</Link>
 									{error && <div className='text-red-500'>{error}</div>}
 								</InformationPanel>
 								<InformationPanel header='Folders' className='flex-1'>

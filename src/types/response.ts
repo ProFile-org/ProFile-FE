@@ -1,4 +1,13 @@
-import { IBorrowRequest, IDepartment, IDocument, IFolder, ILocker, IRoom, IUser } from './item';
+import {
+	IBorrowRequest,
+	IDepartment,
+	IDocument,
+	IFolder,
+	IImportRequest,
+	ILocker,
+	IRoom,
+	IUser,
+} from './item';
 
 export type BaseResponse<T = null> = {
 	data: T;
@@ -67,3 +76,7 @@ export type GetFolderByIdResponse = BaseResponse<IFolder>;
 export type GetRoomsResponse = BaseResponse<{ items: IRoom[] } & PaginationResponse>;
 
 export type GetRoomByIdResponse = BaseResponse<IRoom>;
+
+export type GetDepartmentByIdResponse = BaseResponse<IDepartment>;
+
+export type GetImportByIdResponse = BaseResponse<IImportRequest>;

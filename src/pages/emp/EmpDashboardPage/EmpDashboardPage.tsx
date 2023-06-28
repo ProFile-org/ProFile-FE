@@ -1,7 +1,5 @@
 import { AUTH_ROUTES } from '@/constants/routes';
 import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthContext } from '@/context/authContext';
 import axiosClient from '@/utils/axiosClient';
 import { GetDocumentByIdResponse, GetRequestsResponse } from '@/types/response';
 import { REFETCH_CONFIG } from '@/constants/config';
@@ -12,17 +10,12 @@ import Status from '@/components/Status/Status.component';
 import { dateFormatter } from '@/utils/formatter';
 
 const EmpDashboardPage = () => {
-	const { user } = useContext(AuthContext);
-
-	const roomId = user?.department.roomId;
-
 	const { data: requests, isLoading: isRequestsLoading } = useQuery(
 		['requests', 'recent'],
 		async () =>
 			(
-				await axiosClient.get<GetRequestsResponse>('/borrows/employees', {
+				await axiosClient.get<GetRequestsResponse>('/documents/borrows', {
 					params: {
-						roomId,
 						sortOrder: 'desc',
 						size: 4,
 						page: 1,

@@ -4,7 +4,12 @@ import { SkeletonCard } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
 import { REFETCH_CONFIG } from '@/constants/config';
 import { AUTH_ROUTES } from '@/constants/routes';
-import { GetDocumentsResponse, GetFoldersResponse, GetLockersResponse } from '@/types/response';
+import {
+	GetDocumentsResponse,
+	GetFoldersResponse,
+	GetLockersResponse,
+	GetRoomsResponse,
+} from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import clsx from 'clsx';
 import { useQuery } from 'react-query';
@@ -65,15 +70,60 @@ const AdminDashboardPage = () => {
 		}
 	);
 
+	const { data: rooms, isLoading: isRoomLoading } = useQuery(
+		['rooms', 'recent'],
+		async () =>
+			(
+				await axiosClient.get<GetRoomsResponse>('/rooms', {
+					params: {
+						sortBy: '',
+						sortOrder: 'desc',
+						size: 3,
+						page: 1,
+					},
+				})
+			).data
+	);
+
 	return (
 		<div className='flex flex-col gap-5'>
-			<Link to={AUTH_ROUTES.REQUESTS} className='header link-underlined'>
+			{/* <Link to={AUTH_ROUTES.REQUESTS} className='header link-underlined'>
 				Pending request &gt;
 			</Link>
 			<div className='flex gap-5'>
 				<div className='card flex-1 h-40'></div>
 				<div className='card flex-1 h-40'></div>
 				<div className='card flex-1 h-40'></div>
+			</div> */}
+			<Link to={AUTH_ROUTES.ROOMS} className='header link-underlined'>
+				Rooms &gt;
+			</Link>
+			<div className='flex gap-5'>
+				{isRoomLoading ? (
+					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
+				) : rooms ? (
+					rooms.data.items.map((room) => (
+						<InfoCard key={room.id} header={room.name} url={`${AUTH_ROUTES.ROOMS}/${room.id}`}>
+							<p className='mt-2 text-lg'>
+								Status:{' '}
+								<span
+									className={clsx(!room.isAvailable && 'text-red-500', 'text-green-500 font-bold')}
+								>
+									{room.isAvailable ? 'Available' : 'Not available'}
+								</span>
+							</p>
+							<p className='mt-2 text-lg'>Locker count:</p>
+							<Progress
+								className='mt-2'
+								current={room.numberOfLockers}
+								max={room.capacity}
+								showPercentage
+							/>
+						</InfoCard>
+					))
+				) : (
+					<div>No rooms</div>
+				)}
 			</div>
 			<Link to={AUTH_ROUTES.LOCKERS} className='header link-underlined'>
 				Lockers &gt;
@@ -164,7 +214,7 @@ const AdminDashboardPage = () => {
 								</h4>
 								<Status className='block w-max' type='document' item={document} />
 							</div>
-							<p className='mt-2 text-lg'>{document.folder.name}</p>
+							<p className='mt-2 text-lg'>{document.folder?.name}</p>
 							<p className='mt-2 text-lg'>
 								Type: <span className='font-bold'>{document.documentType}</span>
 							</p>

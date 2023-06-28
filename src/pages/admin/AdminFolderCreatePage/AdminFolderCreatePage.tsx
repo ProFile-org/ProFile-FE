@@ -26,7 +26,7 @@ type FormValues = typeof initialValues;
 
 const AdminFolderCreatePage = () => {
 	const navigate = useNavigate();
-	const { lockers, lockersRefetch } = useLockers();
+	const { lockers, lockersRefetch } = useLockers(true);
 
 	const onSubmit = async (values: FormValues, { setFieldError }: FormikHelpers<FormValues>) => {
 		try {
@@ -123,6 +123,13 @@ const AdminFolderCreatePage = () => {
 							error={touched.locker && !!errors.locker}
 							small={touched.locker ? errors.locker : undefined}
 							disabled={isSubmitting}
+							optionGroupLabel='room'
+							optionGroupChildren='lockers'
+							optionGroupTemplate={(option) => (
+								<div className='font-bold text-primary flex flex-col border-b-primary border-b-2'>
+									{option.room}
+								</div>
+							)}
 						/>
 						<TextareaWithLabel
 							label='Description'

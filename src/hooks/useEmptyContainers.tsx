@@ -16,7 +16,7 @@ const useEmptyContainers = ({ roomId, page = 1, size = 20 }: IUserEmptyContainer
 		async () =>
 			(
 				await axiosClient.post<GetEmptyContainersResponse>(
-					`/rooms/empty-containers/${roomId}?page=${page}&size=${size}`
+					`/rooms/${roomId}/empty-containers?page=${page}&size=${size}`
 				)
 			).data,
 		{

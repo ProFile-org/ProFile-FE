@@ -14,7 +14,8 @@
 	.title {
 		@apply text-2xl font-bold;
 	}
-	.input, .p-inputnumber-input {
+	.input,
+	.p-inputnumber-input {
 		@apply bg-transparent !border-2 transition-shadow text-white disabled:bg-neutral-800 border-primary hover:!border-primary hover:!border-opacity-80 rounded-lg;
 	}
 	.error-input {
@@ -60,6 +61,10 @@ body {
 	box-shadow: none !important;
 }
 
+.p-dropdown-filter-container > .p-inputtext {
+	color: initial;
+}
+
 .p-invalid {
 	border-color: var(--action) !important;
 }
@@ -70,21 +75,27 @@ body {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 0.5rem;
+	width: 0.5rem;
 	height: 0.5rem;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+	background: #f1f1f1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+	background: var(--primary);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary);
+	background: var(--secondary);
+}
+
+.p-dialog .p-dialog-footer,
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content {
+	background: var(--layer-700);
 }

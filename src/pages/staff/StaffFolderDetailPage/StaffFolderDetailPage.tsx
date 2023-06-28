@@ -31,7 +31,7 @@ const StaffFolderDetailPage = () => {
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DOCUMENTS' });
 
-	const roomId = user?.department.roomId;
+	const roomId = user?.roomId;
 
 	const {
 		data: folder,
@@ -138,7 +138,7 @@ const StaffFolderDetailPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
 						{lockerName}

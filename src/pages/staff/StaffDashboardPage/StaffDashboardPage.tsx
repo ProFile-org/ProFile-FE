@@ -15,7 +15,7 @@ import Status from '@/components/Status/Status.component';
 const StaffDashboardPage = () => {
 	const { user } = useContext(AuthContext);
 
-	const roomId = user?.department.roomId;
+	const roomId = user?.roomId || '';
 
 	const { data: lockers, isLoading: isLockerLoading } = useQuery(
 		['lockers', 'recent'],
@@ -90,7 +90,7 @@ const StaffDashboardPage = () => {
 			<div className='flex gap-5'>
 				{isLockerLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : lockers ? (
+				) : lockers && lockers.data.items.length !== 0 ? (
 					lockers.data.items.map((locker) => (
 						<InfoCard
 							key={locker.id}
@@ -118,7 +118,7 @@ const StaffDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No lockers</div>
+					<InfoCard>No lockers</InfoCard>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.FOLDERS} className='header link-underlined'>
@@ -127,7 +127,7 @@ const StaffDashboardPage = () => {
 			<div className='flex gap-5'>
 				{isFolderLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : folders ? (
+				) : folders && folders.data.items.length !== 0 ? (
 					folders.data.items.map((folder) => (
 						<InfoCard
 							key={folder.id}
@@ -155,7 +155,7 @@ const StaffDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No folders</div>
+					<InfoCard>No folders</InfoCard>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.DOCUMENTS} className='header link-underlined'>
@@ -164,23 +164,23 @@ const StaffDashboardPage = () => {
 			<div className='flex gap-5 overflow-x-auto max-w-full'>
 				{isDocumentLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : documents ? (
+				) : documents && documents.data.items.length !== 0 ? (
 					documents.data.items.map((document) => (
-						<InfoCard key={document.id} url={`${AUTH_ROUTES.DOCUMENTS}/${document.id}`} >
+						<InfoCard key={document.id} url={`${AUTH_ROUTES.DOCUMENTS}/${document.id}`}>
 							<div className='flex items-center gap-3'>
 								<h4 className='font-bold text-xl group-hover:text-primary transition-colors'>
 									{document.title}
 								</h4>
 								<Status className='block w-max' type='document' item={document} />
 							</div>
-							<p className='mt-2 text-lg'>{document.folder.name}</p>
+							<p className='mt-2 text-lg'>{document.folder?.name}</p>
 							<p className='mt-2 text-lg'>
 								Type: <span className='font-bold'>{document.documentType}</span>
 							</p>
 						</InfoCard>
 					))
 				) : (
-					<div>No documents</div>
+					<InfoCard>No documents</InfoCard>
 				)}
 			</div>
 		</div>
