@@ -49,7 +49,7 @@ const usePagination = <K,>({
 				await axiosClient.get<BaseResponse<{ items: K[] } & PaginationResponse>>(url, {
 					params: {
 						searchTerm: query,
-						roomId: user?.role === 'admin' ? undefined : user?.department.roomId,
+						roomId: user?.role === 'staff' ? user?.roomId : undefined,
 						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
 						size: paginate.rows,
 						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),

@@ -30,7 +30,7 @@ const StaffLockerDetailPage = () => {
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
 
-	const roomId = user?.department.roomId || '';
+	const roomId = user?.roomId || '';
 
 	const {
 		data: locker,
@@ -136,7 +136,7 @@ const StaffLockerDetailPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<span>{lockerName}</span>
 				</h2>

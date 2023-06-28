@@ -16,7 +16,7 @@ import { OnResultFunction } from 'react-qr-reader';
 import { useNavigate } from 'react-router';
 
 const initialValues = {
-	id: 'N/A',
+	documentId: 'N/A',
 	types: 'N/A',
 	title: 'N/A',
 	locker: 'N/A',
@@ -32,28 +32,34 @@ const StaffReturnsPage = () => {
 	const [values, setValues] = useState(initialValues);
 	const [error, setError] = useState('');
 
-	const { borrowerDepartment, borrowerId, borrowerName, folder, id, locker, title, types } = values;
+	const { borrowerDepartment, borrowerId, borrowerName, folder, documentId, locker, title, types } =
+		values;
 
-	const getDocumentsById = async (id: string) => {
-		if (!id) return;
+	const getDocumentsById = async (documentId: string) => {
+		if (!documentId) return;
 		try {
-			const { data } = await axiosClient.get<GetRequestsResponse>(`/borrows/documents/${id}`, {
-				params: {
-					status: 'checkedout,overdue',
-					page: 1,
-					size: 1,
-					sortBy: 'BorrowTime',
-					sortDirection: 'desc',
-				},
-			});
+			const { data } = await axiosClient.get<GetRequestsResponse>(
+				`/documents/borrows/${documentId}`,
+				{
+					params: {
+						status: 'checkedout,overdue',
+						page: 1,
+						size: 1,
+						sortBy: 'BorrowTime',
+						sortDirection: 'desc',
+					},
+				}
+			);
 			const request = data.data.items[0];
-			const { data: document } = await axiosClient.get<GetDocumentByIdResponse>(`/documents/${id}`);
+			const { data: document } = await axiosClient.get<GetDocumentByIdResponse>(
+				`/documents/${documentId}`
+			);
 			const { data: employee } = await axiosClient.get<GetUserByIdResponse>(
 				`/users/${request.borrowerId}`
 			);
 			setValues((prev) => ({
 				...prev,
-				id: document.data.id,
+				documentId: document.data.id,
 				types: document.data.documentType,
 				title: document.data.title,
 				locker: document.data.folder.locker.name,
@@ -72,7 +78,7 @@ const StaffReturnsPage = () => {
 
 	const onScan: OnResultFunction = async (e) => {
 		const id = e?.getText();
-		if (!id || id === values.id) return;
+		if (!id || id === values.documentId) return;
 		try {
 			await getDocumentsById(id);
 			setOpenScan(false);
@@ -83,7 +89,7 @@ const StaffReturnsPage = () => {
 
 	const onApprove = async () => {
 		try {
-			await axiosClient.post(`/borrows/return/${id}`);
+			await axiosClient.post(`/documents/borrows/return/${documentId}`);
 			navigate(AUTH_ROUTES.REQUESTS);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -105,7 +111,7 @@ const StaffReturnsPage = () => {
 		<div className='flex gap-5 flex-col md:flex-row'>
 			<div className='flex flex-col gap-5 flex-1'>
 				<InformationPanel header='Document information'>
-					<InputWithLabel label='ID' readOnly value={id} />
+					<InputWithLabel label='ID' readOnly value={documentId} />
 					<InputWithLabel label='Types' readOnly value={types} />
 					<InputWithLabel label='Title' readOnly value={title} />
 					<div className='flex gap-5'>
@@ -133,19 +139,19 @@ const StaffReturnsPage = () => {
 					className='h-11 rounded-lg'
 					onClick={() => setOpenScan((prev) => !prev)}
 				/>
-				{id !== 'N/A' && (
+				{documentId !== 'N/A' && (
 					<div className='flex gap-5'>
 						<Button
 							label='Approve'
 							className='h-11 rounded-lg flex-1'
-							disabled={!id}
+							disabled={!documentId}
 							onClick={onApprove}
 						/>
 						<Button
 							label='Deny'
 							severity='danger'
 							className='h-11 rounded-lg flex-1'
-							disabled={!id}
+							disabled={!documentId}
 							onClick={onDeny}
 						/>
 					</div>

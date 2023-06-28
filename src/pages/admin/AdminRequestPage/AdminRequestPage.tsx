@@ -9,7 +9,7 @@ import { Column } from 'primereact/column';
 const AdminRequestPage = () => {
 	const { getPaginatedTableProps } = usePagination<IBorrowRequest>({
 		key: 'requests',
-		url: '/borrows',
+		url: '/documents/borrows',
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });
@@ -18,7 +18,11 @@ const AdminRequestPage = () => {
 		<div className='flex flex-col gap-5'>
 			<h2 className='header'>Pending requests</h2>
 			<div className='card'>
-				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
+				<Table
+					sortMode='single'
+					// {...getNavigateOnSelectProps()}
+					{...getPaginatedTableProps()}
+				>
 					<Column field='count' header='No.' />
 					<Column
 						field='id'

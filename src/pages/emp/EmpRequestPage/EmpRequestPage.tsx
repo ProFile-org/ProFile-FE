@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 const EmpRequestPage = () => {
 	const { getPaginatedTableProps } = usePagination<GetRequestsResponse>({
 		key: 'requests',
-		url: '/borrows/employees',
+		url: '/documents/borrows',
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });

@@ -8,8 +8,13 @@ interface IAuthGuardProps {
 
 const AuthGuard: FC<IAuthGuardProps> = ({ authComponent: Auth, unAuthComponent: UnAuth }) => {
 	const { user } = useContext(AuthContext);
-	if (user) return Auth;
-	return UnAuth;
+	if (!user) return UnAuth;
+	if (user.role === 'staff' && !user.roomId) {
+		return (
+			<div>You have not yet been assigned a room, please contact admin for more information</div>
+		);
+	}
+	return Auth;
 };
 
 export default AuthGuard;

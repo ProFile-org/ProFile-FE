@@ -15,7 +15,7 @@ const EmpDocumentPage = () => {
 
 	const { getPaginatedTableProps, refetch } = usePagination<IDocument>({
 		key: ['documents', query.current],
-		url: '/documents',
+		url: '/documents/employees',
 		query: query.current,
 	});
 
@@ -38,7 +38,7 @@ const EmpDocumentPage = () => {
 					/>
 					<Button label='Search' name='search' id='search' className='px-3 rounded-lg' />
 				</form>
-				<Link to={AUTH_ROUTES.IMPORT}>
+				<Link to={AUTH_ROUTES.NEW_IMPORT}>
 					<Button className='h-11 rounded-lg'>Import +</Button>
 				</Link>
 			</div>

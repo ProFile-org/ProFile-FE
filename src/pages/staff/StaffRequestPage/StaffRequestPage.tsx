@@ -1,15 +1,19 @@
 import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
+import { AuthContext } from '@/context/authContext';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import usePagination from '@/hooks/usePagination';
 import { IBorrowRequest } from '@/types/item';
 import { dateFormatter } from '@/utils/formatter';
 import { Column } from 'primereact/column';
+import { useContext } from 'react';
 
 const StaffRequestPage = () => {
+	const { user } = useContext(AuthContext);
+
 	const { getPaginatedTableProps } = usePagination<IBorrowRequest>({
 		key: 'requests',
-		url: '/borrows/staffs',
+		url: `/documents/borrows?roomId=${user?.roomId}`,
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });

@@ -15,3 +15,8 @@ export { default as AdminLockerCreatePage } from './AdminLockerCreatePage/AdminL
 export { default as AdminRoomCreatePage } from './AdminRoomCreatePage/AdminRoomCreatePage';
 export { default as AdminFolderCreatePage } from './AdminFolderCreatePage/AdminFolderCreatePage';
 export { default as AdminRoomPage } from './AdminRoomPage/AdminRoomPage';
+export { default as AdminRoomDetailPage } from './AdminRoomDetailPage/AdminRoomDetailPage';
+export { default as AdminStaffCreatePage } from './AdminStaffCreatePage/AdminStaffCreatePage';
+export { default as AdminDepartmentPage } from './AdminDepartmentPage/AdminDepartmentPage';
+export { default as AdminDepartmentCreatePage } from './AdminDepartmentCreatePage/AdminDepartmentCreatePage';
+export { default as AdminDepartmentDetailPage } from './AdminDepartmentDetailPage/AdminDepartmentDetailPage';

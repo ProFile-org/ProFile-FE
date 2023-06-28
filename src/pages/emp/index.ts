@@ -4,3 +4,6 @@ export { default as EmpDocumentDetailPage } from './EmpDocumentDetailPage/EmpDoc
 export { default as EmpRequestPage } from './EmpRequestPage/EmpRequestPage';
 export { default as EmpRequestDetailPage } from './EmpRequestDetailPage/EmpRequestDetailPage';
 export { default as EmpRequestCreatePage } from './EmpRequestCreatePage/EmpRequestCreatePage';
+export { default as EmpImportCreatePage } from './EmpImportCreatePage/EmpImportCreatePage';
+export { default as EmpImportDetailPage } from './EmpImportDetailPage/EmpImportDetailPage';
+export { default as EmpImportPage } from './EmpImportPage/EmpImportPage';

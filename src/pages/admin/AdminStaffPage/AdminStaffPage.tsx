@@ -1,26 +1,22 @@
 import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
 import { AUTH_ROUTES } from '@/constants/routes';
-import useNavigateSelect from '@/hooks/useNavigateSelect';
 import usePagination from '@/hooks/usePagination';
-import { IUser } from '@/types/item';
+import { IStaff } from '@/types/item';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const AdminEmployeePage = () => {
+const AdminStaffPage = () => {
+	const navigate = useNavigate();
 	const query = useRef('');
-	const { getPaginatedTableProps, refetch } = usePagination<IUser>({
+	const { getPaginatedTableProps, refetch } = usePagination<IStaff>({
 		key: 'staffs',
 		url: '/staffs',
 		query: query.current,
 	});
-
-	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'STAFFS_MANAGE' });
-
-	console.log(getPaginatedTableProps());
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -40,11 +36,18 @@ const AdminEmployeePage = () => {
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>
 				<Link to={AUTH_ROUTES.NEW_STAFF}>
-					<Button className='h-11 rounded-lg'>Create +</Button>
+					<Button className='h-11 rounded-lg'>Assign +</Button>
 				</Link>
 			</div>
 			<div className='card w-full overflow-hidden'>
-				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
+				<Table
+					sortMode='single'
+					selectionMode='single'
+					onSelectionChange={(e) =>
+						navigate(`${AUTH_ROUTES.NEW_STAFF}?staffId=${(e.value as { id: string }).id}`)
+					}
+					{...getPaginatedTableProps()}
+				>
 					{/* <Column
 						field='id'
 						header='ID'
@@ -52,8 +55,18 @@ const AdminEmployeePage = () => {
 					/> */}
 					<Column field='count' header='No.' />
 					<Column field='user.username' header='Username' sortable />
-					<Column field='room.department.name' header='Department' sortable />
-					<Column field='room.name' header='Room' sortable />
+					<Column
+						field='room.department.name'
+						header='Department'
+						sortable
+						body={(staff) => <>{staff.room?.department?.name || 'N/A'}</>}
+					/>
+					<Column
+						field='room.name'
+						header='Room'
+						sortable
+						body={(staff) => <>{staff.room?.name || 'N/A'}</>}
+					/>
 					<Column
 						field='user.isActive'
 						header='Is active'
@@ -72,4 +85,4 @@ const AdminEmployeePage = () => {
 	);
 };
 
-export default AdminEmployeePage;
+export default AdminStaffPage;

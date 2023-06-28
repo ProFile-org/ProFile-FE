@@ -62,7 +62,7 @@ const ImportDocumentContainer = () => {
 	});
 
 	const { availableFolders, availableLockers, containerRefetch } = useEmptyContainers({
-		roomId: user?.department.roomId || '',
+		roomId: user?.roomId || '',
 	});
 
 	const { documentTypes, typesRefetch } = useDocumentTypes();
@@ -127,7 +127,7 @@ const ImportDocumentContainer = () => {
 		if (!user) {
 			setFieldError('id', 'User not found');
 			setFieldValue('name', '', false);
-		} else setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, false);
+		} else setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, true);
 	};
 
 	useEffect(() => {
@@ -294,7 +294,7 @@ const ImportDocumentContainer = () => {
 										label='Submit'
 										type='submit'
 										className='bg-primary mt-5 rounded-lg'
-										disabled={isSubmitting || isValid}
+										disabled={isSubmitting || !isValid}
 									/>
 								</InformationPanel>
 							</div>

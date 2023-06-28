@@ -38,7 +38,7 @@ const StaffFolderPage = () => {
 					/>
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>
-				<Link to={AUTH_ROUTES.IMPORT}>
+				<Link to={AUTH_ROUTES.NEW_IMPORT}>
 					<Button className='h-11 rounded-lg'>Import +</Button>
 				</Link>
 			</div>

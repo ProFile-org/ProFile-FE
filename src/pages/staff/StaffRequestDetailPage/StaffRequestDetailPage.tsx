@@ -1,6 +1,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
+import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
+import Overlay from '@/components/Overlay/Overlay.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import { AUTH_ROUTES } from '@/constants/routes';
 import { REQUEST_STATUS } from '@/constants/status';
@@ -12,6 +14,8 @@ import {
 } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { AxiosError } from 'axios';
+import clsx from 'clsx';
+import { PrimeIcons } from 'primereact/api';
 import { Button } from 'primereact/button';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
@@ -29,9 +33,12 @@ const NO_ACTIONS = [
 const StaffRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
 	const [error, setError] = useState('');
+	const [showModal, setShowModal] = useState('');
+	const [reason, setReason] = useState('');
 	const { data, refetch } = useQuery(
 		['requests', requestId],
-		async () => (await axiosClient.get<GetRequestByIdResponse>(`/borrows/${requestId}`)).data,
+		async () =>
+			(await axiosClient.get<GetRequestByIdResponse>(`/documents/borrows/${requestId}`)).data,
 		{
 			enabled: !!requestId,
 		}
@@ -62,19 +69,25 @@ const StaffRequestDetailPage = () => {
 	const {
 		title,
 		documentType,
-		folder: {
-			name: folder,
-			locker: { name: locker },
-		},
+		// folder: {
+		// 	name: folder,
+		// 	locker: { name: locker },
+		// },
 	} = document.data;
+
+	const folder = '',
+		locker = '';
 
 	const { id: employeeId, lastName, firstName } = employee.data;
 
-	const { borrowTime, dueTime, reason, status } = data.data;
+	const { borrowTime, dueTime, borrowReason, status } = data.data;
 
 	const onApprove = async () => {
 		try {
-			await axiosClient.post(`/borrows/approve/${requestId}`);
+			await axiosClient.put(`/documents/borrows/staffs/${requestId}`, {
+				staffReason: reason,
+				decision: 'approve',
+			});
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -84,9 +97,12 @@ const StaffRequestDetailPage = () => {
 		}
 	};
 
-	const onDeny = async () => {
+	const onReject = async () => {
 		try {
-			await axiosClient.post(`/borrows/reject/${requestId}`);
+			await axiosClient.put(`/documents/borrows/staffs/${requestId}`, {
+				staffReason: reason,
+				decision: 'reject',
+			});
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -98,7 +114,7 @@ const StaffRequestDetailPage = () => {
 
 	const onCheckout = async () => {
 		try {
-			await axiosClient.post(`/borrows/checkout/${requestId}`);
+			await axiosClient.post(`/documents/borrows/checkout/${requestId}`);
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -131,7 +147,7 @@ const StaffRequestDetailPage = () => {
 					<InputWithLabel label='Status' value={status} readOnly />
 					<InputWithLabel label='Borrow date' value={borrowTime} readOnly />
 					<InputWithLabel label='Return date' value={dueTime} readOnly />
-					<InputWithLabel label='Reasons' value={reason} readOnly />
+					<InputWithLabel label='Reasons' value={borrowReason} readOnly />
 				</InformationPanel>
 				<InformationPanel>
 					<div className='flex flex-row gap-4'>
@@ -140,13 +156,21 @@ const StaffRequestDetailPage = () => {
 							<Button label='Checkout' className='h-11 rounded-l flex-1' onClick={onCheckout} />
 						) : (
 							<>
-								<Button label='Approve' className='h-11 rounded-lg flex-1' onClick={onApprove} />
+								<Button
+									label='Approve'
+									className='h-11 rounded-lg flex-1'
+									onClick={() => {
+										setShowModal('approve');
+									}}
+								/>
 								{status === REQUEST_STATUS.Rejected.status ? null : (
 									<Button
 										label='Deny'
 										severity='danger'
 										className='h-11 rounded-lg flex-1'
-										onClick={onDeny}
+										onClick={() => {
+											setShowModal('reject');
+										}}
 									/>
 								)}
 							</>
@@ -159,6 +183,52 @@ const StaffRequestDetailPage = () => {
 					{error && <div className='text-red-500'>{error}</div>}
 				</InformationPanel>
 			</div>
+			{showModal && (
+				<Overlay onExit={() => setShowModal('')} className='flex items-center justify-center'>
+					<div className='bg-neutral-800 p-5 rounded-lg' onClick={(e) => e.stopPropagation()}>
+						<div className='flex justify-between items-center'>
+							<div className='title'>Confirmation</div>
+							<i
+								className={clsx(PrimeIcons.TIMES, 'hover:text-red-500 cursor-pointer text-lg')}
+								onClick={() => setShowModal('')}
+							/>
+						</div>
+						<div className='text-lg mt-5 title'>
+							{showModal === 'approve'
+								? 'Are you sure you want to approve this request?'
+								: showModal === 'reject'
+								? 'Are you sure you want to reject this request?'
+								: 'Choose the folder to assign this document to'}
+						</div>
+						<InputWithLabel
+							// label={`Reason for ${showModal === 'approve' ? 'approve' : 'reject'}`}
+							label=''
+							wrapperClassName='mt-1'
+							value={reason}
+							onChange={(e) => setReason(e.target.value)}
+							placeholder='Enter your reason here'
+						/>
+						<div className='flex items-center gap-5 mt-5 justify-end'>
+							<Button
+								label='Cancel'
+								outlined
+								severity='danger'
+								className='!text-white !border-red-500'
+								onClick={() => setShowModal('')}
+							/>
+							<Button
+								label={
+									showModal === 'approve' ? 'Approve' : showModal === 'reject' ? 'Reject' : 'Assign'
+								}
+								onClick={() => {
+									if (showModal === 'approve') onApprove();
+									else if (showModal === 'reject') onReject();
+								}}
+							/>
+						</div>
+					</div>
+				</Overlay>
+			)}
 		</div>
 	);
 };

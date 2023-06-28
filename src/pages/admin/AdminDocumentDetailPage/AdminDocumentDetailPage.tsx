@@ -4,7 +4,7 @@ import { AUTH_ROUTES } from '@/constants/routes';
 import { BaseResponse, GetDocumentByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -25,16 +25,18 @@ const AdminDocumentDetailPage = () => {
 
 	const { data, isLoading, error } = useQuery(
 		['documents', documentId],
-		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
-		{
-			onSuccess: async (data) => {
-				const { id } = data?.data || { id: '' };
-				if (!id) return;
-				const qrCode = await QRCode.toDataURL(id);
-				setQr(qrCode);
-			},
-		}
+		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data
 	);
+
+	useEffect(() => {
+		const renderQr = async () => {
+			const { id } = data?.data || { id: '' };
+			if (!id) return;
+			const qrCode = await QRCode.toDataURL(id);
+			setQr(qrCode);
+		};
+		renderQr();
+	}, [data]);
 
 	if (isLoading) return <SkeletonPage />;
 
@@ -43,18 +45,33 @@ const AdminDocumentDetailPage = () => {
 
 	const {
 		title,
-		folder: {
-			id: folderId,
-			name: folderName,
-			locker: {
-				id: lockerId,
-				name: lockerName,
-				room: { id: roomId, name: roomName },
-			},
-		},
+		// folder: {
+		// 	id: folderId,
+		// 	name: folderName,
+		// 	locker: { id: lockerId, name: lockerName },
+		// },
 	} = data.data;
 
-	const initialValues = data.data;
+	const folder = data.data.folder || {
+		id: '',
+		name: '',
+		locker: {
+			id: '',
+			name: '',
+			room: {
+				id: '',
+				name: '',
+			},
+		},
+	};
+
+	const {
+		id: folderId,
+		name: folderName,
+		locker: { id: lockerId, name: lockerName, room: { id: roomId, name: roomName } } = { room: {} },
+	} = folder;
+
+	const initialValues = { ...data.data, folder };
 
 	type FormValues = typeof initialValues;
 
@@ -85,7 +102,7 @@ const AdminDocumentDetailPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card py-3'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
 						{roomName}

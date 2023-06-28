@@ -25,7 +25,7 @@ const NOT_REQUIRED = ['description'];
 type FormValues = typeof initialValues;
 
 const AdminLockerCreatePage = () => {
-	const { rooms, roomsRefetch } = useRooms();
+	const { rooms, roomsRefetch } = useRooms(true);
 	const navigate = useNavigate();
 
 	const onSubmit = async (values: FormValues, { setFieldError }: FormikHelpers<FormValues>) => {
@@ -123,6 +123,13 @@ const AdminLockerCreatePage = () => {
 							error={touched.room && !!errors.room}
 							small={touched.room ? errors.room : undefined}
 							disabled={isSubmitting}
+							optionGroupLabel='department'
+							optionGroupChildren='rooms'
+							optionGroupTemplate={(option) => (
+								<div className='font-bold text-primary flex flex-col border-b-primary border-b-2'>
+									{option.department}
+								</div>
+							)}
 						/>
 						<TextareaWithLabel
 							label='Description'
