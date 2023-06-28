@@ -4,14 +4,13 @@ import Progress from '@/components/Progress/Progress.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import Table from '@/components/Table/Table.component';
 import { AUTH_ROUTES } from '@/constants/routes';
-import { BaseResponse, GetFoldersResponse, GetLockerByIdResponse } from '@/types/response';
+import { BaseResponse, GetLockersResponse, GetRoomByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { useQuery, useQueryClient } from 'react-query';
 import { Link, useParams } from 'react-router-dom';
-import { useContext, useState } from 'react';
-import { AuthContext } from '@/context/authContext';
+import { useState } from 'react';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import { IFolder } from '@/types/item';
 import Status from '@/components/Status/Status.component';
@@ -22,38 +21,33 @@ import InputNumberWithLabel from '@/components/InputWithLabel/InputNumberWithLab
 
 const NOT_REQUIRED = ['description'];
 
-const StaffLockerDetailPage = () => {
-	const { user } = useContext(AuthContext);
-	const { lockerId } = useParams<{ lockerId: string }>();
-	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'FOLDERS' });
+const AdminRoomDetailPage = () => {
+	const { roomId } = useParams<{ roomId: string }>();
+	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'LOCKERS' });
 	const queryClient = useQueryClient();
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
 
-	const roomId = user?.department.roomId || '';
-
 	const {
-		data: locker,
+		data: room,
 		isLoading,
 		error: axiosError,
 	} = useQuery(
-		['lockers', lockerId],
-		async () => (await axiosClient.get<GetLockerByIdResponse>(`/lockers/${lockerId}`)).data
+		['rooms', roomId],
+		async () => (await axiosClient.get<GetRoomByIdResponse>(`/rooms/${roomId}`)).data
 	);
 
-	const { data: folders, isLoading: isFoldersLoading } = useQuery(
+	const { data: lockers, isLoading: isLockersLoading } = useQuery(
 		[
-			'folders',
+			'lockers',
 			{
 				roomId,
-				lockerId,
 			},
 		],
 		async () =>
 			(
-				await axiosClient.get<GetFoldersResponse>(`/folders`, {
+				await axiosClient.get<GetLockersResponse>(`/lockers`, {
 					params: {
-						lockerId,
 						roomId,
 						size: 20,
 						page: 1,
@@ -61,40 +55,37 @@ const StaffLockerDetailPage = () => {
 				})
 			).data,
 		{
-			enabled: !!lockerId && !!roomId,
+			enabled: !!roomId,
 		}
 	);
 
 	if (isLoading) return <SkeletonPage />;
 
-	if ((axiosError as AxiosError)?.response?.status === 404 || !locker)
+	if ((axiosError as AxiosError)?.response?.status === 404 || !room)
 		return <ErrorTemplate code={404} message='Locker not found' url={AUTH_ROUTES.LOCKERS} />;
 
-	const { name: lockerName, capacity, numberOfFolders, description, isAvailable } = locker.data;
+	const { name: roomName, capacity, numberOfLockers, description, isAvailable } = room.data;
 
-	const foldersWithId = folders?.data.items.map((folder, index) => ({
+	const lockersWithId = lockers?.data.items.map((locker, index) => ({
 		count: index + 1,
-		...folder,
+		...locker,
 	}));
 
-	const totalDocuments = folders?.data.items.reduce(
-		(acc, folder) => acc + folder.numberOfDocuments,
-		0
-	);
+	const totalFolders = lockers?.data.items.reduce((acc, locker) => acc + locker.numberOfFolders, 0);
 
-	const totalDocumentsCapacity = folders?.data.items.reduce(
-		(acc, folder) => acc + folder.capacity,
+	const totalFoldersCapacity = lockers?.data.items.reduce(
+		(acc, locker) => acc + locker.capacity,
 		0
 	);
 
 	const onToggleAvailability = async () => {
 		try {
 			if (isAvailable) {
-				await axiosClient.put(`/lockers/disable/${lockerId}`);
+				await axiosClient.put(`/rooms/disable/${roomId}`);
 			} else {
-				await axiosClient.put(`/lockers/enable/${lockerId}`);
+				await axiosClient.put(`/rooms/enable/${roomId}`);
 			}
-			queryClient.invalidateQueries('lockers');
+			queryClient.invalidateQueries('rooms');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			setError(axiosError.response?.data.message || 'Something went wrong');
@@ -102,7 +93,7 @@ const StaffLockerDetailPage = () => {
 	};
 
 	const initialValues = {
-		name: lockerName,
+		name: roomName,
 		description,
 		capacity,
 	};
@@ -124,8 +115,8 @@ const StaffLockerDetailPage = () => {
 	const onSubmit = async (values: FormValues) => {
 		if (JSON.stringify(values) === JSON.stringify(initialValues)) return setEditMode(false);
 		try {
-			await axiosClient.put(`/lockers/${lockerId}`, values);
-			queryClient.invalidateQueries('lockers');
+			await axiosClient.put(`/rooms/${roomId}`, values);
+			queryClient.invalidateQueries('rooms');
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -138,7 +129,7 @@ const StaffLockerDetailPage = () => {
 			<div className='card'>
 				<h2 className='title flex gap-2'>
 					<span>/</span>
-					<span>{lockerName}</span>
+					<span>{roomName}</span>
 				</h2>
 			</div>
 			<Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
@@ -163,9 +154,9 @@ const StaffLockerDetailPage = () => {
 									<InputWithLabel
 										label='ID'
 										wrapperClassName='flex-1'
-										value={lockerId}
+										value={roomId}
 										readOnly
-										sideComponent={<Status type='locker' item={locker.data} />}
+										sideComponent={<Status type='room' item={room.data} />}
 									/>
 									<InputWithLabel
 										label='Locker name'
@@ -209,15 +200,15 @@ const StaffLockerDetailPage = () => {
 									) : (
 										<>
 											<Progress
-												label='Folder capacity'
-												current={numberOfFolders}
+												label='Locker capacity'
+												current={numberOfLockers}
 												max={capacity}
 												showPercentage
 											/>
 											<Progress
-												label='Document capacity'
-												current={totalDocuments}
-												max={totalDocumentsCapacity}
+												label='Folder capacity'
+												current={totalFolders}
+												max={totalFoldersCapacity}
 												showPercentage
 											/>
 										</>
@@ -282,8 +273,8 @@ const StaffLockerDetailPage = () => {
 								</InformationPanel>
 								<InformationPanel header='Folders' className='flex-1'>
 									<Table
-										value={foldersWithId}
-										loading={isFoldersLoading}
+										value={lockersWithId}
+										loading={isLockersLoading}
 										lazy
 										selectionMode='single'
 										{...getNavigateOnSelectProps()}
@@ -306,4 +297,4 @@ const StaffLockerDetailPage = () => {
 	);
 };
 
-export default StaffLockerDetailPage;
+export default AdminRoomDetailPage;

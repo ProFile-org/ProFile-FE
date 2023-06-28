@@ -1,4 +1,4 @@
-import { IBorrowRequest, IDepartment, IDocument, IFolder, ILocker, IUser } from './item';
+import { IBorrowRequest, IDepartment, IDocument, IFolder, ILocker, IRoom, IUser } from './item';
 
 export type BaseResponse<T = null> = {
 	data: T;
@@ -6,7 +6,7 @@ export type BaseResponse<T = null> = {
 	message: string | null;
 };
 
-export type GetPaginationResponse = {
+export type PaginationResponse = {
 	pageNumber: number;
 	totalPages: number;
 	totalCount: number;
@@ -35,10 +35,10 @@ export type GetEmptyContainersResponse = BaseResponse<
 				slot: number;
 			}[];
 		}[];
-	} & GetPaginationResponse
+	} & PaginationResponse
 >;
 
-export type GetDocumentsResponse = BaseResponse<{ items: IDocument[] } & GetPaginationResponse>;
+export type GetDocumentsResponse = BaseResponse<{ items: IDocument[] } & PaginationResponse>;
 
 export type GetDocumentByIdResponse = BaseResponse<IDocument>;
 
@@ -49,17 +49,21 @@ export type PostRequestResponse = BaseResponse<IBorrowRequest>;
 export type GetRequestsResponse = BaseResponse<
 	{
 		items: IBorrowRequest[];
-	} & GetPaginationResponse
+	} & PaginationResponse
 >;
 
 export type GetRequestByIdResponse = BaseResponse<IBorrowRequest>;
 
 export type GetUserByIdResponse = BaseResponse<IUser>;
 
-export type GetLockersResponse = BaseResponse<{ items: ILocker[] } & GetPaginationResponse>;
+export type GetLockersResponse = BaseResponse<{ items: ILocker[] } & PaginationResponse>;
 
 export type GetLockerByIdResponse = BaseResponse<ILocker>;
 
-export type GetFoldersResponse = BaseResponse<{ items: IFolder[] } & GetPaginationResponse>;
+export type GetFoldersResponse = BaseResponse<{ items: IFolder[] } & PaginationResponse>;
 
 export type GetFolderByIdResponse = BaseResponse<IFolder>;
+
+export type GetRoomsResponse = BaseResponse<{ items: IRoom[] } & PaginationResponse>;
+
+export type GetRoomByIdResponse = BaseResponse<IRoom>;

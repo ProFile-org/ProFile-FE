@@ -1,6 +1,6 @@
 import { REFETCH_CONFIG } from '@/constants/config';
 import { AuthContext } from '@/context/authContext';
-import { BaseResponse, GetPaginationResponse } from '@/types/response';
+import { BaseResponse, PaginationResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { DataTableProps, DataTableStateEvent, DataTableValueArray } from 'primereact/datatable';
 import { useState, useContext } from 'react';
@@ -46,10 +46,10 @@ const usePagination = <K,>({
 		[key, paginate],
 		async () =>
 			(
-				await axiosClient.get<BaseResponse<{ items: K[] } & GetPaginationResponse>>(url, {
+				await axiosClient.get<BaseResponse<{ items: K[] } & PaginationResponse>>(url, {
 					params: {
 						searchTerm: query,
-						roomId: user?.department.roomId,
+						roomId: user?.role === 'admin' ? undefined : user?.department.roomId,
 						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
 						size: paginate.rows,
 						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),

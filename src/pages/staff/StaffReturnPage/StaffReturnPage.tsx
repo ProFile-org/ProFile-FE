@@ -104,7 +104,7 @@ const StaffReturnsPage = () => {
 	return (
 		<div className='flex gap-5 flex-col md:flex-row'>
 			<div className='flex flex-col gap-5 flex-1'>
-				<InformationPanel title='Document information'>
+				<InformationPanel header='Document information'>
 					<InputWithLabel label='ID' readOnly value={id} />
 					<InputWithLabel label='Types' readOnly value={types} />
 					<InputWithLabel label='Title' readOnly value={title} />
@@ -113,7 +113,7 @@ const StaffReturnsPage = () => {
 						<InputWithLabel label='Folder' wrapperClassName='flex-1' readOnly value={folder} />
 					</div>
 				</InformationPanel>
-				<InformationPanel title='Borrower information'>
+				<InformationPanel header='Borrower information'>
 					<InputWithLabel label='ID' readOnly value={borrowerId} />
 					<InputWithLabel label='Name' readOnly value={borrowerName} />
 					<InputWithLabel label='Department' readOnly value={borrowerDepartment} />
