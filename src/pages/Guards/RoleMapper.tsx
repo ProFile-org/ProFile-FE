@@ -53,6 +53,7 @@ const EmpImportDetailPage = lazy(
 	() => import('@/pages/emp/EmpImportDetailPage/EmpImportDetailPage')
 );
 const EmpImportPage = lazy(() => import('@/pages/emp/EmpImportPage/EmpImportPage'));
+const EmpProfilePage = lazy(() => import('@/pages/emp/EmpProfilePage/EmpProfilePage'));
 
 // Admin imports
 const AdminDashboardPage = lazy(
@@ -107,6 +108,7 @@ const AdminDepartmentCreatePage = lazy(
 const AdminDepartmentDetailPage = lazy(
 	() => import('@/pages/admin/AdminDepartmentDetailPage/AdminDepartmentDetailPage')
 );
+const AdminLogPage = lazy(() => import('@/pages/admin/AdminLogPage/AdminLogPage'));
 
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
@@ -224,5 +226,11 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.IMPORT]: {
 		employee: () => <Navigate to={AUTH_ROUTES.IMPORT_MANAGE} />,
 		staff: () => <Navigate to={AUTH_ROUTES.IMPORT_MANAGE} />,
+	},
+	[AUTH_ROUTES.LOGS]: {
+		admin: () => <AdminLogPage />,
+	},
+	[AUTH_ROUTES.PROFILE]: {
+		employee: () => <EmpProfilePage />,
 	},
 };

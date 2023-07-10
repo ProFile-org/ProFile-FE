@@ -61,7 +61,7 @@ const AdminDepartmentDetailPage = () => {
 			navigate(AUTH_ROUTES.ROOMS);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 

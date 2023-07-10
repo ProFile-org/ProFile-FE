@@ -20,3 +20,4 @@ export { default as AdminStaffCreatePage } from './AdminStaffCreatePage/AdminSta
 export { default as AdminDepartmentPage } from './AdminDepartmentPage/AdminDepartmentPage';
 export { default as AdminDepartmentCreatePage } from './AdminDepartmentCreatePage/AdminDepartmentCreatePage';
 export { default as AdminDepartmentDetailPage } from './AdminDepartmentDetailPage/AdminDepartmentDetailPage';
+export { default as AdminLogPage } from './AdminLogPage/AdminLogPage';

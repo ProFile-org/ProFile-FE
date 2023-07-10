@@ -97,6 +97,25 @@ export interface IImportRequest {
 	document: IDocument;
 	importReason: string;
 	staffReason: string;
-	status: string;
+	status: DOCUMENT_STATUS_KEY;
 	id: string;
+}
+
+export interface Ilog {
+	id: number;
+	template: string;
+	message: string;
+	level: string;
+	time: string;
+	event: string;
+	user: IUser;
+	objectId: string;
+	objectType: string;
+}
+
+export interface IPermission {
+	canRead: boolean;
+	canBorrow: boolean;
+	employeeId: string;
+	documentId: string;
 }

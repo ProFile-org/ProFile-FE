@@ -5,6 +5,7 @@ import {
 	IFolder,
 	IImportRequest,
 	ILocker,
+	IPermission,
 	IRoom,
 	IUser,
 } from './item';
@@ -80,3 +81,7 @@ export type GetRoomByIdResponse = BaseResponse<IRoom>;
 export type GetDepartmentByIdResponse = BaseResponse<IDepartment>;
 
 export type GetImportByIdResponse = BaseResponse<IImportRequest>;
+
+export type GetImportsResponse = BaseResponse<{ items: IImportRequest[] } & PaginationResponse>;
+
+export type GetPermissionResponse = BaseResponse<IPermission>;

@@ -43,14 +43,7 @@ const AdminDocumentDetailPage = () => {
 	if ((error as AxiosError)?.response?.status === 404 || !data)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
-	const {
-		title,
-		// folder: {
-		// 	id: folderId,
-		// 	name: folderName,
-		// 	locker: { id: lockerId, name: lockerName },
-		// },
-	} = data.data;
+	const { title } = data.data;
 
 	const folder = data.data.folder || {
 		id: '',
@@ -86,7 +79,7 @@ const AdminDocumentDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setFieldError('title', axiosError?.response?.data?.message || 'Something went wrong');
+			setFieldError('title', axiosError?.response?.data?.message || 'Bad request');
 		}
 	};
 
@@ -103,18 +96,30 @@ const AdminDocumentDetailPage = () => {
 		<div className='flex flex-col gap-5'>
 			<div className='card py-3'>
 				<h2 className='flex gap-2'>
-					<span>/</span>
-					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
-						{roomName}
-					</Link>
-					<span>/</span>
-					<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
-						{lockerName}
-					</Link>
-					<span>/</span>
-					<Link to={`${AUTH_ROUTES.FOLDERS}/${folderId}`} className='link-underlined'>
-						{folderName}
-					</Link>
+					{roomId && (
+						<>
+							<span>/</span>
+							<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
+								{roomName}
+							</Link>
+						</>
+					)}
+					{lockerId && (
+						<>
+							<span>/</span>
+							<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
+								{lockerName}
+							</Link>
+						</>
+					)}
+					{folderId && (
+						<>
+							<span>/</span>
+							<Link to={`${AUTH_ROUTES.FOLDERS}/${folderId}`} className='link-underlined'>
+								{folderName}
+							</Link>
+						</>
+					)}
 					<span>/</span>
 					<span>{title}</span>
 				</h2>

@@ -7,6 +7,7 @@ export const REQUEST_STATUS = {
 	Returned: { status: 'Returned', color: 'bg-primary' },
 	Lost: { status: 'Lost', color: 'bg-black' },
 	NotProcessable: { status: 'NotProcessable', color: 'bg-black' },
+	Overdue: { status: 'Overdue', color: 'bg-red-500' },
 };
 
 export type REQUEST_STATUS_KEY = keyof typeof REQUEST_STATUS;
@@ -27,6 +28,30 @@ export const DOCUMENT_STATUS = {
 	Lost: {
 		status: 'Lost',
 		color: 'bg-black',
+	},
+	Pending: {
+		status: 'Pending',
+		color: 'bg-yellow-500',
+	},
+	Rejected: {
+		status: 'Rejected',
+		color: 'bg-red-500',
+	},
+	Approved: {
+		status: 'Approved',
+		color: 'bg-green-500',
+	},
+	Assigned: {
+		status: 'Assigned',
+		color: 'bg-blue-500',
+	},
+	CheckedIn: {
+		status: 'CheckedIn',
+		color: 'bg-primary',
+	},
+	Overdue: {
+		status: 'Overdue',
+		color: 'bg-red-500',
 	},
 };
 

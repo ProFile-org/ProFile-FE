@@ -1,5 +1,13 @@
 import { DOCUMENT_STATUS, REQUEST_STATUS } from '@/constants/status';
-import { IBorrowRequest, IDocument, IFolder, ILocker, IRoom, IUser } from '@/types/item';
+import {
+	IBorrowRequest,
+	IDocument,
+	IFolder,
+	IImportRequest,
+	ILocker,
+	IRoom,
+	IUser,
+} from '@/types/item';
 import clsx from 'clsx';
 import { FC, HTMLAttributes } from 'react';
 
@@ -9,7 +17,7 @@ interface IStatusBorrowProps {
 }
 
 interface IStatusDocumentProps {
-	item: IDocument;
+	item: IDocument | IImportRequest;
 	type: 'document';
 }
 

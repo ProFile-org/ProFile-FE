@@ -8,10 +8,12 @@ import clsx from 'clsx';
 import DashboardPage from '@/pages/DashboardPage/DashboardPage';
 import MobileSideBar from '../Sidebar/MobileSideBar.component';
 import axiosClient from '@/utils/axiosClient';
+import { useQueryClient } from 'react-query';
 
 const Navbar = () => {
 	const { user, dispatch } = useContext(AuthContext);
 	const [open, setOpen] = useState(false);
+	const queryClient = useQueryClient();
 
 	const signOut = async () => {
 		try {
@@ -24,6 +26,7 @@ const Navbar = () => {
 				payload: null,
 			});
 			localStorage.removeItem('user');
+			queryClient.clear();
 		}
 	};
 

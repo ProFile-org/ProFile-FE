@@ -77,7 +77,7 @@ const SignInForm = () => {
 				});
 			} else {
 				const message =
-					(axiosError.response?.data as { message?: string }).message || 'Something went wrong';
+					(axiosError.response?.data as { message?: string }).message || 'Bad request';
 				setErrors({
 					error: message,
 				});

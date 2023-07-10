@@ -89,15 +89,16 @@ const StaffLockerDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/lockers/disable/${lockerId}`);
-			} else {
-				await axiosClient.put(`/lockers/enable/${lockerId}`);
-			}
+			await axiosClient.put(`/lockers/${lockerId}`, {
+				isAvailable: !isAvailable,
+				name: lockerName,
+				description,
+				capacity,
+			});
 			queryClient.invalidateQueries('lockers');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -129,7 +130,7 @@ const StaffLockerDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 

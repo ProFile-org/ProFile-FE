@@ -104,7 +104,7 @@ const AdminLockerDetailPage = () => {
 			queryClient.invalidateQueries('lockers');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -136,7 +136,7 @@ const AdminLockerDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -147,7 +147,7 @@ const AdminLockerDetailPage = () => {
 			navigate(AUTH_ROUTES.LOCKERS);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 

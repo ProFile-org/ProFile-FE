@@ -63,7 +63,12 @@ const StaffImportPage = () => {
 						sortable
 						body={(item) => <Status type='document' item={item.document} />}
 					/>
-					<Column field='status' header='Request status' sortable />
+					<Column
+						field='status'
+						header='Request status'
+						sortable
+						body={(item) => <Status type='document' item={item} />}
+					/>
 					<Column field='room.name' header='Into room' sortable />
 				</Table>
 			</div>

@@ -72,7 +72,7 @@ const StaffReturnsPage = () => {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const status = axiosError.response?.status;
 			if (status === 404) setError('Document not found');
-			else setError(axiosError.response?.data.message || 'Something went wrong');
+			else setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -95,7 +95,7 @@ const StaffReturnsPage = () => {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const status = axiosError.response?.status;
 			if (status === 404) setError('Document not found');
-			else setError(axiosError.response?.data.message || 'Something went wrong');
+			else setError(axiosError.response?.data.message || 'Bad request');
 		} finally {
 			setOpenScan(false);
 		}

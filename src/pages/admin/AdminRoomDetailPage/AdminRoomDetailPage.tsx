@@ -90,7 +90,7 @@ const AdminRoomDetailPage = () => {
 			queryClient.invalidateQueries('rooms');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -122,7 +122,7 @@ const AdminRoomDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -133,7 +133,7 @@ const AdminRoomDetailPage = () => {
 			navigate(AUTH_ROUTES.ROOMS);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 

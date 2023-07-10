@@ -25,7 +25,7 @@ const RequiredValues = {
 	isPrivate: true,
 };
 
-const NOT_REQUIRED = ['description'];
+const NOT_REQUIRED = ['description', 'isPrivate'];
 
 type FormValues = typeof RequiredValues;
 

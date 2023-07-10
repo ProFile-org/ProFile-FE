@@ -1,92 +1,73 @@
 import ErrorTemplate from '@/components/ErrorTemplate/ErrorTemplate.component';
-import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
-import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
-import { SkeletonPage } from '@/components/Skeleton';
-import { AUTH_ROUTES } from '@/constants/routes';
+import { AuthContext } from '@/context/authContext';
 import { BaseResponse, GetUserByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
+import { useContext, useState, useEffect } from 'react';
+import { useQueryClient } from 'react-query';
+import QRCode from 'qrcode';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
+import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
+import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { Button } from 'primereact/button';
-import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
-import { useParams } from 'react-router';
-import QRCode from 'qrcode';
-import { Link } from 'react-router-dom';
 
-const AdminEmployeeDetailPage = () => {
-	const { empId } = useParams<{ empId: string }>();
-	const [qr, setQr] = useState('');
+const EmpProfilePage = () => {
+	const { user, dispatch } = useContext(AuthContext);
 	const [editMode, setEditMode] = useState(false);
-	const queryClient = useQueryClient();
 	const [error, setError] = useState('');
-
-	const {
-		data: user,
-		isLoading,
-		error: axiosError,
-	} = useQuery(
-		['users', empId],
-		async () => (await axiosClient.get<GetUserByIdResponse>(`/users/${empId}`)).data,
-		{
-			enabled: !!empId,
-		}
-	);
+	const queryClient = useQueryClient();
+	const [qr, setQr] = useState('');
 
 	useEffect(() => {
 		const renderQr = async () => {
-			if (!empId) return;
-			const qrCode = await QRCode.toDataURL(empId);
+			if (!user?.id) return;
+			const qrCode = await QRCode.toDataURL(user.id);
 			setQr(qrCode);
 		};
 		renderQr();
-	}, [empId]);
+	}, [user?.id]);
 
-	if (isLoading) return <SkeletonPage />;
-	if ((axiosError as AxiosError)?.response?.status === 404 || !user)
-		return <ErrorTemplate code={404} message='User not found' url={AUTH_ROUTES.EMPLOYEES_MANAGE} />;
+	if (!user) return <ErrorTemplate code={404} message='User not found' url='/' />;
 
 	const initialValues = {
-		firstName: user.data.firstName,
-		lastName: user.data.lastName,
-		position: user.data.position,
+		firstName: user.firstName,
+		lastName: user.lastName,
 	};
 
 	const {
 		role,
 		email,
 		username,
-		isActive,
+		position,
 		department: { name: departmentName },
-	} = user.data;
+	} = user;
 
 	type FormValues = typeof initialValues;
-
-	const onToggleAvailability = async () => {
-		try {
-			await axiosClient.put(`/users/${empId}`, {
-				...initialValues,
-				role,
-				isActive: !isActive,
-			});
-			queryClient.invalidateQueries('users');
-		} catch (error) {
-			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Bad request');
-		}
-	};
 
 	const onSubmit = async (values: FormValues) => {
 		if (JSON.stringify(values) === JSON.stringify(initialValues)) return setEditMode(false);
 		try {
-			await axiosClient.put<GetUserByIdResponse>(`/users/${empId}`, values);
+			const {
+				data: { data },
+			} = await axiosClient.put<GetUserByIdResponse>(`/users/self`, values);
 			queryClient.invalidateQueries('users');
+			const user = {
+				...data,
+				role: data.role.toLowerCase(),
+			};
+
+			dispatch({
+				type: 'LOGIN',
+				payload: user,
+			});
+			localStorage.setItem('user', JSON.stringify(user));
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			// const status = axiosError.response?.status;
-			const message = axiosError.response?.data.message;
+			const message = axiosError.response?.data.message || 'Bad request';
 			console.error(message);
+			setError(message);
 		}
 	};
 
@@ -184,25 +165,20 @@ const AdminEmployeeDetailPage = () => {
 								label='Position'
 								name='position'
 								id='position'
-								placeholder='Enter position'
-								value={values.position}
-								onChange={handleChange}
-								onBlur={handleBlur}
-								error={touched.position && !!errors.position}
-								small={touched.position ? errors.position : undefined}
-								disabled={isSubmitting}
+								value={position}
+								readOnly
 							/>
 						</InformationPanel>
 					</div>
 					<div>
-						<InformationPanel direction='row'>
+						<InformationPanel>
 							{qr ? (
 								<img src={qr} className='rounded-lg w-48 aspect-square' />
 							) : (
 								<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 							)}
 							<div className='flex flex-col justify-between flex-1 gap-4'>
-								{editMode ? (
+								{editMode && (
 									<Button
 										label='Cancelled'
 										severity='danger'
@@ -214,16 +190,6 @@ const AdminEmployeeDetailPage = () => {
 											setEditMode(false);
 										}}
 									/>
-								) : (
-									<Button
-										type='button'
-										label={isActive ? 'Disable' : 'Enable'}
-										className='h-11 rounded-lg flex-1'
-										severity={isActive ? 'danger' : 'success'}
-										onClick={onToggleAvailability}
-										disabled={editMode || isSubmitting || !isValid}
-									/>
-									// <Button label='Print QR' className='h-11 rounded-lg bg-primary' type='button' />
 								)}
 								<Button
 									label={editMode ? 'Save' : 'Edit'}
@@ -238,14 +204,6 @@ const AdminEmployeeDetailPage = () => {
 										submitForm();
 									}}
 								/>
-								<Link to={AUTH_ROUTES.EMPLOYEES_MANAGE} className='w-full'>
-									<Button
-										type='button'
-										label='Return home'
-										className='w-full h-11 rounded-lg btn-outlined'
-										outlined
-									/>
-								</Link>
 								{error && <div className='text-red-500'>{error}</div>}
 							</div>
 						</InformationPanel>
@@ -256,4 +214,4 @@ const AdminEmployeeDetailPage = () => {
 	);
 };
 
-export default AdminEmployeeDetailPage;
+export default EmpProfilePage;

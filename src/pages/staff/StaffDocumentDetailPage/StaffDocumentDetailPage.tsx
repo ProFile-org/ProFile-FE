@@ -43,14 +43,7 @@ const StaffDocumentDetailPage = () => {
 	if ((error as AxiosError)?.response?.status === 404 || !data)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
-	const {
-		title,
-		// folder: {
-		// 	id: folderId,
-		// 	name: folderName,
-		// 	locker: { id: lockerId, name: lockerName },
-		// },
-	} = data.data;
+	const { title } = data.data;
 
 	const folder = data.data.folder || {
 		id: '',
@@ -82,7 +75,7 @@ const StaffDocumentDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setFieldError('title', axiosError?.response?.data?.message || 'Something went wrong');
+			setFieldError('title', axiosError?.response?.data?.message || 'Bad request');
 		}
 	};
 
@@ -242,14 +235,13 @@ const StaffDocumentDetailPage = () => {
 												setEditMode(false);
 											}}
 										/>
-									) : (
-										<Button
-											label='Print QR'
-											className='h-11 rounded-lg'
-											severity='info'
-											type='button'
-										/>
-									)}
+									) : // <Button
+									// 	label='Print QR'
+									// 	className='h-11 rounded-lg'
+									// 	severity='info'
+									// 	type='button'
+									// />
+									null}
 									<Button
 										label={editMode ? 'Save' : 'Edit'}
 										className='h-11 rounded-lg bg-primary'

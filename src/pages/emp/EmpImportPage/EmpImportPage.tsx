@@ -2,7 +2,7 @@ import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
 import { AUTH_ROUTES } from '@/constants/routes';
 import usePagination from '@/hooks/usePagination';
-import { IDocument, IImportRequest } from '@/types/item';
+import { IImportRequest } from '@/types/item';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
@@ -59,7 +59,12 @@ const EmpImportPage = () => {
 						sortable
 						body={(item) => <Status type='document' item={item.document} />}
 					/>
-					<Column field='status' header='Request status' sortable />
+					<Column
+						field='status'
+						header='Request status'
+						sortable
+						body={(item) => <Status type='document' item={item} />}
+					/>
 					<Column field='room.name' header='Into room' sortable />
 				</Table>
 			</div>

@@ -34,6 +34,7 @@ export const AUTH_ROUTES = {
 	IMPORT_ID: '/import/manage/:importId',
 	IMPORT_MANAGE: '/import/manage',
 	IMPORT: '/import',
+	PROFILE: '/profile',
 };
 
 export const UNAUTH_ROUTES = {

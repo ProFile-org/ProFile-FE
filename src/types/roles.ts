@@ -15,6 +15,15 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 		},
 		{
 			type: 'group',
+			label: 'Audit',
+		},
+		{
+			label: 'Logs',
+			path: AUTH_ROUTES.LOGS,
+			icon: PrimeIcons.FILE,
+		},
+		{
+			type: 'group',
 			label: 'Departments',
 		},
 		{
@@ -164,7 +173,7 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			icon: PrimeIcons.UPLOAD,
 			items: [
 				{
-					label: 'Employee Requests',
+					label: 'Requests',
 					path: AUTH_ROUTES.IMPORT_MANAGE,
 					icon: PrimeIcons.USERS,
 				},
@@ -182,6 +191,11 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			label: 'Home',
 			path: AUTH_ROUTES.HOME,
 			icon: PrimeIcons.HOME,
+		},
+		{
+			path: AUTH_ROUTES.PROFILE,
+			label: 'Profile',
+			icon: PrimeIcons.USER,
 		},
 		{
 			type: 'group',

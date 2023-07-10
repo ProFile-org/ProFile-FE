@@ -13,11 +13,19 @@ import useNavigateSelect from '@/hooks/useNavigateSelect';
 const EmpDocumentPage = () => {
 	const query = useRef('');
 
-	const { getPaginatedTableProps, refetch } = usePagination<IDocument>({
-		key: ['documents', query.current],
-		url: '/documents/employees',
-		query: query.current,
-	});
+	const { getPaginatedTableProps: getPublicTableProps, refetch: publicRefetch } =
+		usePagination<IDocument>({
+			key: ['documents', query.current, 'false'],
+			url: '/documents/employees',
+			query: query.current,
+		});
+
+	const { getPaginatedTableProps: getPrivateTableProps, refetch: privateRefetch } =
+		usePagination<IDocument>({
+			key: ['documents', query.current, 'true'],
+			url: '/documents/employees?isPrivate=true',
+			query: query.current,
+		});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DOCUMENTS' });
 
@@ -28,7 +36,8 @@ const EmpDocumentPage = () => {
 					className='flex h-11 gap-3'
 					onSubmit={async (e) => {
 						e.preventDefault();
-						await refetch();
+						await publicRefetch();
+						await privateRefetch();
 					}}
 				>
 					<InputText
@@ -42,8 +51,31 @@ const EmpDocumentPage = () => {
 					<Button className='h-11 rounded-lg'>Import +</Button>
 				</Link>
 			</div>
+			<h2 className='title'>Private document</h2>
 			<div className='card w-full overflow-hidden'>
-				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
+				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPrivateTableProps()}>
+					<Column field='count' header='No.' className='w-max' />
+					<Column
+						field='id'
+						header='ID'
+						className='break-keep overflow-ellipsis max-w-[5rem]'
+						sortable
+					/>
+					<Column field='title' header='Title' sortable />
+					<Column field='documentType' header='Type' sortable />
+					<Column
+						field='status'
+						header='Status'
+						sortable
+						body={(item) => <Status type='document' item={item} />}
+					/>
+					<Column field='folder.name' header='Folder' />
+					<Column field='folder.locker.name' header='Locker' />
+				</Table>
+			</div>
+			<h2 className='title'>Public document</h2>
+			<div className='card w-full overflow-hidden'>
+				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPublicTableProps()}>
 					<Column field='count' header='No.' className='w-max' />
 					<Column
 						field='id'

@@ -56,7 +56,7 @@ const AdminStaffCreatePage = () => {
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			console.error(error);
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 

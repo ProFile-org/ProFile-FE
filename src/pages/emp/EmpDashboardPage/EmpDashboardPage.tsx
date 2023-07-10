@@ -8,14 +8,19 @@ import InfoCard from '@/components/Card/InfoCard.component';
 import { useQueries, useQuery } from 'react-query';
 import Status from '@/components/Status/Status.component';
 import { dateFormatter } from '@/utils/formatter';
+import { useContext } from 'react';
+import { AuthContext } from '@/context/authContext';
 
 const EmpDashboardPage = () => {
+	const { user } = useContext(AuthContext);
+
 	const { data: requests, isLoading: isRequestsLoading } = useQuery(
 		['requests', 'recent'],
 		async () =>
 			(
 				await axiosClient.get<GetRequestsResponse>('/documents/borrows', {
 					params: {
+						employeeId: user?.id,
 						sortOrder: 'desc',
 						size: 4,
 						page: 1,
@@ -33,7 +38,13 @@ const EmpDashboardPage = () => {
 		temp.data.items.map((request) => ({
 			queryKey: ['documents', request.id],
 			queryFn: async () =>
-				(await axiosClient.get<GetDocumentByIdResponse>(`/documents/${request.documentId}`)).data,
+				(
+					await axiosClient.get<GetDocumentByIdResponse>(`/documents/${request.documentId}`, {
+						params: {
+							employeeId: user?.id,
+						},
+					})
+				).data,
 		}))
 	);
 

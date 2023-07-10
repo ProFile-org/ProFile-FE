@@ -23,7 +23,6 @@ import { Link } from 'react-router-dom';
 
 const NO_ACTIONS = [
 	REQUEST_STATUS.Cancelled.status,
-	REQUEST_STATUS.CheckedOut.status,
 	REQUEST_STATUS.NotProcessable.status,
 	REQUEST_STATUS.Returned.status,
 	REQUEST_STATUS.Lost.status,
@@ -68,18 +67,15 @@ const StaffRequestDetailPage = () => {
 	const {
 		title,
 		documentType,
-		// folder: {
-		// 	name: folder,
-		// 	locker: { name: locker },
-		// },
+		folder: {
+			name: folder,
+			locker: { name: locker },
+		},
 	} = document.data;
-
-	const folder = '',
-		locker = '';
 
 	const { id: employeeId, lastName, firstName } = employee.data;
 
-	const { borrowTime, dueTime, borrowReason, status } = data.data;
+	const { borrowTime, dueTime, borrowReason, status, staffReason } = data.data;
 
 	const onApprove = async () => {
 		try {
@@ -90,7 +86,7 @@ const StaffRequestDetailPage = () => {
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
+			const message = axiosError.response?.data.message || 'Bad request';
 			console.log(error);
 			setError(message);
 		}
@@ -105,7 +101,7 @@ const StaffRequestDetailPage = () => {
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
+			const message = axiosError.response?.data.message || 'Bad request';
 			console.log(error);
 			setError(message);
 		}
@@ -117,7 +113,19 @@ const StaffRequestDetailPage = () => {
 			await refetch();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			const message = axiosError.response?.data.message || 'Something went wrong';
+			const message = axiosError.response?.data.message || 'Bad request';
+			console.log(error);
+			setError(message);
+		}
+	};
+
+	const onLost = async () => {
+		try {
+			await axiosClient.post(`/documents/borrows/lost/${requestId}`);
+			await refetch();
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			const message = axiosError.response?.data.message || 'Bad request';
 			console.log(error);
 			setError(message);
 		}
@@ -131,8 +139,8 @@ const StaffRequestDetailPage = () => {
 					<InputWithLabel label='Types' value={documentType} readOnly />
 					<InputWithLabel label='Title' value={title} readOnly />
 					<div className='flex gap-5'>
-						<InputWithLabel label='Locker' value={locker} readOnly />
-						<InputWithLabel label='Folder' value={folder} readOnly />
+						<InputWithLabel wrapperClassName='flex-1' label='Locker' value={locker} readOnly />
+						<InputWithLabel wrapperClassName='flex-1' label='Folder' value={folder} readOnly />
 					</div>
 				</InformationPanel>
 				<InformationPanel header='Borrower information'>
@@ -146,13 +154,21 @@ const StaffRequestDetailPage = () => {
 					<InputWithLabel label='Status' value={status} readOnly />
 					<InputWithLabel label='Borrow date' value={borrowTime} readOnly />
 					<InputWithLabel label='Return date' value={dueTime} readOnly />
-					<InputWithLabel label='Reasons' value={borrowReason} readOnly />
+					<InputWithLabel label='Borrow reasons' value={borrowReason} readOnly />
+					{staffReason && <InputWithLabel label='Staff reasons' value={staffReason} readOnly />}
 				</InformationPanel>
 				<InformationPanel>
 					<div className='flex flex-row gap-4'>
 						{NO_ACTIONS.indexOf(status) !== -1 ? null : status ===
-						  REQUEST_STATUS.Approved.status ? (
-							<Button label='Checkout' className='h-11 rounded-l flex-1' onClick={onCheckout} />
+								REQUEST_STATUS.CheckedOut.status || status === REQUEST_STATUS.Overdue.status ? (
+							<Button
+								label='Marked as lost'
+								className='h-11 rounded-lg flex-1'
+								severity='danger'
+								onClick={onLost}
+							/>
+						) : status === REQUEST_STATUS.Approved.status ? (
+							<Button label='Checkout' className='h-11 rounded-lg flex-1' onClick={onCheckout} />
 						) : (
 							<>
 								<Button

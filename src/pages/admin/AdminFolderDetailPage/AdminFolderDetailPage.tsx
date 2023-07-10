@@ -90,15 +90,16 @@ const AdminFolderDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/folders/disable/${folderId}`);
-			} else {
-				await axiosClient.put(`/folders/enable/${folderId}`);
-			}
+			await axiosClient.put(`/folders/${folderId}`, {
+				name: folderName,
+				description,
+				capacity,
+				isAvailable: !isAvailable,
+			});
 			queryClient.invalidateQueries('folders');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -130,7 +131,7 @@ const AdminFolderDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -141,7 +142,7 @@ const AdminFolderDetailPage = () => {
 			navigate(AUTH_ROUTES.FOLDERS);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
