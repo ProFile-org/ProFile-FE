@@ -106,11 +106,6 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			path: AUTH_ROUTES.PHYSICAL,
 		},
 		{
-			label: 'Digital',
-			path: AUTH_ROUTES.DRIVE,
-			icon: PrimeIcons.CLOUD,
-		},
-		{
 			type: 'group',
 			label: 'Borrowed docs',
 		},
@@ -207,11 +202,24 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			icon: PrimeIcons.FOLDER_OPEN,
 		},
 		{
+			type: 'group',
 			label: 'Digital',
+		},
+		{
+			label: 'My Drive',
 			path: AUTH_ROUTES.DRIVE,
 			icon: PrimeIcons.CLOUD,
 		},
-
+		{
+			label: 'Shared',
+			path: AUTH_ROUTES.DRIVE_SHARED,
+			icon: PrimeIcons.CLOUD_UPLOAD,
+		},
+		{
+			label: 'Trash',
+			path: AUTH_ROUTES.DRIVE_TRASH,
+			icon: PrimeIcons.TRASH,
+		},
 		{
 			type: 'group',
 			label: 'Requests',

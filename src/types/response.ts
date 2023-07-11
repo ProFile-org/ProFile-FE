@@ -2,6 +2,8 @@ import {
 	IBorrowRequest,
 	IDepartment,
 	IDocument,
+	IDrive,
+	IDrivePermission,
 	IFolder,
 	IImportRequest,
 	ILocker,
@@ -64,6 +66,8 @@ export type GetRequestsResponse = BaseResponse<
 
 export type GetRequestByIdResponse = BaseResponse<IBorrowRequest>;
 
+export type GetUsersResponse = BaseResponse<{ items: IUser[] } & PaginationResponse>;
+
 export type GetUserByIdResponse = BaseResponse<IUser>;
 
 export type GetLockersResponse = BaseResponse<{ items: ILocker[] } & PaginationResponse>;
@@ -85,3 +89,13 @@ export type GetImportByIdResponse = BaseResponse<IImportRequest>;
 export type GetImportsResponse = BaseResponse<{ items: IImportRequest[] } & PaginationResponse>;
 
 export type GetPermissionResponse = BaseResponse<IPermission>;
+
+export type GetDriveResponse = BaseResponse<{ items: IDrive[] } & PaginationResponse>;
+
+export type GetDriveByIDResponse = BaseResponse<IDrive>;
+
+export type GetDrivePermissionResponse = BaseResponse<
+	{ items: IDrivePermission[] } & PaginationResponse
+>;
+
+export type GetCurrentDrivePermissionResponse = BaseResponse<IDrivePermission>;

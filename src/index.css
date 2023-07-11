@@ -99,3 +99,7 @@ body {
 .p-dialog .p-dialog-content {
 	background: var(--layer-700);
 }
+
+.p-toast .p-toast-message .p-toast-message-content {
+	@apply border-red-600;
+}

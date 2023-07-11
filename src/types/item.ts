@@ -119,3 +119,26 @@ export interface IPermission {
 	employeeId: string;
 	documentId: string;
 }
+
+export interface IDrive {
+	name: string;
+	path: string;
+	fileId: string | null;
+	fileType: string | null;
+	fileExtension: string | null;
+	isDirectory: boolean;
+	sizeInBytes: number | null;
+	owner: IUser;
+	created: string;
+	createdBy: string;
+	lastModified: string;
+	lastModifiedBy: string;
+	uploader: IUser;
+	id: string;
+}
+
+export interface IDrivePermission {
+	canView: boolean;
+	canEdit: boolean;
+	employee: IUser;
+}

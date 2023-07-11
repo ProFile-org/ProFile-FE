@@ -50,7 +50,7 @@ const AdminLogPage = () => {
 					<InputText
 						className='input'
 						onChange={(e) => (query.current = e.target.value)}
-						placeholder='document a'
+						placeholder='log a'
 					/>
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>
