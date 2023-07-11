@@ -291,6 +291,8 @@ const EmpDrivePage = () => {
 			<div
 				className='flex flex-col gap-5 h-full'
 				onContextMenu={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
 					if (path === '') return;
 					currentPathPerm.canEdit && globalCm.current?.show(e);
 					fileCm.current?.hide(e);
