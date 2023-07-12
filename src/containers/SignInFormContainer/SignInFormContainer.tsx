@@ -5,8 +5,9 @@ import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component
 import { AuthContext } from '@/context/authContext';
 import Spinner from '@/components/Spinner/Spinner.component';
 import axiosClient from '@/utils/axiosClient';
-import { GetRoomByIdResponse, LoginResponse } from '@/types/response';
+import { BaseResponse, GetRoomByIdResponse, LoginResponse } from '@/types/response';
 import { AxiosError } from 'axios';
+import { useNavigate } from 'react-router';
 
 const SIGNIN_INITIALS = {
 	email: '',
@@ -22,6 +23,7 @@ interface ISiginFormValues {
 
 const SignInForm = () => {
 	const { dispatch } = useContext(AuthContext);
+	const navigate = useNavigate();
 
 	const onValidate = async (values: ISiginFormValues) => {
 		const errors: { email?: string; password?: string } = {};
@@ -70,14 +72,20 @@ const SignInForm = () => {
 			localStorage.setItem('user', JSON.stringify(user));
 		} catch (error) {
 			console.error(error);
-			const axiosError = error as AxiosError;
+			const axiosError = error as AxiosError<BaseResponse<{ token: string }>>;
 			if (axiosError.response?.status === 404) {
 				setErrors({
 					error: 'You have not been assigned a room yet, please contact admin for more information',
 				});
 			} else {
-				const message =
-					(axiosError.response?.data as { message?: string }).message || 'Bad request';
+				const token = axiosError.response?.data.data.token;
+				if (token) {
+					navigate(`/reset`, {
+						state: token,
+					});
+					return;
+				}
+				const message = axiosError.response?.data.message || 'Bad request';
 				setErrors({
 					error: message,
 				});

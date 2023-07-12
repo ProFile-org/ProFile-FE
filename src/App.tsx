@@ -4,7 +4,7 @@ import AuthGuard from '@/pages/Guards/AuthGuard';
 import SignInPage from '@/pages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar.component';
 import RoleGuard from './pages/Guards/RoleGuard';
-import CallbackPage from './pages/CallbackPage/CallbackPage';
+import ResetPage from './pages/CallbackPage/CallbackPage';
 
 function App() {
 	return (
@@ -23,7 +23,7 @@ function App() {
 				element={
 					<AuthGuard
 						authComponent={<Navigate to={AUTH_ROUTES.HOME} />}
-						unAuthComponent={<CallbackPage />}
+						unAuthComponent={<ResetPage />}
 					/>
 				}
 			/>

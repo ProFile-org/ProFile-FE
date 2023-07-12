@@ -56,6 +56,7 @@ const EmpImportPage = lazy(() => import('@/pages/emp/EmpImportPage/EmpImportPage
 const EmpProfilePage = lazy(() => import('@/pages/emp/EmpProfilePage/EmpProfilePage'));
 const EmpDrivePage = lazy(() => import('@/pages/emp/EmpDrivePage/EmpDrivePage'));
 const EmpDriveSharedPage = lazy(() => import('@/pages/emp/EmpDriveSharedPage/EmpDriveSharedPage'));
+const EmpDriveTrashPage = lazy(() => import('@/pages/emp/EmpDriveTrashPage/EmpDriveTrashPage'));
 
 // Admin imports
 const AdminDashboardPage = lazy(
@@ -242,7 +243,7 @@ export const ROLE_MAPPER = {
 		employee: () => <EmpDriveSharedPage />,
 	},
 	[AUTH_ROUTES.DRIVE_TRASH]: {
-		employee: () => <EmpDriveSharedPage />,
+		employee: () => <EmpDriveTrashPage />,
 	},
 	[AUTH_ROUTES.DIGITAL]: {
 		employee: () => <Navigate to={AUTH_ROUTES.DRIVE} replace />,

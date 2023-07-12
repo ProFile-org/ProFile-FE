@@ -7,7 +7,9 @@ const File = ({
 	// shared = false,
 	file,
 	onContextMenu,
-}: {
+}: // trashed = false,
+{
+	trashed?: boolean;
 	shared?: boolean;
 	file: IDrive;
 	onContextMenu: (value: string, e: MouseEvent, type: 'file') => void;

@@ -28,7 +28,7 @@ export type PaginationResponse = {
 
 export type GetDocumentTypesResponse = BaseResponse<string[]>;
 
-export type GetDepartmentsResponse = BaseResponse<IDepartment[]>;
+export type GetDepartmentsResponse = BaseResponse<{ items: IDepartment[] } & PaginationResponse>;
 
 export type GetEmptyContainersResponse = BaseResponse<
 	{

@@ -1,9 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import axiosClient from '@/utils/axiosClient';
-import { InputText } from 'primereact/inputtext';
+// import { InputText } from 'primereact/inputtext';
 import { useQuery, useQueryClient } from 'react-query';
 import { useRef, useState, useContext, useEffect } from 'react';
-import { Button } from 'primereact/button';
+// import { Button } from 'primereact/button';
 import useQueryParams from '@/hooks/useQueryParams';
 import { ContextMenu } from 'primereact/contextmenu';
 import { PrimeIcons } from 'primereact/api';
@@ -26,6 +26,8 @@ import { Toast } from 'primereact/toast';
 import { AxiosError } from 'axios';
 import ShareModal from '@/components/Drive/ShareModal';
 import { AuthContext } from '@/context/authContext';
+import Spinner from '@/components/Spinner/Spinner.component';
+import { REFETCH_CONFIG } from '@/constants/config';
 
 const EmpDrivePage = () => {
 	const query = useRef('');
@@ -49,9 +51,14 @@ const EmpDrivePage = () => {
 		canEdit: false,
 		canView: false,
 	});
+	const [currentItemPerm, setCurrentItemPerm] = useState({
+		canEdit: false,
+		canView: false,
+	});
 
 	useEffect(() => {
 		const getPerms = async () => {
+			if (!path) return;
 			const { data } = await axiosClient.get<GetCurrentDrivePermissionResponse>(
 				`/shared/entries/${path}/permissions`
 			);
@@ -63,23 +70,30 @@ const EmpDrivePage = () => {
 		getPerms();
 	}, [path, setCurrentPathPerm]);
 
-	const { data, refetch } = useQuery(
-		['digital', 'private', path],
+	const { data, isLoading } = useQuery(
+		['digital', 'shared', path, query.current],
 		async () =>
 			(
 				await axiosClient.get<GetDriveResponse>(
-					`/shared/entries?entryId=${encodeURIComponent(path)}`
+					`/shared/entries?entryId=${encodeURIComponent(path)}`,
+					{
+						params: {
+							searchTerm: query.current,
+							pageSize: 100,
+						},
+					}
 				)
-			).data
+			).data,
+		REFETCH_CONFIG
 	);
 
 	const { data: users } = useQuery(
-		['digital', 'private', 'users'],
+		['digital', 'shared', 'users'],
 		async () => (await axiosClient.get<GetUsersResponse>('/users/employees')).data
 	);
 
 	const { data: sharedUsers } = useQuery(
-		['digital', 'private', 'sharedUsers', currentItem],
+		['digital', 'shared', 'sharedUsers', currentItem],
 		async () =>
 			(
 				await axiosClient.get<GetDrivePermissionResponse>(
@@ -92,7 +106,7 @@ const EmpDrivePage = () => {
 	);
 
 	const { data: owner } = useQuery(
-		['digital', 'private', 'owner', currentItem],
+		['digital', 'shared', 'owner', currentItem],
 		async () =>
 			(await axiosClient.get<GetDriveByIDResponse>(`/shared/entries/${currentItem}`)).data,
 		{
@@ -123,7 +137,7 @@ const EmpDrivePage = () => {
 	const onDelete = async () => {
 		try {
 			await axiosClient.post(`/bin/entries?entryId=${currentItem}`);
-			queryClient.invalidateQueries(['digital', 'private', path]);
+			queryClient.invalidateQueries(['digital', 'shared', path]);
 		} catch (error) {
 			onError(error as AxiosError<BaseResponse>);
 		}
@@ -139,7 +153,7 @@ const EmpDrivePage = () => {
 		}
 	};
 
-	const fileItems: MenuItem[] = currentPathPerm?.canEdit
+	const fileItems: MenuItem[] = currentItemPerm?.canEdit
 		? [
 				{
 					label: 'Share',
@@ -174,7 +188,7 @@ const EmpDrivePage = () => {
 				},
 		  ];
 
-	const folderItems: MenuItem[] = currentPathPerm?.canEdit
+	const folderItems: MenuItem[] = currentItemPerm?.canEdit
 		? [
 				{
 					label: 'Share',
@@ -227,7 +241,7 @@ const EmpDrivePage = () => {
 			await axiosClient.post(`/shared/entries/${path}`, formData, {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			});
-			queryClient.invalidateQueries(['digital', 'private', path]);
+			queryClient.invalidateQueries(['digital', 'shared', path]);
 			closeModals();
 		} catch (error) {
 			onError(error as AxiosError<BaseResponse>);
@@ -247,7 +261,7 @@ const EmpDrivePage = () => {
 			await axiosClient.post(`/shared/entries/${path}`, formData, {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			});
-			queryClient.invalidateQueries(['digital', 'private', path]);
+			queryClient.invalidateQueries(['digital', 'shared', path]);
 			closeModals();
 		} catch (error) {
 			onError(error as AxiosError<BaseResponse>);
@@ -260,7 +274,7 @@ const EmpDrivePage = () => {
 		if (!name) return;
 		try {
 			await axiosClient.put(`/entries/${currentItem}`, { name });
-			queryClient.invalidateQueries(['digital', 'private', path]);
+			queryClient.invalidateQueries(['digital', 'shared', path]);
 			closeModals();
 		} catch (error) {
 			onError(error as AxiosError<BaseResponse>);
@@ -279,7 +293,7 @@ const EmpDrivePage = () => {
 		e.preventDefault();
 		try {
 			await axiosClient.put(`/entries/${currentItem}/permissions`, perms);
-			queryClient.invalidateQueries(['digital', 'private']);
+			queryClient.invalidateQueries(['digital', 'shared']);
 			closeModals();
 		} catch (error) {
 			onError(error as AxiosError<BaseResponse>);
@@ -288,18 +302,23 @@ const EmpDrivePage = () => {
 
 	return (
 		<>
-			<div
-				className='flex flex-col gap-5 h-full'
-				onContextMenu={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					if (path === '') return;
-					currentPathPerm.canEdit && globalCm.current?.show(e);
-					fileCm.current?.hide(e);
-					folderCm.current?.hide(e);
-				}}
-			>
-				<div className='card w-full py-3 flex justify-between'>
+			{isLoading ? (
+				<div className='w-full h-full flex items-center justify-center'>
+					<Spinner />
+				</div>
+			) : (
+				<div
+					className='flex flex-col gap-5 h-full'
+					onContextMenu={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						if (path === '') return;
+						currentPathPerm.canEdit && globalCm.current?.show(e);
+						fileCm.current?.hide(e);
+						folderCm.current?.hide(e);
+					}}
+				>
+					{/* <div className='card w-full py-3 flex justify-between'>
 					<form
 						className='flex h-11 gap-3'
 						onSubmit={async (e) => {
@@ -315,57 +334,88 @@ const EmpDrivePage = () => {
 						<Button label='Search' name='search' id='search' className='px-3 rounded-lg' />
 					</form>
 					<Button className='h-11 rounded-lg'>Upload +</Button>
-				</div>
-				<Breadcrumbs shared path={path} pathArr={pathArr} />
+				</div> */}
+					<Breadcrumbs shared path={path} pathArr={pathArr} />
+					{!data ||
+						(data.data.items.length === 0 && (
+							<div className='text-center text-lg font-bold h-full flex items-center justify-center w-full'>
+								This drive is empty
+								<br />
+								Any files that are being shared with you will appear here
+							</div>
+						))}
+					{folders && folders.length !== 0 && (
+						<>
+							<h2 className='title'>Folders</h2>
+							<div className='grid grid-cols-5 gap-5'>
+								{folders.map((folder) => (
+									<Folder
+										shared
+										key={folder.id}
+										folder={folder}
+										currentPath={currentPath}
+										onContextMenu={async (value, e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											// Race condition
+											setTimeout(() => {
+												globalCm.current?.hide(e);
+											}, 0);
+											fileCm.current?.hide(e);
+											const { data: perm } =
+												await axiosClient.get<GetCurrentDrivePermissionResponse>(
+													`/shared/entries/${value}/permissions`
+												);
+											setCurrentItemPerm({
+												canEdit: perm.data.canEdit,
+												canView: perm.data.canView,
+											});
+											setCurrentItem(value);
+											perm.data.canEdit && folderCm.current?.show(e);
+										}}
+									/>
+								))}
+							</div>
+						</>
+					)}
+					{files && files.length !== 0 && (
+						<>
+							<h2 className='title'>Files</h2>
+							<div className='grid grid-cols-5 gap-5'>
+								{files.map((file) => (
+									<File
+										key={file.id}
+										file={file}
+										onContextMenu={async (value, e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											// Race condition
+											setTimeout(() => {
+												globalCm.current?.hide(e);
+											}, 0);
+											folderCm.current?.hide(e);
+											const { data: perm } =
+												await axiosClient.get<GetCurrentDrivePermissionResponse>(
+													`/shared/entries/${value}/permissions`
+												);
+											setCurrentItemPerm({
+												canEdit: perm.data.canEdit,
+												canView: perm.data.canView,
+											});
+											setCurrentItem(value);
+											perm.data.canView && fileCm.current?.show(e);
+										}}
+									/>
+								))}
+							</div>
+						</>
+					)}
 
-				<h2 className='title'>Folders</h2>
-				<div className='grid grid-cols-5 gap-5'>
-					{folders?.map((folder) => (
-						<Folder
-							shared
-							key={folder.id}
-							folder={folder}
-							currentPath={currentPath}
-							onContextMenu={async (value, e) => {
-								// Race condition
-								setTimeout(() => {
-									globalCm.current?.hide(e);
-								}, 0);
-								fileCm.current?.hide(e);
-								const { data: perm } = await axiosClient.get<GetCurrentDrivePermissionResponse>(
-									`/shared/entries/${value}/permissions`
-								);
-								perm.data.canEdit && folderCm.current?.show(e);
-								setCurrentItem(value);
-							}}
-						/>
-					))}
+					<ContextMenu ref={globalCm} model={items} />
+					<ContextMenu ref={folderCm} model={folderItems} />
+					<ContextMenu ref={fileCm} model={fileItems} />
 				</div>
-				<h2 className='title'>Files</h2>
-				<div className='grid grid-cols-5 gap-5'>
-					{files?.map((file) => (
-						<File
-							key={file.id}
-							file={file}
-							onContextMenu={async (value, e) => {
-								// Race condition
-								setTimeout(() => {
-									globalCm.current?.hide(e);
-								}, 0);
-								folderCm.current?.hide(e);
-								const { data: perm } = await axiosClient.get<GetCurrentDrivePermissionResponse>(
-									`/shared/entries/${value}/permissions`
-								);
-								perm.data.canView && fileCm.current?.show(e);
-								setCurrentItem(value);
-							}}
-						/>
-					))}
-				</div>
-				<ContextMenu ref={globalCm} model={items} />
-				<ContextMenu ref={folderCm} model={folderItems} />
-				<ContextMenu ref={fileCm} model={fileItems} />
-			</div>
+			)}
 			{modal && (
 				<Overlay onExit={() => setModal('')} className='flex justify-center items-center'>
 					{modal === 'create-folder' && (

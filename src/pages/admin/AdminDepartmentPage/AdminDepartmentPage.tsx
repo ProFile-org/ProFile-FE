@@ -5,7 +5,6 @@ import { InputText } from 'primereact/inputtext';
 import { IDepartment } from '@/types/item';
 import usePagination from '@/hooks/usePagination';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
-import Status from '@/components/Status/Status.component';
 import { useRef } from 'react';
 
 const AdminDepartmentPage = () => {
@@ -17,7 +16,7 @@ const AdminDepartmentPage = () => {
 		query: query.current,
 	});
 
-	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DEPARTMENTS' });
+	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DEPARTMENTS_MANAGE' });
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -46,16 +45,7 @@ const AdminDepartmentPage = () => {
 						className='break-keep overflow-ellipsis max-w-[5rem]'
 						sortable
 					/>
-					<Column field='title' header='Title' sortable />
-					<Column field='documentType' header='Type' sortable />
-					<Column
-						field='status'
-						header='Status'
-						sortable
-						body={(item) => <Status type='document' item={item} />}
-					/>
-					<Column field='folder.name' header='Folder' />
-					<Column field='folder.locker.name' header='Locker' />
+					<Column field='name' header='Name' sortable />
 				</Table>
 			</div>
 		</div>

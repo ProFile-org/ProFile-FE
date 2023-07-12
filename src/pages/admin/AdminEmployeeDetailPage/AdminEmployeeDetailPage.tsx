@@ -57,6 +57,7 @@ const AdminEmployeeDetailPage = () => {
 		email,
 		username,
 		isActive,
+		isActivated,
 		department: { name: departmentName },
 	} = user.data;
 
@@ -195,7 +196,7 @@ const AdminEmployeeDetailPage = () => {
 						</InformationPanel>
 					</div>
 					<div>
-						<InformationPanel direction='row'>
+						<InformationPanel>
 							{qr ? (
 								<img src={qr} className='rounded-lg w-48 aspect-square' />
 							) : (
@@ -218,7 +219,7 @@ const AdminEmployeeDetailPage = () => {
 									<Button
 										type='button'
 										label={isActive ? 'Disable' : 'Enable'}
-										className='h-11 rounded-lg flex-1'
+										className='h-11 rounded-lg'
 										severity={isActive ? 'danger' : 'success'}
 										onClick={onToggleAvailability}
 										disabled={editMode || isSubmitting || !isValid}
@@ -238,6 +239,7 @@ const AdminEmployeeDetailPage = () => {
 										submitForm();
 									}}
 								/>
+								{!isActivated && <Button label='Resend email' severity='info' className='h-11' />}
 								<Link to={AUTH_ROUTES.EMPLOYEES_MANAGE} className='w-full'>
 									<Button
 										type='button'
@@ -246,8 +248,8 @@ const AdminEmployeeDetailPage = () => {
 										outlined
 									/>
 								</Link>
-								{error && <div className='text-red-500'>{error}</div>}
 							</div>
+							{error && <div className='text-red-500'>{error}</div>}
 						</InformationPanel>
 					</div>
 				</div>

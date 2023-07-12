@@ -3,14 +3,13 @@ import InformationPanel from '@/components/InformationPanel/InformationPanel.com
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import { AUTH_ROUTES } from '@/constants/routes';
-import { BaseResponse, GetDepartmentByIdResponse, GetRoomsResponse } from '@/types/response';
+import { GetDepartmentByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { AxiosError } from 'axios';
 import { Button } from 'primereact/button';
 import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import { Column } from 'primereact/column';
 import Table from '@/components/Table/Table.component';
@@ -19,7 +18,6 @@ const AdminDepartmentDetailPage = () => {
 	const { departmentId } = useParams<{ departmentId: string }>();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
-	const [error, setError] = useState('');
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'ROOMS' });
 
 	const {
@@ -30,19 +28,6 @@ const AdminDepartmentDetailPage = () => {
 		['departments', departmentId],
 		async () =>
 			(await axiosClient.get<GetDepartmentByIdResponse>(`/departments/${departmentId}`)).data
-	);
-	const { data: rooms, isLoading: isRoomsLoading } = useQuery(
-		[
-			'rooms',
-			{
-				departmentId,
-			},
-		],
-		async () =>
-			(await axiosClient.get<GetRoomsResponse>(`/departments/${departmentId}/rooms`)).data,
-		{
-			enabled: !!departmentId,
-		}
 	);
 
 	if (isLoading) return <SkeletonPage />;
@@ -60,8 +45,7 @@ const AdminDepartmentDetailPage = () => {
 			queryClient.invalidateQueries('rooms');
 			navigate(AUTH_ROUTES.ROOMS);
 		} catch (error) {
-			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Bad request');
+			console.log(error);
 		}
 	};
 
@@ -91,7 +75,7 @@ const AdminDepartmentDetailPage = () => {
 				<InformationPanel header='Rooms' className='flex-1'>
 					<Table
 						value={[]}
-						loading={isRoomsLoading}
+						loading={isLoading}
 						lazy
 						selectionMode='single'
 						{...getNavigateOnSelectProps()}

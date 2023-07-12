@@ -42,7 +42,7 @@ export const AUTH_ROUTES = {
 
 export const UNAUTH_ROUTES = {
 	AUTH: '/auth',
-	CALLBACK: '/callback',
+	CALLBACK: '/reset',
 };
 
 export type AUTH_ROUTES_KEY = keyof typeof AUTH_ROUTES;

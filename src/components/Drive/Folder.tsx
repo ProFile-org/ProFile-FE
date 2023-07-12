@@ -9,23 +9,27 @@ const Folder = ({
 	currentPath,
 	folder,
 	shared = false,
+	trashed = false,
 	onContextMenu,
 }: {
 	currentPath: string;
 	folder: IDrive;
 	shared?: boolean;
+	trashed?: boolean;
 	onContextMenu: (value: string, e: MouseEvent, type: 'folder') => void;
 }) => {
 	const [hover, setHover] = useState(false);
-	const link = `${shared ? AUTH_ROUTES.DRIVE_SHARED : AUTH_ROUTES.DRIVE}?path=${encodeURIComponent(
-		currentPath
-	)}${encodeURIComponent(`${shared ? folder.id : `/${folder.name}`}`)}`;
+	const link = `${
+		shared ? AUTH_ROUTES.DRIVE_SHARED : trashed ? AUTH_ROUTES.DRIVE_TRASH : AUTH_ROUTES.DRIVE
+	}?path=${encodeURIComponent(currentPath)}${encodeURIComponent(
+		`${shared ? folder.id : `/${folder.name}`}`
+	)}`;
 
 	return (
 		<>
 			<Link
 				to={link}
-				className='group'
+				className={clsx('group', trashed && 'cursor-default')}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 				onContextMenu={(e) => {

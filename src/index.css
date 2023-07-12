@@ -69,7 +69,7 @@ body {
 	border-color: var(--action) !important;
 }
 
-#password {
+#password, #confirmPassword {
 	width: 100%;
 }
 
@@ -102,4 +102,8 @@ body {
 
 .p-toast .p-toast-message .p-toast-message-content {
 	@apply border-red-600;
+}
+
+.p-confirm-dialog-message {
+	color: white;
 }
