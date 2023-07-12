@@ -98,7 +98,7 @@ const EmpDashboardPage = () => {
 						)
 					)
 				) : (
-					<div>No requests</div>
+					<div className='card w-full text-center'>No requests</div>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.IMPORT_MANAGE} className='header link-underlined'>
@@ -128,7 +128,7 @@ const EmpDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No import requests</div>
+					<div className='card w-full text-center'>No import requests</div>
 				)}
 			</div>
 		</div>

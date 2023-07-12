@@ -101,7 +101,7 @@ const AdminDashboardPage = () => {
 			<div className='flex gap-5'>
 				{isRoomLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : rooms ? (
+				) : rooms?.data.items.length ? (
 					rooms.data.items.map((room) => (
 						<InfoCard key={room.id} header={room.name} url={`${AUTH_ROUTES.ROOMS}/${room.id}`}>
 							<p className='mt-2 text-lg'>
@@ -122,7 +122,7 @@ const AdminDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No rooms</div>
+					<div className='card w-full text-center'>No rooms</div>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.LOCKERS} className='header link-underlined'>
@@ -131,7 +131,7 @@ const AdminDashboardPage = () => {
 			<div className='flex gap-5'>
 				{isLockerLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : lockers ? (
+				) : lockers?.data.items.length ? (
 					lockers.data.items.map((locker) => (
 						<InfoCard
 							key={locker.id}
@@ -159,7 +159,7 @@ const AdminDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No lockers</div>
+					<div className='card w-full text-center'>No lockers</div>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.FOLDERS} className='header link-underlined'>
@@ -168,7 +168,7 @@ const AdminDashboardPage = () => {
 			<div className='flex gap-5'>
 				{isFolderLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : folders ? (
+				) : folders?.data.items.length ? (
 					folders.data.items.map((folder) => (
 						<InfoCard
 							key={folder.id}
@@ -196,7 +196,7 @@ const AdminDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No folders</div>
+					<div className='card w-full text-center'>No folders</div>
 				)}
 			</div>
 			<Link to={AUTH_ROUTES.DOCUMENTS} className='header link-underlined'>
@@ -205,7 +205,7 @@ const AdminDashboardPage = () => {
 			<div className='flex gap-5 overflow-x-auto max-w-full'>
 				{isDocumentLoading ? (
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
-				) : documents ? (
+				) : documents?.data.items.length ? (
 					documents.data.items.map((document) => (
 						<InfoCard key={document.id} url={`${AUTH_ROUTES.DOCUMENTS}/${document.id}`}>
 							<div className='flex items-center gap-3'>
@@ -221,7 +221,7 @@ const AdminDashboardPage = () => {
 						</InfoCard>
 					))
 				) : (
-					<div>No documents</div>
+					<div className='card w-full text-center'>No documents</div>
 				)}
 			</div>
 		</div>

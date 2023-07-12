@@ -18,7 +18,7 @@ const AdminDepartmentCreatePage = () => {
 	const onSubmit = async (values: FormValues, { setFieldError }: FormikHelpers<FormValues>) => {
 		try {
 			const res = await axiosClient.post('/departments', values);
-			navigate(`${AUTH_ROUTES.DEPARTMENTS_MANAGE}/${res.data.data.id}}`);
+			navigate(`${AUTH_ROUTES.DEPARTMENTS_MANAGE}/${res.data.data.id}`);
 		} catch (error) {
 			setFieldError('name', 'Department name already exists');
 			console.error(error);

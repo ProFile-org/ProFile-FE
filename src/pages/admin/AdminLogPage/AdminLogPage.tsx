@@ -1,5 +1,4 @@
 import CustomDropdown from '@/components/Dropdown/Dropdown.component';
-import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
 import usePagination from '@/hooks/usePagination';
 import { Ilog } from '@/types/item';
@@ -9,22 +8,22 @@ import { InputText } from 'primereact/inputtext';
 import { useRef, useState } from 'react';
 
 const LOG_TYPES = [
-	{ label: 'Documents', value: 'Documents' },
-	{ label: 'Folders', value: 'Folders' },
-	{ label: 'Lockers', value: 'Lockers' },
-	{ label: 'Users', value: 'Users' },
-	{ label: 'Rooms', value: 'Rooms' },
-	{ label: 'Requests', value: 'Requests' },
-	{ label: 'Borrows', value: 'Borrows' },
+	{ label: 'Document', value: 'Document' },
+	{ label: 'Folder', value: 'Folder' },
+	{ label: 'Locker', value: 'Locker' },
+	{ label: 'User', value: 'User' },
+	{ label: 'Room', value: 'Room' },
+	{ label: 'Request', value: 'Request' },
+	{ label: 'Borrow', value: 'Borrow' },
 ];
 
 const AdminLogPage = () => {
 	const query = useRef('');
-	const [objectType, setObjectType] = useState('Documents');
+	const [objectType, setObjectType] = useState('Document');
 
 	const { getPaginatedTableProps, refetch } = usePagination<Ilog>({
-		key: ['logs', objectType],
-		url: `/logs`,
+		key: ['logs', objectType, query.current],
+		url: `/logs?objectType=${objectType}`,
 		query: query.current,
 		queryConfig: {
 			enabled: !!objectType,
@@ -64,16 +63,19 @@ const AdminLogPage = () => {
 						className='break-keep overflow-ellipsis max-w-[5rem]'
 						sortable
 					/>
-					<Column field='event' header='Event' sortable />
+					<Column
+						field='message'
+						header='Message'
+						body={(item) => (
+							<div className='w-[500px] overflow-hidden break-words whitespace-normal'>
+								{item.message}
+							</div>
+						)}
+						sortable
+					/>
 					<Column field='level' header='Level' sortable />
 					<Column field='time' header='Time' sortable />
 					<Column field='user.email' header='By user' sortable />
-					<Column
-						field='status'
-						header='Status'
-						sortable
-						body={(item) => <Status type='document' item={item} />}
-					/>
 					<Column field='objectId' header='Item ID' />
 				</Table>
 			</div>
