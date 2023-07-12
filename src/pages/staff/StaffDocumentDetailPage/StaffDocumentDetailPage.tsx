@@ -10,7 +10,7 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
@@ -128,7 +128,7 @@ const StaffDocumentDetailPage = () => {
 					<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 						<div className='flex flex-col gap-5 flex-1'>
 							<InformationPanel header='Employee information'>
-								<div className='flex gap-3'>
+								{/* <div className='flex gap-3'>
 									<InputWithLabel
 										label='ID'
 										wrapperClassName='flex-1'
@@ -140,7 +140,7 @@ const StaffDocumentDetailPage = () => {
 										className='self-end bg-primary rounded-lg h-11'
 										type='button'
 									/>
-								</div>
+								</div> */}
 								<InputWithLabel
 									label='Name'
 									wrapperClassName='flex-1'
@@ -222,7 +222,7 @@ const StaffDocumentDetailPage = () => {
 								) : (
 									<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 								)}
-								<div className='flex flex-col justify-between flex-1'>
+								<div className='flex flex-col gap-5 flex-1'>
 									{editMode ? (
 										<Button
 											label='Cancelled'
@@ -265,7 +265,7 @@ const StaffDocumentDetailPage = () => {
 									</Link>
 								</div>
 							</InformationPanel>
-							<InformationPanel header='Digital copies' className='h-max'>
+							{/* <InformationPanel header='Digital copies' className='h-max'>
 								<ImagePreviewer
 									readOnly
 									images={[
@@ -275,7 +275,7 @@ const StaffDocumentDetailPage = () => {
 									]}
 								/>
 							</InformationPanel>
-							<InformationPanel header='History' className='flex-1'></InformationPanel>
+							<InformationPanel header='History' className='flex-1'></InformationPanel> */}
 						</div>
 					</form>
 				)}

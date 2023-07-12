@@ -1,7 +1,12 @@
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { AUTH_ROUTES } from '@/constants/routes';
-import { BaseResponse, GetDocumentByIdResponse, GetPermissionResponse } from '@/types/response';
+import {
+	BaseResponse,
+	GetDocumentByIdResponse,
+	GetPermissionResponse,
+	GetUsersResponse,
+} from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { useState, useEffect, useContext } from 'react';
@@ -10,7 +15,7 @@ import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
@@ -21,6 +26,7 @@ import { PrimeIcons } from 'primereact/api';
 import clsx from 'clsx';
 import { AuthContext } from '@/context/authContext';
 import { InputSwitch } from 'primereact/inputswitch';
+import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 
 const EmpDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -52,6 +58,18 @@ const EmpDocumentDetailPage = () => {
 			(await axiosClient.get<GetPermissionResponse>(`/documents/${documentId}/permissions`)).data
 	);
 
+	const { data: users } = useQuery(
+		['users'],
+		async () =>
+			(
+				await axiosClient.get<GetUsersResponse>('/users/employees', {
+					params: {
+						pageSize: 100,
+					},
+				})
+			).data
+	);
+
 	useEffect(() => {
 		const renderQr = async () => {
 			const { id } = data?.data || { id: '' };
@@ -69,7 +87,11 @@ const EmpDocumentDetailPage = () => {
 
 	if (isLoading) return <SkeletonPage />;
 
-	if ((axiosError as AxiosError)?.response?.status === 404 || !data)
+	if (
+		(axiosError as AxiosError)?.response?.status === 404 ||
+		!data ||
+		(data.data.importer.id !== user?.id && (data.data.isPrivate && perms.employeeId !== user?.id))
+	)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
 	const { title, importer, isPrivate } = data.data;
@@ -159,7 +181,7 @@ const EmpDocumentDetailPage = () => {
 						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 							<div className='flex flex-col gap-5 flex-1'>
 								<InformationPanel header='Employee information'>
-									<div className='flex gap-3'>
+									{/* <div className='flex gap-3'>
 										<InputWithLabel
 											label='ID'
 											wrapperClassName='flex-1'
@@ -171,7 +193,7 @@ const EmpDocumentDetailPage = () => {
 											className='self-end bg-primary rounded-lg h-11'
 											type='button'
 										/>
-									</div>
+									</div> */}
 									<InputWithLabel
 										label='Name'
 										wrapperClassName='flex-1'
@@ -267,7 +289,7 @@ const EmpDocumentDetailPage = () => {
 									) : (
 										<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 									)}
-									<div className='flex flex-col justify-between flex-1'>
+									<div className='flex flex-col gap-5 flex-1'>
 										{editMode ? (
 											<Button
 												label='Cancelled'
@@ -292,19 +314,32 @@ const EmpDocumentDetailPage = () => {
 												/>
 											)
 										)}
-										<Button
-											label={editMode ? 'Save' : 'Edit'}
-											className='h-11 rounded-lg bg-primary'
-											type='button'
-											disabled={!isValid || isSubmitting}
-											onClick={() => {
-												if (!editMode) {
-													setEditMode(true);
-													return;
-												}
-												submitForm();
-											}}
-										/>
+										{(!isPrivate || permission?.data.canBorrow) && (
+											<Link to={`${AUTH_ROUTES.NEW_REQUEST}?id=${documentId}`} className='w-full'>
+												<Button
+													label='Request'
+													className='h-11 rounded-lg w-full'
+													severity='success'
+												/>
+											</Link>
+										)}
+										{importer.id === user?.id && (
+											<>
+												<Button
+													label={editMode ? 'Save' : 'Edit'}
+													className='h-11 rounded-lg bg-primary'
+													type='button'
+													disabled={!isValid || isSubmitting}
+													onClick={() => {
+														if (!editMode) {
+															setEditMode(true);
+															return;
+														}
+														submitForm();
+													}}
+												/>
+											</>
+										)}
 										<Link to={AUTH_ROUTES.DOCUMENTS} className='w-full'>
 											<Button
 												type='button'
@@ -315,7 +350,7 @@ const EmpDocumentDetailPage = () => {
 										</Link>
 									</div>
 								</InformationPanel>
-								<InformationPanel header='Digital copies' className='h-max'>
+								{/* <InformationPanel header='Digital copies' className='h-max'>
 									<ImagePreviewer
 										readOnly
 										images={[
@@ -325,7 +360,7 @@ const EmpDocumentDetailPage = () => {
 										]}
 									/>
 								</InformationPanel>
-								<InformationPanel header='History' className='flex-1'></InformationPanel>
+								<InformationPanel header='History' className='flex-1'></InformationPanel> */}
 							</div>
 						</form>
 					)}
@@ -360,11 +395,12 @@ const EmpDocumentDetailPage = () => {
 						</div>
 						<div className='mt-3'>
 							<div className='mt-3'>
-								<InputWithLabel
-									label='UserID'
-									id='user'
-									name='user'
+								<CustomDropdown
+									label='Employee'
+									options={users?.data.items.filter((u) => user?.id !== u.id)}
 									value={perms.employeeId}
+									optionLabel='email'
+									optionValue='id'
 									onChange={(e) => {
 										setError('');
 										setPerms((prev) => ({ ...prev, employeeId: e.target.value }));
@@ -378,7 +414,13 @@ const EmpDocumentDetailPage = () => {
 									checked={perms.canRead}
 									name='canRead'
 									id='canRead'
-									onChange={(e) => setPerms((prev) => ({ ...prev, canRead: e.value as boolean }))}
+									onChange={(e) =>
+										setPerms((prev) => ({
+											...prev,
+											canRead: e.value as boolean,
+											canBorrow: e.value ? prev.canBorrow : false,
+										}))
+									}
 								/>
 								<div>Can borrow: </div>
 								<InputSwitch
@@ -386,6 +428,7 @@ const EmpDocumentDetailPage = () => {
 									name='canBorrow'
 									id='canBorrow'
 									onChange={(e) => setPerms((prev) => ({ ...prev, canBorrow: e.value as boolean }))}
+									disabled={!perms.canRead}
 								/>
 							</div>
 						</div>
@@ -417,6 +460,9 @@ const EmpDocumentDetailPage = () => {
 												new Date().setDate(new Date().getDate() + 7)
 											).toISOString(),
 										});
+										queryClient.invalidateQueries(['documents', documentId, user?.id]);
+										setError('');
+										setShowModal(false);
 									} catch (error) {
 										const axiosError = error as AxiosError<BaseResponse>;
 										const msg = axiosError.response?.data.message || 'Bad request';

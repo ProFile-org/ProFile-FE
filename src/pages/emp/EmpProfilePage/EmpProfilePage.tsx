@@ -177,7 +177,7 @@ const EmpProfilePage = () => {
 							) : (
 								<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 							)}
-							<div className='flex flex-col justify-between flex-1 gap-4'>
+							<div className='flex flex-col gap-5 flex-1'>
 								{editMode && (
 									<Button
 										label='Cancelled'

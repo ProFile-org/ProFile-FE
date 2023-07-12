@@ -75,6 +75,25 @@ const ImportDocumentContainer = () => {
 		{ setSubmitting, setFieldError }: FormikHelpers<FormValues>
 	) => {
 		try {
+			// const formData = new FormData();
+			// formData.set('Name', values.title);
+			// formData.set('Path', '/');
+			// formData.set('isDirectory', 'true');
+			// await axiosClient.post('/entries', formData, {
+			// 	headers: { 'Content-Type': 'multipart/form-data' },
+			// });
+			// await Promise.all(
+			// 	values.files.map((file) => {
+			// 		const fileData = new FormData();
+			// 		fileData.set('Name', file.name);
+			// 		fileData.set('Path', `/${values.title}`);
+			// 		fileData.set('File', file);
+			// 		fileData.set('isDirectory', 'false');
+			// 		return axiosClient.post('/entries', fileData, {
+			// 			headers: { 'Content-Type': 'multipart/form-data' },
+			// 		});
+			// 	})
+			// );
 			mutation.mutate(
 				{
 					title: values.title,
@@ -329,7 +348,7 @@ const ImportDocumentContainer = () => {
 									/>
 									<InputWithLabel label='Name' name='name' id='name' readOnly value={values.name} />
 								</InformationPanel>
-								<InformationPanel header='Add digital copies'>
+								{/* <InformationPanel header='Add digital copies'>
 									<ImagePreviewer
 										images={data}
 										setData={setData}
@@ -350,7 +369,7 @@ const ImportDocumentContainer = () => {
 										className='bg-primary rounded-lg h-11'
 										disabled={isSubmitting}
 									/>
-								</InformationPanel>
+								</InformationPanel> */}
 							</div>
 						</form>
 						{openScan && (
