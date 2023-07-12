@@ -4,10 +4,10 @@ import { FormEvent } from 'react';
 
 const CreateFolderModal = ({
 	onCreateFolder,
-	setModal,
+	handleClose,
 }: {
 	onCreateFolder: (e: FormEvent<HTMLFormElement>) => void;
-	setModal: (value: string) => void;
+	handleClose: () => void;
 }) => {
 	return (
 		<form
@@ -26,7 +26,7 @@ const CreateFolderModal = ({
 				<Button
 					label='Cancel'
 					className='mt-5 h-11 rounded-lg mr-3 btn-outlined !border-red-600'
-					onClick={() => setModal('')}
+					onClick={handleClose}
 					severity='danger'
 					outlined
 				/>

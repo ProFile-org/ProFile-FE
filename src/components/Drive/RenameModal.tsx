@@ -4,10 +4,10 @@ import { FormEvent } from 'react';
 
 const RenameModal = ({
 	onRename,
-	setModal,
+	handleClose,
 }: {
 	onRename: (e: FormEvent<HTMLFormElement>) => void;
-	setModal: (value: string) => void;
+	handleClose: () => void;
 }) => {
 	return (
 		<form
@@ -21,7 +21,7 @@ const RenameModal = ({
 				<Button
 					label='Cancel'
 					className='h-11 rounded-lg mr-3 btn-outlined !border-red-600'
-					onClick={() => setModal('')}
+					onClick={handleClose}
 					severity='danger'
 					outlined
 				/>

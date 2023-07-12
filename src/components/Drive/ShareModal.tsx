@@ -12,7 +12,7 @@ type UserWithPermission = { canView: boolean; canEdit: boolean; employee: IUser 
 
 const ShareModal = ({
 	onShare,
-	setModal,
+	handleClose,
 	users,
 	sharedUsers,
 }: {
@@ -20,7 +20,7 @@ const ShareModal = ({
 		e: FormEvent<HTMLFormElement>,
 		perms: { userId: string; canEdit: boolean; canView: boolean; expiryDate?: Date }
 	) => void;
-	setModal: (value: string) => void;
+	handleClose: () => void;
 	users: IUser[];
 	sharedUsers: UserWithPermission[];
 }) => {
@@ -72,7 +72,7 @@ const ShareModal = ({
 						label='Close'
 						className='h-11 rounded-lg bg-primary'
 						onClick={() => {
-							setModal('');
+							handleClose();
 							setShareModal(false);
 							setSelectedUser(null);
 							setSelectedId('');

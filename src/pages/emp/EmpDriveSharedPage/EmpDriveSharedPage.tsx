@@ -419,17 +419,17 @@ const EmpDrivePage = () => {
 			{modal && (
 				<Overlay onExit={() => setModal('')} className='flex justify-center items-center'>
 					{modal === 'create-folder' && (
-						<CreateFolderModal onCreateFolder={onCreateFolder} setModal={setModal} />
+						<CreateFolderModal onCreateFolder={onCreateFolder} handleClose={closeModals} />
 					)}
 					{modal === 'upload-file' && (
 						<CreateFileModal
 							onCreateFile={onCreateFile}
-							setModal={setModal}
+							handleClose={closeModals}
 							setFile={setFile}
 							file={file}
 						/>
 					)}
-					{modal === 'rename-file' && <RenameModal onRename={onRename} setModal={setModal} />}
+					{modal === 'rename-file' && <RenameModal onRename={onRename} handleClose={closeModals} />}
 					{modal === 'share' && (
 						<ShareModal
 							sharedUsers={
@@ -449,7 +449,7 @@ const EmpDrivePage = () => {
 								) || []
 							}
 							onShare={onShare}
-							setModal={setModal}
+							handleClose={closeModals}
 						/>
 					)}
 				</Overlay>

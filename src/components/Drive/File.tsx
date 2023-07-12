@@ -20,17 +20,18 @@ const File = ({
 				onContextMenu={(e) => {
 					onContextMenu(file.id, e, 'file');
 				}}
+				className='w-max group'
 			>
-				<div className='flex flex-col items-center w-full p-3 rounded-lg bg-neutral-900'>
-					<div className='p-5 bg-neutral-800 rounded-lg group transition-colors'>
+				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900 w-max'>
+					<div className='p-3 bg-neutral-800 rounded-lg transition-colors flex items-center justify-center w-full aspect-square'>
 						<i
 							className={clsx(
 								PrimeIcons.FILE,
-								'text-7xl group-hover:text-primary transition-colors'
+								'text-[100px] group-hover:text-primary transition-colors'
 							)}
 						/>
 					</div>
-					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words'>
+					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words w-[160px]'>
 						{file.name}
 					</h3>
 				</div>

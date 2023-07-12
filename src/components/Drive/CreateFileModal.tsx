@@ -7,12 +7,12 @@ import { useRef } from 'react';
 
 const CreateFileModal = ({
 	onCreateFile,
-	setModal,
+	handleClose,
 	setFile,
 	file,
 }: {
 	onCreateFile: (e: FormEvent<HTMLFormElement>) => void;
-	setModal: (value: string) => void;
+	handleClose: () => void;
 	setFile: (value: File) => void;
 	file: File | null;
 }) => {
@@ -49,7 +49,7 @@ const CreateFileModal = ({
 				<Button
 					label='Cancel'
 					className='h-11 rounded-lg mr-3 btn-outlined !border-red-600'
-					onClick={() => setModal('')}
+					onClick={handleClose}
 					severity='danger'
 					outlined
 				/>
