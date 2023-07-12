@@ -29,14 +29,14 @@ const Folder = ({
 		<>
 			<Link
 				to={link}
-				className={clsx('group w-max', trashed && 'cursor-default')}
+				className={clsx('group w-full', trashed && 'cursor-default')}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 				onContextMenu={(e) => {
 					onContextMenu(folder.id, e, 'folder');
 				}}
 			>
-				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900 w-max'>
+				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900'>
 					<div className='p-5 bg-neutral-800 rounded-lg group transition-colors aspect-square w-full flex items-center justify-center'>
 						{hover ? (
 							<i
@@ -54,7 +54,7 @@ const Folder = ({
 							/>
 						)}
 					</div>
-					<h3 className='text-center text-lg font-medium mt-2 w-[160px]'>{folder.name}</h3>
+					<h3 className='text-center text-lg font-medium mt-2'>{folder.name}</h3>
 				</div>
 			</Link>
 		</>

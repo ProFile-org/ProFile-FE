@@ -311,7 +311,7 @@ const EmpDrivePage = () => {
 					{folders && folders.length !== 0 && (
 						<>
 							<h2 className='title'>Folders</h2>
-							<div className='grid grid-flow-dense gap-5'>
+							<div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'>
 								{folders.map((folder) => (
 									<Folder
 										key={folder.id}
@@ -331,7 +331,7 @@ const EmpDrivePage = () => {
 					{files && files.length !== 0 && (
 						<>
 							<h2 className='title'>Files</h2>
-							<div className='grid grid-flow-dense gap-5'>
+							<div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'>
 								{files.map((file) => (
 									<File
 										key={file.id}
