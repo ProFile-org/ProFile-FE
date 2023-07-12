@@ -24,7 +24,7 @@ const AdminLogPage = () => {
 
 	const { getPaginatedTableProps, refetch } = usePagination<Ilog>({
 		key: ['logs', objectType],
-		url: `/logs?objectType=${objectType}`,
+		url: `/logs`,
 		query: query.current,
 		queryConfig: {
 			enabled: !!objectType,

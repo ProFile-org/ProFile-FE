@@ -331,7 +331,12 @@ const EmpDrivePage = () => {
 					{files && files.length !== 0 && (
 						<>
 							<h2 className='title'>Files</h2>
-							<div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'>
+							<div
+								className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
+								style={{
+									gridTemplateColumns: 'repeat(auto-fit, minmax(160pxx, 1fr))',
+								}}
+							>
 								{files.map((file) => (
 									<File
 										key={file.id}
