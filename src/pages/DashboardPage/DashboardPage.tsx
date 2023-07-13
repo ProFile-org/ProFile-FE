@@ -6,7 +6,10 @@ import { Outlet } from 'react-router';
 const DashboardPage = ({ open = false }) => {
 	return (
 		<div
-			className={clsx('flex-1 flex text-white max-w-full page-wrapper', open && 'lg:pl-[232px]')}
+			className={clsx(
+				'flex-1 flex text-white max-w-full page-wrapper transition-all',
+				open && 'lg:pl-[232px]'
+			)}
 		>
 			<Suspense
 				fallback={
