@@ -19,7 +19,7 @@ const AdminEmployeeDetailPage = () => {
 	const [qr, setQr] = useState('');
 	const [editMode, setEditMode] = useState(false);
 	const queryClient = useQueryClient();
-	const [error] = useState('');
+	const [error, setError] = useState('');
 
 	const {
 		data: user,
@@ -34,12 +34,12 @@ const AdminEmployeeDetailPage = () => {
 	);
 
 	useEffect(() => {
-		const generateQr = async () => {
+		const renderQr = async () => {
 			if (!empId) return;
 			const qrCode = await QRCode.toDataURL(empId);
 			setQr(qrCode);
 		};
-		generateQr();
+		renderQr();
 	}, [empId]);
 
 	if (isLoading) return <SkeletonPage />;
@@ -56,31 +56,32 @@ const AdminEmployeeDetailPage = () => {
 		role,
 		email,
 		username,
-		// isActive,
+		isActive,
+		isActivated,
 		department: { name: departmentName },
 	} = user.data;
 
 	type FormValues = typeof initialValues;
 
-	// const onToggleAvailability = async () => {
-	// 	try {
-	// 		if (isActive) {
-	// 			await axiosClient.put(`/users/disable/${empId}`);
-	// 		} else {
-	// 			await axiosClient.post(`/users/enable/${empId}`, {});
-	// 		}
-	// 		queryClient.invalidateQueries('users');
-	// 	} catch (error) {
-	// 		const axiosError = error as AxiosError<BaseResponse>;
-	// 		setError(axiosError.response?.data.message || 'Something went wrong');
-	// 	}
-	// };
+	const onToggleAvailability = async () => {
+		try {
+			await axiosClient.put(`/users/${empId}`, {
+				...initialValues,
+				role,
+				isActive: !isActive,
+			});
+			queryClient.invalidateQueries('users');
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			setError(axiosError.response?.data.message || 'Bad request');
+		}
+	};
 
 	const onSubmit = async (values: FormValues) => {
 		if (JSON.stringify(values) === JSON.stringify(initialValues)) return setEditMode(false);
 		try {
 			await axiosClient.put<GetUserByIdResponse>(`/users/${empId}`, values);
-			queryClient.invalidateQueries('documents');
+			queryClient.invalidateQueries('users');
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -113,7 +114,7 @@ const AdminEmployeeDetailPage = () => {
 				isValid,
 				isSubmitting,
 			}) => (
-				<div className='flex gap-5 flex-col md:flex-row'>
+				<div className='flex gap-5 flex-col md:flex-row w-full'>
 					<div className='flex flex-col gap-5 flex-1'>
 						<InformationPanel header='General information' className='flex-1 h-max'>
 							<InputWithLabel
@@ -195,13 +196,13 @@ const AdminEmployeeDetailPage = () => {
 						</InformationPanel>
 					</div>
 					<div>
-						<InformationPanel direction='row'>
+						<InformationPanel>
 							{qr ? (
 								<img src={qr} className='rounded-lg w-48 aspect-square' />
 							) : (
 								<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 							)}
-							<div className='flex flex-col justify-between flex-1 gap-4'>
+							<div className='flex flex-col flex-1 gap-5'>
 								{editMode ? (
 									<Button
 										label='Cancelled'
@@ -215,15 +216,15 @@ const AdminEmployeeDetailPage = () => {
 										}}
 									/>
 								) : (
-									// <Button
-									// 	type='button'
-									// 	label={isActive ? 'Disable' : 'Enable'}
-									// 	className='h-11 rounded-lg flex-1'
-									// 	severity={isActive ? 'danger' : 'success'}
-									// 	onClick={onToggleAvailability}
-									// 	disabled={editMode || isSubmitting || !isValid}
-									// />
-									<Button label='Print QR' className='h-11 rounded-lg bg-primary' type='button' />
+									<Button
+										type='button'
+										label={isActive ? 'Disable' : 'Enable'}
+										className='h-11 rounded-lg'
+										severity={isActive ? 'danger' : 'success'}
+										onClick={onToggleAvailability}
+										disabled={editMode || isSubmitting || !isValid}
+									/>
+									// <Button label='Print QR' className='h-11 rounded-lg bg-primary' type='button' />
 								)}
 								<Button
 									label={editMode ? 'Save' : 'Edit'}
@@ -238,6 +239,7 @@ const AdminEmployeeDetailPage = () => {
 										submitForm();
 									}}
 								/>
+								{!isActivated && <Button label='Resend email' severity='info' className='h-11' />}
 								<Link to={AUTH_ROUTES.EMPLOYEES_MANAGE} className='w-full'>
 									<Button
 										type='button'
@@ -246,8 +248,8 @@ const AdminEmployeeDetailPage = () => {
 										outlined
 									/>
 								</Link>
-								{error && <div className='text-red-500'>{error}</div>}
 							</div>
+							{error && <div className='text-red-500'>{error}</div>}
 						</InformationPanel>
 					</div>
 				</div>

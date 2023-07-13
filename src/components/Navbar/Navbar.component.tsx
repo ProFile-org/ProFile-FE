@@ -8,10 +8,13 @@ import clsx from 'clsx';
 import DashboardPage from '@/pages/DashboardPage/DashboardPage';
 import MobileSideBar from '../Sidebar/MobileSideBar.component';
 import axiosClient from '@/utils/axiosClient';
+import { useQueryClient } from 'react-query';
+import Sidebar from '../Sidebar/Sidebar.component';
 
 const Navbar = () => {
 	const { user, dispatch } = useContext(AuthContext);
 	const [open, setOpen] = useState(false);
+	const queryClient = useQueryClient();
 
 	const signOut = async () => {
 		try {
@@ -24,6 +27,7 @@ const Navbar = () => {
 				payload: null,
 			});
 			localStorage.removeItem('user');
+			queryClient.clear();
 		}
 	};
 
@@ -33,7 +37,7 @@ const Navbar = () => {
 				<Layout>
 					<div className='flex py-3 justify-between items-center'>
 						<div className='flex gap-3'>
-							<button className='lg:hidden' onClick={() => setOpen(true)}>
+							<button className='' onClick={() => setOpen((prev) => !prev)}>
 								<i className={clsx(PrimeIcons.BARS, 'text-white text-2xl')} />
 							</button>
 							<Link to='/' className='text-white font-bold text-2xl'>
@@ -55,7 +59,10 @@ const Navbar = () => {
 				</Layout>
 			</div>
 			<Layout>
-				<DashboardPage />
+				<div className='flex mt-5 pb-3 sm:pb-5 max-w-full h-full'>
+					<Sidebar open={open} />
+					<DashboardPage open={open} />
+				</div>
 			</Layout>
 			<MobileSideBar open={open} setOpen={setOpen} />
 		</>

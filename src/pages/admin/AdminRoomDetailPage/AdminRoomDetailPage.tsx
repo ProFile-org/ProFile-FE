@@ -9,10 +9,10 @@ import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { useQuery, useQueryClient } from 'react-query';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
-import { IFolder } from '@/types/item';
+import { ILocker } from '@/types/item';
 import Status from '@/components/Status/Status.component';
 import { AxiosError } from 'axios';
 import ErrorTemplate from '@/components/ErrorTemplate/ErrorTemplate.component';
@@ -27,6 +27,7 @@ const AdminRoomDetailPage = () => {
 	const queryClient = useQueryClient();
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
+	const navigate = useNavigate();
 
 	const {
 		data: room,
@@ -62,7 +63,7 @@ const AdminRoomDetailPage = () => {
 	if (isLoading) return <SkeletonPage />;
 
 	if ((axiosError as AxiosError)?.response?.status === 404 || !room)
-		return <ErrorTemplate code={404} message='Locker not found' url={AUTH_ROUTES.LOCKERS} />;
+		return <ErrorTemplate code={404} message='Locker not found' url={AUTH_ROUTES.ROOMS} />;
 
 	const { name: roomName, capacity, numberOfLockers, description, isAvailable } = room.data;
 
@@ -80,15 +81,16 @@ const AdminRoomDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/rooms/disable/${roomId}`);
-			} else {
-				await axiosClient.put(`/rooms/enable/${roomId}`);
-			}
+			await axiosClient.put(`/rooms/${roomId}`, {
+				name: roomName,
+				description,
+				capacity,
+				isAvailable: !isAvailable,
+			});
 			queryClient.invalidateQueries('rooms');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -120,14 +122,25 @@ const AdminRoomDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
+		}
+	};
+
+	const onDelete = async () => {
+		try {
+			await axiosClient.delete(`/rooms/${roomId}`);
+			queryClient.invalidateQueries('rooms');
+			navigate(AUTH_ROUTES.ROOMS);
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<span>{roomName}</span>
 				</h2>
@@ -150,7 +163,7 @@ const AdminRoomDetailPage = () => {
 						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 							{' '}
 							<div className='flex flex-col gap-5 flex-1'>
-								<InformationPanel header='Locker information'>
+								<InformationPanel header='Room information'>
 									<InputWithLabel
 										label='ID'
 										wrapperClassName='flex-1'
@@ -227,7 +240,7 @@ const AdminRoomDetailPage = () => {
 										<Button
 											type='button'
 											label={editMode ? 'Update' : 'Edit'}
-											className='h-11 rounded-lg flex-1 bg-primary'
+											className='h-11 rounded-lg bg-primary flex-1'
 											onClick={async () => {
 												if (editMode) {
 													await submitForm();
@@ -242,7 +255,7 @@ const AdminRoomDetailPage = () => {
 												label='Cancelled'
 												severity='danger'
 												type='button'
-												className='h-11 rounded-lg flex-1'
+												className='h-11 rounded-lg '
 												onClick={() => {
 													setEditMode(false);
 													resetForm();
@@ -259,19 +272,26 @@ const AdminRoomDetailPage = () => {
 												disabled={editMode || isSubmitting || !isValid}
 											/>
 										)}
-										<Link to={AUTH_ROUTES.FOLDERS}>
-											<Button
-												type='button'
-												label='Return home'
-												className='w-full h-11 rounded-lg btn-outlined'
-												outlined
-												disabled={isSubmitting}
-											/>
-										</Link>
+										<Button
+											label='Delete'
+											className='h-11 rounded-lg flex-1 btn-outlined !border-red-500 hover:!bg-red-500'
+											type='button'
+											outlined
+											onClick={onDelete}
+										/>
 									</div>
+									<Link to={AUTH_ROUTES.ROOMS}>
+										<Button
+											type='button'
+											label='Return home'
+											className='w-full h-11 rounded-lg btn-outlined'
+											outlined
+											disabled={isSubmitting}
+										/>
+									</Link>
 									{error && <div className='text-red-500'>{error}</div>}
 								</InformationPanel>
-								<InformationPanel header='Folders' className='flex-1'>
+								<InformationPanel header='Lockers' className='flex-1'>
 									<Table
 										value={lockersWithId}
 										loading={isLockersLoading}
@@ -284,7 +304,7 @@ const AdminRoomDetailPage = () => {
 										<Column
 											field='status'
 											header='Status'
-											body={(item: IFolder) => <Status type='folder' item={item} />}
+											body={(item: ILocker) => <Status type='locker' item={item} />}
 										/>
 									</Table>
 								</InformationPanel>

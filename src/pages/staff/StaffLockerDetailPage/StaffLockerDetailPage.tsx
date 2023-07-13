@@ -30,7 +30,7 @@ const StaffLockerDetailPage = () => {
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
 
-	const roomId = user?.department.roomId || '';
+	const roomId = user?.roomId || '';
 
 	const {
 		data: locker,
@@ -89,15 +89,16 @@ const StaffLockerDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/lockers/disable/${lockerId}`);
-			} else {
-				await axiosClient.put(`/lockers/enable/${lockerId}`);
-			}
+			await axiosClient.put(`/lockers/${lockerId}`, {
+				isAvailable: !isAvailable,
+				name: lockerName,
+				description,
+				capacity,
+			});
 			queryClient.invalidateQueries('lockers');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -129,14 +130,14 @@ const StaffLockerDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<span>{lockerName}</span>
 				</h2>

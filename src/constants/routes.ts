@@ -13,8 +13,11 @@ export const AUTH_ROUTES = {
 	REQUEST: '/requests/:requestId',
 	NEW_REQUEST: '/requests/create',
 	RETURNS: '/returns',
-	IMPORT: '/import',
-	DRIVE: '/digital',
+	NEW_IMPORT: '/import/create',
+	DIGITAL: '/digital',
+	DRIVE: '/digital/drive',
+	DRIVE_SHARED: '/digital/shared',
+	DRIVE_TRASH: '/digital/trash',
 	EMPLOYEES: '/employees',
 	EMPLOYEES_MANAGE: '/employees/manage',
 	EMPLOYEE: '/employees/manage/:empId',
@@ -28,12 +31,18 @@ export const AUTH_ROUTES = {
 	STAFF: '/staffs/manage/:staffId',
 	NEW_STAFF: '/staffs/create',
 	DEPARTMENTS: '/departments',
-	DEPARTMENT: '/departments/:departmentId',
+	DEPARTMENTS_MANAGE: '/departments/manage',
+	DEPARTMENT: '/departments/manage/:departmentId',
 	NEW_DEPARTMENT: '/departments/create',
+	IMPORT_ID: '/import/manage/:importId',
+	IMPORT_MANAGE: '/import/manage',
+	IMPORT: '/import',
+	PROFILE: '/profile',
 };
 
 export const UNAUTH_ROUTES = {
 	AUTH: '/auth',
+	CALLBACK: '/reset',
 };
 
 export type AUTH_ROUTES_KEY = keyof typeof AUTH_ROUTES;

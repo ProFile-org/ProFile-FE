@@ -10,7 +10,9 @@ const StaffDashboardPage = lazy(
 );
 const StaffLockerPage = lazy(() => import('@/pages/staff/StaffLockerPage/StaffLockerPage'));
 const StaffDocumentPage = lazy(() => import('@/pages/staff/StaffDocumentPage/StaffDocumentPage'));
-const StaffImportPage = lazy(() => import('@/pages/staff/StaffImportPage/StaffImportPage'));
+const StaffImportCreatePage = lazy(
+	() => import('@/pages/staff/StaffImportCreatePage/StaffImportCreatePage')
+);
 const StaffDocumentDetailPage = lazy(
 	() => import('@/pages/staff/StaffDocumentDetailPage/StaffDocumentDetailPage')
 );
@@ -26,6 +28,10 @@ const StaffFolderPage = lazy(() => import('@/pages/staff/StaffFolderPage/StaffFo
 const StaffFolderDetailPage = lazy(
 	() => import('@/pages/staff/StaffFolderDetailPage/StaffFolderDetailPage')
 );
+const StaffImportDetailPage = lazy(
+	() => import('@/pages/staff/StaffImportDetailPage/StaffImportDetailPage')
+);
+const StaffImportPage = lazy(() => import('@/pages/staff/StaffImportPage/StaffImportPage'));
 
 // Employee imports
 const EmpDashboardPage = lazy(() => import('@/pages/emp/EmpDashboardPage/EmpDashboardPage'));
@@ -40,6 +46,17 @@ const EmpRequestCreatePage = lazy(
 const EmpDocumentDetailPage = lazy(
 	() => import('@/pages/emp/EmpDocumentDetailPage/EmpDocumentDetailPage')
 );
+const EmpImportCreatePage = lazy(
+	() => import('@/pages/emp/EmpImportCreatePage/EmpImportCreatePage')
+);
+const EmpImportDetailPage = lazy(
+	() => import('@/pages/emp/EmpImportDetailPage/EmpImportDetailPage')
+);
+const EmpImportPage = lazy(() => import('@/pages/emp/EmpImportPage/EmpImportPage'));
+const EmpProfilePage = lazy(() => import('@/pages/emp/EmpProfilePage/EmpProfilePage'));
+const EmpDrivePage = lazy(() => import('@/pages/emp/EmpDrivePage/EmpDrivePage'));
+const EmpDriveSharedPage = lazy(() => import('@/pages/emp/EmpDriveSharedPage/EmpDriveSharedPage'));
+const EmpDriveTrashPage = lazy(() => import('@/pages/emp/EmpDriveTrashPage/EmpDriveTrashPage'));
 
 // Admin imports
 const AdminDashboardPage = lazy(
@@ -82,6 +99,19 @@ const AdminRoomCreatePage = lazy(
 const AdminFolderCreatePage = lazy(
 	() => import('@/pages/admin/AdminFolderCreatePage/AdminFolderCreatePage')
 );
+const AdminStaffCreatePage = lazy(
+	() => import('@/pages/admin/AdminStaffCreatePage/AdminStaffCreatePage')
+);
+const AdminDepartmentPage = lazy(
+	() => import('@/pages/admin/AdminDepartmentPage/AdminDepartmentPage')
+);
+const AdminDepartmentCreatePage = lazy(
+	() => import('@/pages/admin/AdminDepartmentCreatePage/AdminDepartmentCreatePage')
+);
+const AdminDepartmentDetailPage = lazy(
+	() => import('@/pages/admin/AdminDepartmentDetailPage/AdminDepartmentDetailPage')
+);
+const AdminLogPage = lazy(() => import('@/pages/admin/AdminLogPage/AdminLogPage'));
 
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
@@ -107,8 +137,9 @@ export const ROLE_MAPPER = {
 		staff: () => <StaffDocumentPage />,
 		employee: () => <EmpDocumentPage />,
 	},
-	[AUTH_ROUTES.IMPORT]: {
-		staff: () => <StaffImportPage />,
+	[AUTH_ROUTES.NEW_IMPORT]: {
+		staff: () => <StaffImportCreatePage />,
+		employee: () => <EmpImportCreatePage />,
 	},
 	[AUTH_ROUTES.DOCUMENT]: {
 		admin: () => <AdminDocumentDetailPage />,
@@ -160,9 +191,6 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.STAFFS_MANAGE]: {
 		admin: () => <AdminStaffPage />,
 	},
-	[AUTH_ROUTES.NEW_DEPARTMENT]: {
-		// admin: () => <AdminCreatePage />,
-	},
 	[AUTH_ROUTES.NEW_ROOM]: {
 		admin: () => <AdminRoomCreatePage />,
 	},
@@ -173,9 +201,51 @@ export const ROLE_MAPPER = {
 		admin: () => <AdminFolderCreatePage />,
 	},
 	[AUTH_ROUTES.NEW_STAFF]: {
-		// admin: () => <AdminCreatePage />,
+		admin: () => <AdminStaffCreatePage />,
 	},
 	[AUTH_ROUTES.NEW_EMP]: {
 		admin: () => <AdminEmployeeCreatePage />,
+	},
+	[AUTH_ROUTES.DEPARTMENTS_MANAGE]: {
+		admin: () => <AdminDepartmentPage />,
+	},
+	[AUTH_ROUTES.DEPARTMENTS]: {
+		admin: () => <Navigate to={AUTH_ROUTES.DEPARTMENTS_MANAGE} replace />,
+	},
+	[AUTH_ROUTES.DEPARTMENT]: {
+		admin: () => <AdminDepartmentDetailPage />,
+	},
+	[AUTH_ROUTES.NEW_DEPARTMENT]: {
+		admin: () => <AdminDepartmentCreatePage />,
+	},
+	[AUTH_ROUTES.IMPORT_ID]: {
+		employee: () => <EmpImportDetailPage />,
+		staff: () => <StaffImportDetailPage />,
+	},
+	[AUTH_ROUTES.IMPORT_MANAGE]: {
+		employee: () => <EmpImportPage />,
+		staff: () => <StaffImportPage />,
+	},
+	[AUTH_ROUTES.IMPORT]: {
+		employee: () => <Navigate to={AUTH_ROUTES.IMPORT_MANAGE} replace />,
+		staff: () => <Navigate to={AUTH_ROUTES.IMPORT_MANAGE} replace />,
+	},
+	[AUTH_ROUTES.LOGS]: {
+		admin: () => <AdminLogPage />,
+	},
+	[AUTH_ROUTES.PROFILE]: {
+		employee: () => <EmpProfilePage />,
+	},
+	[AUTH_ROUTES.DRIVE]: {
+		employee: () => <EmpDrivePage />,
+	},
+	[AUTH_ROUTES.DRIVE_SHARED]: {
+		employee: () => <EmpDriveSharedPage />,
+	},
+	[AUTH_ROUTES.DRIVE_TRASH]: {
+		employee: () => <EmpDriveTrashPage />,
+	},
+	[AUTH_ROUTES.DIGITAL]: {
+		employee: () => <Navigate to={AUTH_ROUTES.DRIVE} replace />,
 	},
 };

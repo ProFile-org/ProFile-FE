@@ -5,7 +5,7 @@ const SkeletonPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<Skeleton className='w-1/2' />
 				</h2>
 			</div>

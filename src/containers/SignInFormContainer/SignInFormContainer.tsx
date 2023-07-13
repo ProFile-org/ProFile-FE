@@ -5,8 +5,9 @@ import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component
 import { AuthContext } from '@/context/authContext';
 import Spinner from '@/components/Spinner/Spinner.component';
 import axiosClient from '@/utils/axiosClient';
-import { LoginResponse } from '@/types/response';
+import { BaseResponse, GetRoomByIdResponse, LoginResponse } from '@/types/response';
 import { AxiosError } from 'axios';
+import { useNavigate } from 'react-router';
 
 const SIGNIN_INITIALS = {
 	email: '',
@@ -22,6 +23,7 @@ interface ISiginFormValues {
 
 const SignInForm = () => {
 	const { dispatch } = useContext(AuthContext);
+	const navigate = useNavigate();
 
 	const onValidate = async (values: ISiginFormValues) => {
 		const errors: { email?: string; password?: string } = {};
@@ -56,12 +58,12 @@ const SignInForm = () => {
 			const user = {
 				...data,
 				role: data.role.toLowerCase(),
-				department: {
-					id: 'f2760dcd-6830-4541-9e99-d80bce9e6980',
-					name: 'Accounting',
-					roomId: 'f2760dcd-6830-4541-9e99-d80bce9e6980',
-				},
 			};
+
+			if (user.role === 'staff') {
+				const room = (await axiosClient.get<GetRoomByIdResponse>(`/staffs/${data.id}/rooms`)).data;
+				user.roomId = room.data?.id; // If staff is not assigned, it will be null
+			}
 
 			dispatch({
 				type: 'LOGIN',
@@ -70,12 +72,24 @@ const SignInForm = () => {
 			localStorage.setItem('user', JSON.stringify(user));
 		} catch (error) {
 			console.error(error);
-			const axiosError = error as AxiosError;
-			const message =
-				(axiosError.response?.data as { message?: string }).message || 'Something went wrong';
-			setErrors({
-				error: message,
-			});
+			const axiosError = error as AxiosError<BaseResponse<{ token: string }>>;
+			if (axiosError.response?.status === 404) {
+				setErrors({
+					error: 'You have not been assigned a room yet, please contact admin for more information',
+				});
+			} else {
+				const token = axiosError.response?.data.data.token;
+				if (token) {
+					navigate(`/reset`, {
+						state: token,
+					});
+					return;
+				}
+				const message = axiosError.response?.data.message || 'Bad request';
+				setErrors({
+					error: message,
+				});
+			}
 		} finally {
 			setSubmitting(false);
 		}

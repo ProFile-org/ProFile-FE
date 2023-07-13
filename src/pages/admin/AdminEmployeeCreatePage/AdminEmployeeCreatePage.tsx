@@ -83,7 +83,7 @@ const AdminEmployeeCreatePage = () => {
 				isValid,
 				isSubmitting,
 			}) => (
-				<form className='flex gap-5 flex-col md:flex-row' onSubmit={handleSubmit}>
+				<form className='flex gap-5 flex-col md:flex-row w-full' onSubmit={handleSubmit}>
 					<InformationPanel header='General information' className='flex-1 h-max'>
 						<InputWithLabel
 							label='First name'

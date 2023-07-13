@@ -10,7 +10,7 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { useQuery, useQueryClient } from 'react-query';
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IDocument } from '@/types/item';
 import Status from '@/components/Status/Status.component';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
@@ -26,6 +26,7 @@ const AdminFolderDetailPage = () => {
 	const queryClient = useQueryClient();
 	const [editMode, setEditMode] = useState(false);
 	const [error, setError] = useState('');
+	const navigate = useNavigate();
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DOCUMENTS' });
 
@@ -89,15 +90,16 @@ const AdminFolderDetailPage = () => {
 
 	const onToggleAvailability = async () => {
 		try {
-			if (isAvailable) {
-				await axiosClient.put(`/folders/disable/${folderId}`);
-			} else {
-				await axiosClient.put(`/folders/enable/${folderId}`);
-			}
+			await axiosClient.put(`/folders/${folderId}`, {
+				name: folderName,
+				description,
+				capacity,
+				isAvailable: !isAvailable,
+			});
 			queryClient.invalidateQueries('folders');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
@@ -129,14 +131,25 @@ const AdminFolderDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setError(axiosError.response?.data.message || 'Something went wrong');
+			setError(axiosError.response?.data.message || 'Bad request');
+		}
+	};
+
+	const onDelete = async () => {
+		try {
+			await axiosClient.delete(`/folders/${folderId}`);
+			queryClient.invalidateQueries('folders');
+			navigate(AUTH_ROUTES.FOLDERS);
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			setError(axiosError.response?.data.message || 'Bad request');
 		}
 	};
 
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card'>
-				<h2 className='title flex gap-2'>
+				<h2 className='flex gap-2'>
 					<span>/</span>
 					<Link className='link-underlined' to={`${AUTH_ROUTES.ROOMS}/${roomId}`}>
 						{roomName}
@@ -266,16 +279,23 @@ const AdminFolderDetailPage = () => {
 											disabled={editMode || isSubmitting || !isValid}
 										/>
 									)}
-									<Link to={AUTH_ROUTES.FOLDERS}>
-										<Button
-											type='button'
-											label='Return home'
-											className='w-full h-11 rounded-lg btn-outlined'
-											outlined
-											disabled={isSubmitting}
-										/>
-									</Link>
+									<Button
+										label='Delete'
+										className='h-11 rounded-lg flex-1 btn-outlined !border-red-500 hover:!bg-red-500'
+										type='button'
+										outlined
+										onClick={onDelete}
+									/>
 								</div>
+								<Link to={AUTH_ROUTES.FOLDERS}>
+									<Button
+										type='button'
+										label='Return home'
+										className='w-full h-11 rounded-lg btn-outlined'
+										outlined
+										disabled={isSubmitting}
+									/>
+								</Link>
 								{error && <div className='text-red-500'>{error}</div>}
 							</InformationPanel>
 							<InformationPanel header='Documents' className='flex-1'>

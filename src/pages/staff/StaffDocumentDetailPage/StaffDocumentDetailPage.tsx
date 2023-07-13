@@ -4,13 +4,13 @@ import { AUTH_ROUTES } from '@/constants/routes';
 import { BaseResponse, GetDocumentByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
@@ -25,32 +25,42 @@ const StaffDocumentDetailPage = () => {
 
 	const { data, isLoading, error } = useQuery(
 		['documents', documentId],
-		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data,
-		{
-			onSuccess: async (data) => {
-				const { id } = data?.data || { id: '' };
-				if (!id) return;
-				const qrCode = await QRCode.toDataURL(id);
-				setQr(qrCode);
-			},
-		}
+		async () => (await axiosClient.get<GetDocumentByIdResponse>(`/documents/${documentId}`)).data
 	);
+
+	useEffect(() => {
+		const renderQr = async () => {
+			const { id } = data?.data || { id: '' };
+			if (!id) return;
+			const qrCode = await QRCode.toDataURL(id);
+			setQr(qrCode);
+		};
+		renderQr();
+	}, [data]);
 
 	if (isLoading) return <SkeletonPage />;
 
 	if ((error as AxiosError)?.response?.status === 404 || !data)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
-	const {
-		title,
-		folder: {
-			id: folderId,
-			name: folderName,
-			locker: { id: lockerId, name: lockerName },
-		},
-	} = data.data;
+	const { title } = data.data;
 
-	const initialValues = data.data;
+	const folder = data.data.folder || {
+		id: '',
+		name: '',
+		locker: {
+			id: '',
+			name: '',
+		},
+	};
+
+	const {
+		id: folderId,
+		name: folderName,
+		locker: { id: lockerId, name: lockerName } = {},
+	} = folder;
+
+	const initialValues = { ...data.data, folder };
 
 	type FormValues = typeof initialValues;
 
@@ -65,7 +75,7 @@ const StaffDocumentDetailPage = () => {
 			setEditMode(false);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setFieldError('title', axiosError?.response?.data?.message || 'Something went wrong');
+			setFieldError('title', axiosError?.response?.data?.message || 'Bad request');
 		}
 	};
 
@@ -81,15 +91,23 @@ const StaffDocumentDetailPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<div className='card py-3'>
-				<h2 className='title flex gap-2'>
-					<span>/</span>
-					<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
-						{lockerName}
-					</Link>
-					<span>/</span>
-					<Link to={`${AUTH_ROUTES.FOLDERS}/${folderId}`} className='link-underlined'>
-						{folderName}
-					</Link>
+				<h2 className='flex gap-2'>
+					{lockerId && (
+						<>
+							<span>/</span>
+							<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
+								{lockerName}
+							</Link>
+						</>
+					)}
+					{folderId && (
+						<>
+							<span>/</span>
+							<Link to={`${AUTH_ROUTES.FOLDERS}/${folderId}`} className='link-underlined'>
+								{folderName}
+							</Link>
+						</>
+					)}
 					<span>/</span>
 					<span>{title}</span>
 				</h2>
@@ -110,7 +128,7 @@ const StaffDocumentDetailPage = () => {
 					<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 						<div className='flex flex-col gap-5 flex-1'>
 							<InformationPanel header='Employee information'>
-								<div className='flex gap-3'>
+								{/* <div className='flex gap-3'>
 									<InputWithLabel
 										label='ID'
 										wrapperClassName='flex-1'
@@ -122,7 +140,7 @@ const StaffDocumentDetailPage = () => {
 										className='self-end bg-primary rounded-lg h-11'
 										type='button'
 									/>
-								</div>
+								</div> */}
 								<InputWithLabel
 									label='Name'
 									wrapperClassName='flex-1'
@@ -204,7 +222,7 @@ const StaffDocumentDetailPage = () => {
 								) : (
 									<div className='w-48 aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 								)}
-								<div className='flex flex-col justify-between flex-1'>
+								<div className='flex flex-col gap-5 flex-1'>
 									{editMode ? (
 										<Button
 											label='Cancelled'
@@ -217,14 +235,13 @@ const StaffDocumentDetailPage = () => {
 												setEditMode(false);
 											}}
 										/>
-									) : (
-										<Button
-											label='Print QR'
-											className='h-11 rounded-lg'
-											severity='info'
-											type='button'
-										/>
-									)}
+									) : // <Button
+									// 	label='Print QR'
+									// 	className='h-11 rounded-lg'
+									// 	severity='info'
+									// 	type='button'
+									// />
+									null}
 									<Button
 										label={editMode ? 'Save' : 'Edit'}
 										className='h-11 rounded-lg bg-primary'
@@ -248,7 +265,7 @@ const StaffDocumentDetailPage = () => {
 									</Link>
 								</div>
 							</InformationPanel>
-							<InformationPanel header='Digital copies' className='h-max'>
+							{/* <InformationPanel header='Digital copies' className='h-max'>
 								<ImagePreviewer
 									readOnly
 									images={[
@@ -258,7 +275,7 @@ const StaffDocumentDetailPage = () => {
 									]}
 								/>
 							</InformationPanel>
-							<InformationPanel header='History' className='flex-1'></InformationPanel>
+							<InformationPanel header='History' className='flex-1'></InformationPanel> */}
 						</div>
 					</form>
 				)}

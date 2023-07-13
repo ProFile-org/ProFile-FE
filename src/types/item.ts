@@ -11,7 +11,6 @@ export interface IItem {
 export interface IDepartment {
 	id: string;
 	name: string;
-	roomId: string;
 }
 
 export interface IDocument {
@@ -23,6 +22,7 @@ export interface IDocument {
 	importer: IUser;
 	folder: IFolder;
 	status: DOCUMENT_STATUS_KEY;
+	isPrivate: boolean;
 }
 
 export interface IRoom {
@@ -71,6 +71,13 @@ export interface IUser {
 	createdBy: string;
 	lastModified: string;
 	lastModifiedBy: string;
+	roomId?: string;
+}
+
+export interface IStaff {
+	user: IUser;
+	room: IRoom;
+	id: string;
 }
 
 export interface IBorrowRequest {
@@ -80,6 +87,58 @@ export interface IBorrowRequest {
 	borrowTime: string;
 	dueTime: string;
 	actualReturnTime: string;
-	reason: string;
+	borrowReason: string;
+	staffReason: string;
 	status: REQUEST_STATUS_KEY;
+}
+
+export interface IImportRequest {
+	room: IRoom;
+	document: IDocument;
+	importReason: string;
+	staffReason: string;
+	status: DOCUMENT_STATUS_KEY;
+	id: string;
+}
+
+export interface Ilog {
+	id: number;
+	template: string;
+	message: string;
+	level: string;
+	time: string;
+	event: string;
+	user: IUser;
+	objectId: string;
+	objectType: string;
+}
+
+export interface IPermission {
+	canRead: boolean;
+	canBorrow: boolean;
+	employeeId: string;
+	documentId: string;
+}
+
+export interface IDrive {
+	name: string;
+	path: string;
+	fileId: string | null;
+	fileType: string | null;
+	fileExtension: string | null;
+	isDirectory: boolean;
+	sizeInBytes: number | null;
+	owner: IUser;
+	created: string;
+	createdBy: string;
+	lastModified: string;
+	lastModifiedBy: string;
+	uploader: IUser;
+	id: string;
+}
+
+export interface IDrivePermission {
+	canView: boolean;
+	canEdit: boolean;
+	employee: IUser;
 }

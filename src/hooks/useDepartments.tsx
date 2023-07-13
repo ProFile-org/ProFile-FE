@@ -13,7 +13,7 @@ const useDepartments = () => {
 	);
 
 	const departments: DropdownOption[] =
-		departmentsResult?.data.map((department) => ({
+		departmentsResult?.data.items.map((department) => ({
 			name: department.name,
 			id: department.id,
 		})) || [];

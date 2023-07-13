@@ -18,8 +18,8 @@ import { AxiosError, AxiosResponse } from 'axios';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-import FileInput from '@/components/FileInput/FileInput.component';
-import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+// import FileInput from '@/components/FileInput/FileInput.component';
+// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { getUser } from '@/utils/services/getUser';
 
 const RequiredValues = {
@@ -62,19 +62,38 @@ const ImportDocumentContainer = () => {
 	});
 
 	const { availableFolders, availableLockers, containerRefetch } = useEmptyContainers({
-		roomId: user?.department.roomId || '',
+		roomId: user?.roomId || '',
 	});
 
 	const { documentTypes, typesRefetch } = useDocumentTypes();
 
 	const [openScan, setOpenScan] = useState(false);
-	const [data, setData] = useState<string[]>([]);
+	// const [data, setData] = useState<string[]>([]);
 
 	const onSubmit = async (
 		values: FormValues,
 		{ setSubmitting, setFieldError }: FormikHelpers<FormValues>
 	) => {
 		try {
+			// const formData = new FormData();
+			// formData.set('Name', values.title);
+			// formData.set('Path', '/');
+			// formData.set('isDirectory', 'true');
+			// await axiosClient.post('/entries', formData, {
+			// 	headers: { 'Content-Type': 'multipart/form-data' },
+			// });
+			// await Promise.all(
+			// 	values.files.map((file) => {
+			// 		const fileData = new FormData();
+			// 		fileData.set('Name', file.name);
+			// 		fileData.set('Path', `/${values.title}`);
+			// 		fileData.set('File', file);
+			// 		fileData.set('isDirectory', 'false');
+			// 		return axiosClient.post('/entries', fileData, {
+			// 			headers: { 'Content-Type': 'multipart/form-data' },
+			// 		});
+			// 	})
+			// );
 			mutation.mutate(
 				{
 					title: values.title,
@@ -127,7 +146,7 @@ const ImportDocumentContainer = () => {
 		if (!user) {
 			setFieldError('id', 'User not found');
 			setFieldValue('name', '', false);
-		} else setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, false);
+		} else setFieldValue('name', `${user.data.firstName} ${user.data.lastName}`, true);
 	};
 
 	useEffect(() => {
@@ -294,7 +313,7 @@ const ImportDocumentContainer = () => {
 										label='Submit'
 										type='submit'
 										className='bg-primary mt-5 rounded-lg'
-										disabled={isSubmitting || isValid}
+										disabled={isSubmitting || !isValid}
 									/>
 								</InformationPanel>
 							</div>
@@ -329,7 +348,7 @@ const ImportDocumentContainer = () => {
 									/>
 									<InputWithLabel label='Name' name='name' id='name' readOnly value={values.name} />
 								</InformationPanel>
-								<InformationPanel header='Add digital copies'>
+								{/* <InformationPanel header='Add digital copies'>
 									<ImagePreviewer
 										images={data}
 										setData={setData}
@@ -350,7 +369,7 @@ const ImportDocumentContainer = () => {
 										className='bg-primary rounded-lg h-11'
 										disabled={isSubmitting}
 									/>
-								</InformationPanel>
+								</InformationPanel> */}
 							</div>
 						</form>
 						{openScan && (

@@ -4,6 +4,7 @@ import AuthGuard from '@/pages/Guards/AuthGuard';
 import SignInPage from '@/pages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar.component';
 import RoleGuard from './pages/Guards/RoleGuard';
+import ResetPage from './pages/CallbackPage/CallbackPage';
 
 function App() {
 	return (
@@ -14,6 +15,15 @@ function App() {
 					<AuthGuard
 						authComponent={<Navigate to={AUTH_ROUTES.HOME} />}
 						unAuthComponent={<SignInPage />}
+					/>
+				}
+			/>
+			<Route
+				path={UNAUTH_ROUTES.CALLBACK}
+				element={
+					<AuthGuard
+						authComponent={<Navigate to={AUTH_ROUTES.HOME} />}
+						unAuthComponent={<ResetPage />}
 					/>
 				}
 			/>

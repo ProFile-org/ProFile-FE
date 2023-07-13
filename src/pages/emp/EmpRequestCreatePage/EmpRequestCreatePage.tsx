@@ -16,10 +16,6 @@ import { useNavigate } from 'react-router';
 
 type InitialValues = {
 	id: string;
-	title: string;
-	documentType: string;
-	locker: string;
-	folder: string;
 	reason: string;
 	dates: Date[];
 };
@@ -27,11 +23,12 @@ type InitialValues = {
 const EmpRequestCreatePage = () => {
 	const query = useQueryParams();
 	const timeout = useRef<NodeJS.Timeout>();
-	const queries = query.entries();
-	const [initialValues, setInitialValues] = useState({
-		...(Object.fromEntries(queries) as unknown as InitialValues),
+	const initialValues = {
+		id: query.get('id') || '',
+		dates: [] as Date[],
 		reason: '',
-	});
+	};
+	const [document, setDocument] = useState<GetDocumentByIdResponse['data'] | null>(null);
 	const [openScan, setOpenScan] = useState(false);
 	const navigate = useNavigate();
 
@@ -75,7 +72,7 @@ const EmpRequestCreatePage = () => {
 			return;
 		}
 		try {
-			const { data } = await axiosClient.post<PostRequestResponse>('/borrows', {
+			const { data } = await axiosClient.post<PostRequestResponse>('/documents/borrows', {
 				documentId: id,
 				borrowFrom: dates[0].toISOString(),
 				borrowTo: dates[1].toISOString(),
@@ -84,7 +81,7 @@ const EmpRequestCreatePage = () => {
 			navigate(`${AUTH_ROUTES.REQUESTS}/${data.data.id}`);
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
-			setFieldError('id', axiosError.response?.data?.message || 'Something went wrong');
+			setFieldError('id', axiosError.response?.data?.message || 'Bad request');
 		}
 	};
 
@@ -93,14 +90,7 @@ const EmpRequestCreatePage = () => {
 			try {
 				const data = await getDocumentById(initialValues.id);
 				if (!data) return;
-				setInitialValues({
-					...initialValues,
-					title: data.data.title,
-					documentType: data.data.documentType,
-					locker: data.data.folder.locker.name,
-					folder: data.data.folder.name,
-					reason: '',
-				});
+				setDocument(data.data);
 			} catch (error) {
 				console.log(error);
 			}
@@ -112,23 +102,16 @@ const EmpRequestCreatePage = () => {
 	const handleIdChange = async (
 		id: string,
 		// eslint-disable-next-line
-		setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void,
 		setFieldError: (field: string, value: string) => void
 	) => {
 		try {
 			const doc = await getDocumentById(id);
 			if (!doc) {
-				setFieldValue('title', '', false);
-				setFieldValue('documentType', '', false);
-				setFieldValue('locker', '', false);
-				setFieldValue('folder', '', false);
+				setDocument(null);
 				setFieldError('id', 'Document not found');
 				return;
 			}
-			setFieldValue('title', doc.data.title);
-			setFieldValue('documentType', doc.data.documentType);
-			setFieldValue('locker', doc.data.folder.locker.name);
-			setFieldValue('folder', doc.data.folder.name);
+			setDocument(doc.data);
 			setFieldError('id', '');
 		} catch (error) {
 			console.log(error);
@@ -154,9 +137,10 @@ const EmpRequestCreatePage = () => {
 						const result = e?.getText();
 						if (!result) return;
 						setFieldValue('id', result);
-						handleIdChange(result, setFieldValue, setFieldError);
+						handleIdChange(result, setFieldError);
 						setOpenScan(false);
 					};
+					console.log(errors);
 					return (
 						<>
 							<form onSubmit={handleSubmit} className='flex flex-col gap-5'>
@@ -168,7 +152,7 @@ const EmpRequestCreatePage = () => {
 										id='id'
 										onChange={async (e) => {
 											handleChange(e);
-											handleIdChange(e.target.value, setFieldValue, setFieldError);
+											handleIdChange(e.target.value, setFieldError);
 										}}
 										onBlur={handleBlur}
 										error={!!errors.id}
@@ -185,14 +169,14 @@ const EmpRequestCreatePage = () => {
 									/>
 									<InputWithLabel
 										label='Title'
-										value={values.title || ''}
+										value={document?.title || ''}
 										name='title'
 										id='title'
 										readOnly
 									/>
 									<InputWithLabel
 										label='Document type'
-										value={values.documentType || ''}
+										value={document?.documentType || ''}
 										name='documentType'
 										id='documentType'
 										readOnly
@@ -200,7 +184,7 @@ const EmpRequestCreatePage = () => {
 									<div className='flex gap-5'>
 										<InputWithLabel
 											label='Locker'
-											value={values.locker || ''}
+											value={document?.folder.locker.name || ''}
 											wrapperClassName='flex-1'
 											name='locker'
 											id='locker'
@@ -208,7 +192,7 @@ const EmpRequestCreatePage = () => {
 										/>
 										<InputWithLabel
 											label='Folder'
-											value={values.folder || ''}
+											value={document?.folder.name || ''}
 											wrapperClassName='flex-1'
 											name='folder'
 											id='folder'

@@ -4,7 +4,7 @@ import { BaseResponse, PaginationResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { DataTableProps, DataTableStateEvent, DataTableValueArray } from 'primereact/datatable';
 import { useState, useContext } from 'react';
-import { useQuery } from 'react-query';
+import { UseQueryOptions, useQuery } from 'react-query';
 
 interface ILazyTableState {
 	first: number;
@@ -17,11 +17,12 @@ interface ILazyTableState {
 const DEFAULT_ROWS = 10;
 const ROWS_PER_PAGE_OPTIONS = [DEFAULT_ROWS, 20, 50, 100];
 
-type UsePaginationProps = {
+type UsePaginationProps<K> = {
 	key: string | Record<string, string> | string[];
 	url: string;
 	query?: string;
 	lazyConfig?: ILazyTableState;
+	queryConfig?: UseQueryOptions<BaseResponse<{ items: K[] } & PaginationResponse>>;
 };
 
 const DEFAULT_LAZY_CONFIG: ILazyTableState = {
@@ -37,7 +38,8 @@ const usePagination = <K,>({
 	url,
 	query = '',
 	lazyConfig = DEFAULT_LAZY_CONFIG,
-}: UsePaginationProps) => {
+	queryConfig,
+}: UsePaginationProps<K>) => {
 	const { user } = useContext(AuthContext);
 
 	const [paginate, setPaginate] = useState<ILazyTableState>(lazyConfig);
@@ -49,7 +51,7 @@ const usePagination = <K,>({
 				await axiosClient.get<BaseResponse<{ items: K[] } & PaginationResponse>>(url, {
 					params: {
 						searchTerm: query,
-						roomId: user?.role === 'admin' ? undefined : user?.department.roomId,
+						roomId: user?.role === 'staff' ? user?.roomId : undefined,
 						page: paginate.page + 1, // Primereact datatable page start at 0, our api start at 1
 						size: paginate.rows,
 						sortBy: paginate?.sortField?.slice(0, 1).toUpperCase() + paginate?.sortField?.slice(1),
@@ -59,6 +61,8 @@ const usePagination = <K,>({
 			).data,
 		{
 			...REFETCH_CONFIG,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			...(queryConfig as any),
 		}
 	);
 

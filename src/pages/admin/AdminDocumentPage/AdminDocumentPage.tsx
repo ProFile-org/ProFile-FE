@@ -1,9 +1,7 @@
 import Table from '@/components/Table/Table.component';
-import { AUTH_ROUTES } from '@/constants/routes';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
-import { Link } from 'react-router-dom';
 import { IDocument } from '@/types/item';
 import usePagination from '@/hooks/usePagination';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
@@ -22,7 +20,7 @@ const AdminDocumentPage = () => {
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DOCUMENTS' });
 
 	return (
-		<div className='flex flex-col gap-5'>
+		<div className='flex flex-col gap-5 w-full'>
 			<div className='card w-full py-3 flex justify-between'>
 				<form
 					className='flex h-11 gap-3'
@@ -38,9 +36,6 @@ const AdminDocumentPage = () => {
 					/>
 					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
 				</form>
-				<Link to={AUTH_ROUTES.IMPORT}>
-					<Button className='h-11 rounded-lg'>Import +</Button>
-				</Link>
 			</div>
 			<div className='card w-full overflow-hidden'>
 				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
