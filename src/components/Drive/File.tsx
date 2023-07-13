@@ -7,11 +7,13 @@ const File = ({
 	// shared = false,
 	file,
 	onContextMenu,
+	showInfo,
 }: // trashed = false,
 {
 	trashed?: boolean;
 	shared?: boolean;
 	file: IDrive;
+	showInfo?: (file: IDrive | null) => void;
 	onContextMenu: (value: string, e: MouseEvent, type: 'file') => void;
 }) => {
 	return (
@@ -20,7 +22,10 @@ const File = ({
 				onContextMenu={(e) => {
 					onContextMenu(file.id, e, 'file');
 				}}
-				className='w-full group'
+				onClick={() => {
+					showInfo && showInfo(file);
+				}}
+				className='group w-full cursor-pointer max-w-[160px]'
 			>
 				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900'>
 					<div className='p-3 bg-neutral-800 rounded-lg transition-colors flex items-center justify-center w-full aspect-square'>

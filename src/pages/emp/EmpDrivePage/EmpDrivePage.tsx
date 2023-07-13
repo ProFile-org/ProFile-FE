@@ -16,16 +16,21 @@ import {
 } from '@/types/response';
 import Overlay from '@/components/Overlay/Overlay.component';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs.component';
-import Folder from '@/components/Drive/Folder';
-import { CreateFolderModal, File } from '@/components/Drive';
-import CreateFileModal from '@/components/Drive/CreateFileModal';
-import RenameModal from '@/components/Drive/RenameModal';
+import {
+	CreateFolderModal,
+	File,
+	CreateFileModal,
+	DetailInfo,
+	ShareModal,
+	Folder,
+	RenameModal,
+} from '@/components/Drive';
 import { Toast } from 'primereact/toast';
 import { AxiosError } from 'axios';
-import ShareModal from '@/components/Drive/ShareModal';
 import { AuthContext } from '@/context/authContext';
 import Spinner from '@/components/Spinner/Spinner.component';
 import { REFETCH_CONFIG } from '@/constants/config';
+import { IDrive } from '@/types/item';
 
 const EmpDrivePage = () => {
 	const query = useRef('');
@@ -45,6 +50,7 @@ const EmpDrivePage = () => {
 	const [modal, setModal] = useState('');
 	const [file, setFile] = useState<File | null>(null);
 	const [currentItem, setCurrentItem] = useState('');
+	const [showInfo, setShowInfo] = useState<IDrive | null>(null);
 
 	const { data, isLoading } = useQuery(
 		['digital', 'private', path, query.current],
@@ -53,6 +59,7 @@ const EmpDrivePage = () => {
 				await axiosClient.get<GetDriveResponse>(`/entries?EntryPath=${encodeURIComponent(path)}`, {
 					params: {
 						searchTerm: query.current,
+						size: 100,
 					},
 				})
 			).data,
@@ -274,15 +281,16 @@ const EmpDrivePage = () => {
 					<Spinner />
 				</div>
 			) : (
-				<div
-					className='flex flex-col gap-5 h-full'
-					onContextMenu={(e) => {
-						globalCm.current?.show(e);
-						fileCm.current?.hide(e);
-						folderCm.current?.hide(e);
-					}}
-				>
-					{/* <div className='card w-full py-3 flex justify-between'>
+				<>
+					<div
+						className='flex flex-col gap-5 h-full w-full'
+						onContextMenu={(e) => {
+							globalCm.current?.show(e);
+							fileCm.current?.hide(e);
+							folderCm.current?.hide(e);
+						}}
+					>
+						{/* <div className='card w-full py-3 flex justify-between'>
 					<form
 						className='flex h-11 gap-3'
 						onSubmit={async (e) => {
@@ -299,63 +307,77 @@ const EmpDrivePage = () => {
 					</form>
 					<Button className='h-11 rounded-lg'>Upload +</Button>
 				</div> */}
-					<Breadcrumbs path={path} pathArr={pathArr} />
-					{!data ||
-						(data.data.items.length === 0 && (
-							<div className='text-center text-lg font-bold h-full flex items-center justify-center w-full'>
-								This drive is empty
-								<br />
-								Upload a file or create a folder
+						<Breadcrumbs path={path} pathArr={pathArr} />
+						{!data ||
+							(data.data.items.length === 0 && (
+								<div className='text-center text-lg font-bold h-full flex items-center justify-center w-full'>
+									This drive is empty
+									<br />
+									Upload a file or create a folder
+								</div>
+							))}
+						<div className='flex'>
+							<div className='flex flex-col gap-5 w-full h-full'>
+								{folders && folders.length !== 0 && (
+									<>
+										<h2 className='title'>Folders</h2>
+										<div
+											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
+											style={{
+												gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+											}}
+										>
+											{folders.map((folder) => (
+												<Folder
+													showInfo={setShowInfo}
+													key={folder.id}
+													folder={folder}
+													currentPath={currentPath}
+													onContextMenu={(value, e) => {
+														globalCm.current?.hide(e);
+														fileCm.current?.hide(e);
+														folderCm.current?.show(e);
+														setCurrentItem(value);
+													}}
+												/>
+											))}
+										</div>
+									</>
+								)}
+								{files && files.length !== 0 && (
+									<>
+										<h2 className='title'>Files</h2>
+										<div
+											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
+											style={{
+												gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+											}}
+										>
+											{files.map((file) => (
+												<File
+													showInfo={setShowInfo}
+													key={file.id}
+													file={file}
+													onContextMenu={(value, e) => {
+														globalCm.current?.hide(e);
+														folderCm.current?.hide(e);
+														fileCm.current?.show(e);
+														setCurrentItem(value);
+													}}
+												/>
+											))}
+										</div>
+									</>
+								)}
 							</div>
-						))}
-					{folders && folders.length !== 0 && (
-						<>
-							<h2 className='title'>Folders</h2>
-							<div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'>
-								{folders.map((folder) => (
-									<Folder
-										key={folder.id}
-										folder={folder}
-										currentPath={currentPath}
-										onContextMenu={(value, e) => {
-											globalCm.current?.hide(e);
-											fileCm.current?.hide(e);
-											folderCm.current?.show(e);
-											setCurrentItem(value);
-										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
-					{files && files.length !== 0 && (
-						<>
-							<h2 className='title'>Files</h2>
-							<div
-								className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
-								style={{
-									gridTemplateColumns: 'repeat(auto-fit, minmax(160pxx, 1fr))',
-								}}
-							>
-								{files.map((file) => (
-									<File
-										key={file.id}
-										file={file}
-										onContextMenu={(value, e) => {
-											globalCm.current?.hide(e);
-											folderCm.current?.hide(e);
-											fileCm.current?.show(e);
-											setCurrentItem(value);
-										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
-					<ContextMenu ref={globalCm} model={items} />
-					<ContextMenu ref={folderCm} model={folderItems} />
-					<ContextMenu ref={fileCm} model={fileItems} />
-				</div>
+								<DetailInfo showInfo={showInfo}  setShowInfo={setShowInfo}/>
+						</div>
+
+						<ContextMenu ref={globalCm} model={items} />
+						<ContextMenu ref={folderCm} model={folderItems} />
+						<ContextMenu ref={fileCm} model={fileItems} />
+					</div>
+				</>
 			)}
 			{modal && (
 				<Overlay onExit={closeModals} className='flex justify-center items-center'>

@@ -23,6 +23,7 @@ const RequiredValues = {
 	roomId: '',
 	importReason: '',
 	isPrivate: true,
+	// files: [] as File[],
 };
 
 const NOT_REQUIRED = ['description', 'isPrivate'];

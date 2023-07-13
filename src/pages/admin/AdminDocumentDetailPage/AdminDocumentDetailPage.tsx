@@ -93,7 +93,7 @@ const AdminDocumentDetailPage = () => {
 	};
 
 	return (
-		<div className='flex flex-col gap-5'>
+		<div className='flex flex-col gap-5 w-full'>
 			<div className='card py-3'>
 				<h2 className='flex gap-2'>
 					{roomId && (

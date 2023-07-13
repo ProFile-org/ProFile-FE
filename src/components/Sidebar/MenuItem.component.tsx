@@ -20,7 +20,7 @@ const MenuItem: FC<IMenuItemProps> = ({ item }) => {
 			<div className='flex flex-col gap-5'>
 				<Link
 					className={clsx(
-						'text-white text-lg px-3 py-2 bg-neutral-800 rounded-lg cursor-pointer hover:opacity-80 flex items-center',
+						'text-white text-lg px-3 py-2 bg-neutral-800 rounded-lg cursor-pointer hover:opacity-80 flex items-center whitespace-nowrap',
 						open && 'bg-primary'
 					)}
 					to={path}

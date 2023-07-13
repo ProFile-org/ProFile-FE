@@ -10,13 +10,14 @@ import { PrimeIcons } from 'primereact/api';
 import { MenuItem } from 'primereact/menuitem';
 import { BaseResponse, GetDriveResponse } from '@/types/response';
 import Folder from '@/components/Drive/Folder';
-import { File } from '@/components/Drive';
+import { DetailInfo, File } from '@/components/Drive';
 import { Toast } from 'primereact/toast';
 import { AxiosError } from 'axios';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import Spinner from '@/components/Spinner/Spinner.component';
 import { REFETCH_CONFIG } from '@/constants/config';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs.component';
+import { IDrive } from '@/types/item';
 
 const EmpDriveTrashPage = () => {
 	const query = useRef('');
@@ -31,6 +32,7 @@ const EmpDriveTrashPage = () => {
 	const currentPath = pathArr.slice(1).join('/') ? pathArr.join('/') : '';
 
 	const [currentItem, setCurrentItem] = useState('');
+	const [showInfo, setShowInfo] = useState<IDrive | null>(null);
 
 	const { data, isLoading } = useQuery(
 		['digital', 'bin', path, query.current],
@@ -119,7 +121,7 @@ const EmpDriveTrashPage = () => {
 					<Spinner />
 				</div>
 			) : (
-				<div className='flex flex-col gap-5 h-full'>
+				<div className='flex flex-col gap-5 h-full w-full'>
 					{/* <div className='card w-full py-3 flex justify-between'>
 					<form
 						className='flex h-11 gap-3'
@@ -144,46 +146,64 @@ const EmpDriveTrashPage = () => {
 							Any recently deleted files or folder will appear here
 						</div>
 					)}
-					{folders && folders.length !== 0 && (
-						<>
-							<h2 className='title'>Folders</h2>
-							<div className='grid grid-cols-5 gap-5'>
-								{folders?.map((folder) => (
-									<Folder
-										trashed
-										key={folder.id}
-										folder={folder}
-										currentPath={currentPath}
-										onContextMenu={(value, e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											cm.current?.show(e);
-											setCurrentItem(value);
+					<div className='flex'>
+						<div className='flex flex-col gap-5 w-full h-full'>
+							{folders && folders.length !== 0 && (
+								<>
+									<h2 className='title'>Folders</h2>
+									<div
+										className='grid grid-cols-5 gap-5'
+										style={{
+											gridTemplateColumns: 'repeat(auto-fit, minmax(160px))',
 										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
-					{files && files.length !== 0 && (
-						<>
-							<h2 className='title'>Files</h2>
-							<div className='grid grid-cols-5 gap-5'>
-								{files?.map((file) => (
-									<File
-										key={file.id}
-										file={file}
-										onContextMenu={(value, e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											cm.current?.show(e);
-											setCurrentItem(value);
+									>
+										{folders?.map((folder) => (
+											<Folder
+												showInfo={setShowInfo}
+												trashed
+												key={folder.id}
+												folder={folder}
+												currentPath={currentPath}
+												onContextMenu={(value, e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													cm.current?.show(e);
+													setCurrentItem(value);
+												}}
+											/>
+										))}
+									</div>
+								</>
+							)}
+							{files && files.length !== 0 && (
+								<>
+									<h2 className='title'>Files</h2>
+									<div
+										className='grid grid-cols-5 gap-5'
+										style={{
+											gridTemplateColumns: 'repeat(auto-fit, minmax(160px))',
 										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
+									>
+										{files?.map((file) => (
+											<File
+												showInfo={setShowInfo}
+												key={file.id}
+												file={file}
+												onContextMenu={(value, e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													cm.current?.show(e);
+													setCurrentItem(value);
+												}}
+											/>
+										))}
+									</div>
+								</>
+							)}
+						</div>
+						<DetailInfo showInfo={showInfo} setShowInfo={setShowInfo} />
+					</div>
+
 					<ContextMenu ref={cm} model={items} />
 					<ConfirmDialog dismissableMask />
 				</div>

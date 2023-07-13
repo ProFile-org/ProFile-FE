@@ -50,7 +50,7 @@ const AdminDepartmentDetailPage = () => {
 	};
 
 	return (
-		<div className='flex gap-5 md:flex-row flex-col'>
+		<div className='flex gap-5 md:flex-row flex-col w-full'>
 			<InformationPanel className='flex-1 h-max'>
 				<InputWithLabel label='Department name' readOnly value={name} />
 			</InformationPanel>

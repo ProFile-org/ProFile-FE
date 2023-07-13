@@ -114,7 +114,7 @@ const AdminEmployeeDetailPage = () => {
 				isValid,
 				isSubmitting,
 			}) => (
-				<div className='flex gap-5 flex-col md:flex-row'>
+				<div className='flex gap-5 flex-col md:flex-row w-full'>
 					<div className='flex flex-col gap-5 flex-1'>
 						<InformationPanel header='General information' className='flex-1 h-max'>
 							<InputWithLabel

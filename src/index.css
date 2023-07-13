@@ -107,3 +107,8 @@ body {
 .p-confirm-dialog-message {
 	color: white;
 }
+
+.page-wrapper > * {
+	width: 100%;
+	flex: 1;
+}

@@ -19,7 +19,7 @@ import {
 import Overlay from '@/components/Overlay/Overlay.component';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs.component';
 import Folder from '@/components/Drive/Folder';
-import { CreateFolderModal, File } from '@/components/Drive';
+import { CreateFolderModal, DetailInfo, File } from '@/components/Drive';
 import CreateFileModal from '@/components/Drive/CreateFileModal';
 import RenameModal from '@/components/Drive/RenameModal';
 import { Toast } from 'primereact/toast';
@@ -28,6 +28,7 @@ import ShareModal from '@/components/Drive/ShareModal';
 import { AuthContext } from '@/context/authContext';
 import Spinner from '@/components/Spinner/Spinner.component';
 import { REFETCH_CONFIG } from '@/constants/config';
+import { IDrive } from '@/types/item';
 
 const EmpDrivePage = () => {
 	const query = useRef('');
@@ -55,6 +56,7 @@ const EmpDrivePage = () => {
 		canEdit: false,
 		canView: false,
 	});
+	const [showInfo, setShowInfo] = useState<IDrive | null>(null);
 
 	useEffect(() => {
 		const getPerms = async () => {
@@ -308,7 +310,7 @@ const EmpDrivePage = () => {
 				</div>
 			) : (
 				<div
-					className='flex flex-col gap-5 h-full'
+					className='flex flex-col gap-5 h-full w-full'
 					onContextMenu={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
@@ -344,72 +346,89 @@ const EmpDrivePage = () => {
 								Any files that are being shared with you will appear here
 							</div>
 						))}
-					{folders && folders.length !== 0 && (
-						<>
-							<h2 className='title'>Folders</h2>
-							<div className='grid grid-cols-5 gap-5'>
-								{folders.map((folder) => (
-									<Folder
-										shared
-										key={folder.id}
-										folder={folder}
-										currentPath={currentPath}
-										onContextMenu={async (value, e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											// Race condition
-											setTimeout(() => {
-												globalCm.current?.hide(e);
-											}, 0);
-											fileCm.current?.hide(e);
-											const { data: perm } =
-												await axiosClient.get<GetCurrentDrivePermissionResponse>(
-													`/shared/entries/${value}/permissions`
-												);
-											setCurrentItemPerm({
-												canEdit: perm.data.canEdit,
-												canView: perm.data.canView,
-											});
-											setCurrentItem(value);
-											perm.data.canEdit && folderCm.current?.show(e);
+					<div className='flex'>
+						<div className='flex flex-col gap-5 w-full h-full'>
+							{folders && folders.length !== 0 && (
+								<>
+									<h2 className='title'>Folders</h2>
+									<div
+										className='grid grid-cols-5 gap-5'
+										style={{
+											gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
 										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
-					{files && files.length !== 0 && (
-						<>
-							<h2 className='title'>Files</h2>
-							<div className='grid grid-cols-5 gap-5'>
-								{files.map((file) => (
-									<File
-										key={file.id}
-										file={file}
-										onContextMenu={async (value, e) => {
-											e.preventDefault();
-											e.stopPropagation();
-											// Race condition
-											setTimeout(() => {
-												globalCm.current?.hide(e);
-											}, 0);
-											folderCm.current?.hide(e);
-											const { data: perm } =
-												await axiosClient.get<GetCurrentDrivePermissionResponse>(
-													`/shared/entries/${value}/permissions`
-												);
-											setCurrentItemPerm({
-												canEdit: perm.data.canEdit,
-												canView: perm.data.canView,
-											});
-											setCurrentItem(value);
-											perm.data.canView && fileCm.current?.show(e);
+									>
+										{folders.map((folder) => (
+											<Folder
+												shared
+												showInfo={setShowInfo}
+												key={folder.id}
+												folder={folder}
+												currentPath={currentPath}
+												onContextMenu={async (value, e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													// Race condition
+													setTimeout(() => {
+														globalCm.current?.hide(e);
+													}, 0);
+													fileCm.current?.hide(e);
+													const { data: perm } =
+														await axiosClient.get<GetCurrentDrivePermissionResponse>(
+															`/shared/entries/${value}/permissions`
+														);
+													setCurrentItemPerm({
+														canEdit: perm.data.canEdit,
+														canView: perm.data.canView,
+													});
+													setCurrentItem(value);
+													perm.data.canEdit && folderCm.current?.show(e);
+												}}
+											/>
+										))}
+									</div>
+								</>
+							)}
+							{files && files.length !== 0 && (
+								<>
+									<h2 className='title'>Files</h2>
+									<div
+										className='grid grid-cols-5 gap-5'
+										style={{
+											gridTemplateColumns: 'repeat(auto-fit, minmax(160px))',
 										}}
-									/>
-								))}
-							</div>
-						</>
-					)}
+									>
+										{files.map((file) => (
+											<File
+												key={file.id}
+												showInfo={setShowInfo}
+												file={file}
+												onContextMenu={async (value, e) => {
+													e.preventDefault();
+													e.stopPropagation();
+													// Race condition
+													setTimeout(() => {
+														globalCm.current?.hide(e);
+													}, 0);
+													folderCm.current?.hide(e);
+													const { data: perm } =
+														await axiosClient.get<GetCurrentDrivePermissionResponse>(
+															`/shared/entries/${value}/permissions`
+														);
+													setCurrentItemPerm({
+														canEdit: perm.data.canEdit,
+														canView: perm.data.canView,
+													});
+													setCurrentItem(value);
+													perm.data.canView && fileCm.current?.show(e);
+												}}
+											/>
+										))}
+									</div>
+								</>
+							)}
+						</div>
+						<DetailInfo showInfo={showInfo} setShowInfo={setShowInfo} />
+					</div>
 
 					<ContextMenu ref={globalCm} model={items} />
 					<ContextMenu ref={folderCm} model={folderItems} />

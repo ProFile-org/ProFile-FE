@@ -86,7 +86,7 @@ const AdminDashboardPage = () => {
 	);
 
 	return (
-		<div className='flex flex-col gap-5'>
+		<div className='flex flex-col gap-5 w-full'>
 			{/* <Link to={AUTH_ROUTES.REQUESTS} className='header link-underlined'>
 				Pending request &gt;
 			</Link>

@@ -20,7 +20,7 @@ const AdminDocumentPage = () => {
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'DOCUMENTS' });
 
 	return (
-		<div className='flex flex-col gap-5'>
+		<div className='flex flex-col gap-5 w-full'>
 			<div className='card w-full py-3 flex justify-between'>
 				<form
 					className='flex h-11 gap-3'
