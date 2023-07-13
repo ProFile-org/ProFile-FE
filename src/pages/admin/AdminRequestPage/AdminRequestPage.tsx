@@ -1,6 +1,5 @@
 import Status from '@/components/Status/Status.component';
 import Table from '@/components/Table/Table.component';
-import { AUTH_ROUTES } from '@/constants/routes';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import usePagination from '@/hooks/usePagination';
 import { IBorrowRequest } from '@/types/item';
@@ -9,7 +8,6 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
 
 const AdminRequestPage = () => {
 	const query = useRef('');

@@ -1,6 +1,13 @@
 import clsx from 'clsx';
 import { PrimeIcons } from 'primereact/api';
-import { ChangeEvent, FC, InputHTMLAttributes, SetStateAction, useState, useRef } from 'react';
+import {
+	ChangeEvent,
+	FC,
+	InputHTMLAttributes,
+	SetStateAction,
+	// useState,
+	useRef,
+} from 'react';
 
 interface IFileInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	setData?: React.Dispatch<SetStateAction<string[]>>;

@@ -18,8 +18,8 @@ import { AxiosError, AxiosResponse } from 'axios';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-import FileInput from '@/components/FileInput/FileInput.component';
-import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
+// import FileInput from '@/components/FileInput/FileInput.component';
+// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { getUser } from '@/utils/services/getUser';
 
 const RequiredValues = {
@@ -68,7 +68,7 @@ const ImportDocumentContainer = () => {
 	const { documentTypes, typesRefetch } = useDocumentTypes();
 
 	const [openScan, setOpenScan] = useState(false);
-	const [data, setData] = useState<string[]>([]);
+	// const [data, setData] = useState<string[]>([]);
 
 	const onSubmit = async (
 		values: FormValues,
