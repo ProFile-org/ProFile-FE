@@ -149,6 +149,7 @@ const EmpRequestCreatePage = () => {
 						handleIdChange(result, setFieldError);
 						setOpenScan(false);
 					};
+					console.log(errors);
 					return (
 						<>
 							<form onSubmit={handleSubmit} className='flex md:flex-row flex-col gap-5 w-full'>
