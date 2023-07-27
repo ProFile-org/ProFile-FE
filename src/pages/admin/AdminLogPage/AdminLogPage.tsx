@@ -2,19 +2,37 @@ import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 import Table from '@/components/Table/Table.component';
 import usePagination from '@/hooks/usePagination';
 import { Ilog } from '@/types/item';
-import { Button } from 'primereact/button';
+// import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
-import { InputText } from 'primereact/inputtext';
+// import { InputText } from 'primereact/inputtext';
+import { SelectItemOptionsType } from 'primereact/selectitem';
 import { useRef, useState } from 'react';
 
-const LOG_TYPES = [
-	{ label: 'Document', value: 'Document' },
-	{ label: 'Folder', value: 'Folder' },
-	{ label: 'Locker', value: 'Locker' },
-	{ label: 'User', value: 'User' },
-	{ label: 'Room', value: 'Room' },
-	{ label: 'Request', value: 'Request' },
-	{ label: 'Borrow', value: 'Borrow' },
+const LOG_TYPES: SelectItemOptionsType = [
+	{
+		label: 'Physical',
+		items: [
+			{ label: 'Document', value: 'Document' },
+			{ label: 'Folder', value: 'Folder' },
+			{ label: 'Locker', value: 'Locker' },
+			{ label: 'Room', value: 'Room' },
+		],
+	},
+	{
+		label: 'User',
+		items: [
+			{ label: 'User action', value: 'User' },
+			{ label: 'Staff', value: 'Staff' },
+		],
+	},
+	{
+		label: 'Requests',
+		items: [
+			{ label: 'Request creation', value: 'Request' },
+			{ label: 'Import request', value: 'ImportRequest' },
+			{ label: 'Borrow request', value: 'BorrowRequest' },
+		],
+	},
 ];
 
 const AdminLogPage = () => {
@@ -41,17 +59,21 @@ const AdminLogPage = () => {
 					}}
 				>
 					<CustomDropdown
-						className='w-48'
 						options={LOG_TYPES}
 						value={objectType}
 						onChange={(e) => setObjectType(e.value)}
+						optionGroupChildren='items'
+						optionGroupLabel='label'
+						optionGroupTemplate={(option) => (
+							<span className='font-bold text-primary'>{option.label}</span>
+						)}
 					/>
-					<InputText
+					{/* <InputText
 						className='input'
 						onChange={(e) => (query.current = e.target.value)}
 						placeholder='log a'
-					/>
-					<Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' />
+					/> */}
+					{/* <Button type='submit' label='Search' className='px-3 rounded-lg bg-primary' /> */}
 				</form>
 			</div>
 			<div className='card w-full overflow-hidden'>
