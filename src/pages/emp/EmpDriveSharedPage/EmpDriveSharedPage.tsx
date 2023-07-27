@@ -253,7 +253,8 @@ const EmpDrivePage = () => {
 	const onCreateFile = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (!file) return;
-		const name = event.currentTarget.fileName.value || file.name;
+		const name =
+			event.currentTarget.fileName.value || file.name.slice(0, file.name.lastIndexOf('.'));
 
 		const formData = new FormData();
 		formData.set('Name', name);

@@ -53,7 +53,6 @@ const FileInput: FC<IFileInputProps> = ({ setFiles, setData, ...rest }) => {
 				<input
 					type='file'
 					className='absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer'
-					accept='image/*'
 					onChange={onFileChange}
 					ref={ref}
 					{...rest}
