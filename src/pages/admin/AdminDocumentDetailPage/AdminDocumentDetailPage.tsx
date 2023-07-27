@@ -158,6 +158,7 @@ const AdminDocumentDetailPage = () => {
 									wrapperClassName='flex-1'
 									value={`${values.importer.firstName} ${values.importer.lastName}`}
 									readOnly
+									disabled={editMode}
 								/>
 								<InputWithLabel
 									label='Department'
@@ -165,6 +166,7 @@ const AdminDocumentDetailPage = () => {
 									// value={department || 'this should be department'}
 									value={values.department.name}
 									readOnly
+									disabled={editMode}
 								/>
 							</InformationPanel>
 							<InformationPanel header='Document information'>
@@ -174,6 +176,7 @@ const AdminDocumentDetailPage = () => {
 									value={values.id}
 									readOnly
 									sideComponent={<Status item={values} type='document' />}
+									disabled={editMode}
 								/>
 								<InputWithLabel
 									label='Title'
@@ -215,6 +218,7 @@ const AdminDocumentDetailPage = () => {
 									<InputWithLabel
 										label='Locker'
 										readOnly
+										disabled={editMode}
 										value={values.folder.locker.name}
 										wrapperClassName='flex-1'
 									/>
@@ -223,6 +227,7 @@ const AdminDocumentDetailPage = () => {
 										readOnly
 										value={values.folder.name}
 										wrapperClassName='flex-1'
+										disabled={editMode}
 									/>
 								</div>
 							</InformationPanel>
@@ -237,7 +242,7 @@ const AdminDocumentDetailPage = () => {
 								<div className='flex flex-col gap-5 flex-1'>
 									{editMode ? (
 										<Button
-											label='Cancelled'
+											label='Cancel'
 											severity='danger'
 											className='h-11 rounded-lg'
 											type='button'

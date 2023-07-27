@@ -22,6 +22,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { AxiosError } from 'axios';
 
 const NO_ACTIONS = [
+	REQUEST_STATUS.Approved.status,
 	REQUEST_STATUS.Cancelled.status,
 	REQUEST_STATUS.CheckedOut.status,
 	REQUEST_STATUS.Returned.status,
@@ -160,15 +161,32 @@ const EmpRequestDetailPage = () => {
 				<div className='flex gap-5 md:flex-row flex-col'>
 					<div className='flex flex-col gap-5 flex-1'>
 						<InformationPanel header='Document information'>
-							<InputWithLabel label='Title' value={title} readOnly />
-							<InputWithLabel label='Document type' value={documentType} readOnly />
+							<InputWithLabel label='Title' value={title} readOnly disabled={editMode} />
+							<InputWithLabel
+								label='Document type'
+								value={documentType}
+								readOnly
+								disabled={editMode}
+							/>
 							<div className='flex gap-5'>
-								<InputWithLabel label='Locker' value={locker} wrapperClassName='flex-1' readOnly />
-								<InputWithLabel label='Folder' value={folder} wrapperClassName='flex-1' readOnly />
+								<InputWithLabel
+									label='Locker'
+									value={locker}
+									wrapperClassName='flex-1'
+									readOnly
+									disabled={editMode}
+								/>
+								<InputWithLabel
+									label='Folder'
+									value={folder}
+									wrapperClassName='flex-1'
+									readOnly
+									disabled={editMode}
+								/>
 							</div>
 						</InformationPanel>
 						<InformationPanel header='Borrow information'>
-							<InputWithLabel label='Status' value={status} readOnly />
+							<InputWithLabel label='Status' value={status} readOnly disabled={editMode} />
 							<TextareaWithLabel
 								label='Reason'
 								readOnly={!editMode}

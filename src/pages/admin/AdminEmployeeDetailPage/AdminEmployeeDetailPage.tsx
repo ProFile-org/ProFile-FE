@@ -192,6 +192,7 @@ const AdminEmployeeDetailPage = () => {
 								error={touched.position && !!errors.position}
 								small={touched.position ? errors.position : undefined}
 								disabled={isSubmitting}
+								readOnly={!editMode}
 							/>
 						</InformationPanel>
 					</div>
@@ -205,7 +206,7 @@ const AdminEmployeeDetailPage = () => {
 							<div className='flex flex-col flex-1 gap-5'>
 								{editMode ? (
 									<Button
-										label='Cancelled'
+										label='Cancel'
 										severity='danger'
 										className='h-11 rounded-lg'
 										type='button'

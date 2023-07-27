@@ -8,6 +8,7 @@ import { AUTH_ROUTES } from '@/constants/routes';
 import { GetImportByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { AxiosError } from 'axios';
+import { Button } from 'primereact/button';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 
@@ -52,12 +53,17 @@ const ImportDetailPagePage = () => {
 				<InputWithLabel label='Is private' value={isPrivate ? 'Private' : 'Public'} />
 				<TextareaWithLabel label='Description' value={description} />
 			</InformationPanel>
-			<InformationPanel header='Import information' className='flex-1 h-max'>
-				<InputWithLabel label='Status' value={importStatus} />
-				<InputWithLabel label='Room' value={name} />
-				<TextareaWithLabel label='Import reason' value={importReason} />
-				<TextareaWithLabel label='Staff reason' value={staffReason} />
-			</InformationPanel>
+			<div className='flex flex-col gap-5 flex-1'>
+				<InformationPanel header='Import information' className='h-max'>
+					<InputWithLabel label='Status' value={importStatus} />
+					<InputWithLabel label='Room' value={name} />
+					<TextareaWithLabel label='Import reason' value={importReason} />
+					<TextareaWithLabel label='Staff reason' value={staffReason} />
+				</InformationPanel>
+				<InformationPanel>
+					<Button label='Print QR' className='h-11 w-full' />
+				</InformationPanel>
+			</div>
 		</div>
 	);
 };

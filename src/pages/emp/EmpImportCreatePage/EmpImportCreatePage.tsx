@@ -7,14 +7,16 @@ import axiosClient from '@/utils/axiosClient';
 import { Formik, FormikHelpers } from 'formik';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '@/context/authContext';
 import { AxiosError } from 'axios';
 import useDocumentTypes from '@/hooks/useDocumentTypes';
 import useRooms from '@/hooks/useRooms';
-import { BaseResponse } from '@/types/response';
+import { BaseResponse, GetImportByIdResponse } from '@/types/response';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
 import { InputSwitch } from 'primereact/inputswitch';
+import FileInput from '@/components/FileInput/FileInput.component';
+import { fileSizeFormatter } from '@/utils/formatter';
 
 const RequiredValues = {
 	title: '',
@@ -33,6 +35,7 @@ type FormValues = typeof RequiredValues;
 const EmpImportPage = () => {
 	const navigate = useNavigate();
 	const { user } = useContext(AuthContext);
+	const [file, setFile] = useState<File>();
 
 	const { documentTypes, typesRefetch } = useDocumentTypes();
 
@@ -45,7 +48,17 @@ const EmpImportPage = () => {
 		{ setSubmitting, setFieldError }: FormikHelpers<FormValues>
 	) => {
 		try {
-			const result = await axiosClient.post('/documents/import-requests', values);
+			const result = await axiosClient.post<GetImportByIdResponse>(
+				'/documents/import-requests',
+				values
+			);
+			const formData = new FormData();
+			formData.append('file', file as File);
+			const res = await axiosClient.post(
+				`/documents/${result.data.data.document.id}/file`,
+				formData
+			);
+			console.log(res);
 			navigate(`${AUTH_ROUTES.IMPORT_MANAGE}/${result.data.data.id}`);
 		} catch (error) {
 			console.log(error);
@@ -99,90 +112,99 @@ const EmpImportPage = () => {
 				return (
 					<>
 						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
+							<InformationPanel header='Document information' className='flex-1'>
+								<InputWithLabel
+									name='title'
+									id='title'
+									label='Title'
+									error={touched.title && !!errors.title}
+									small={touched.title ? errors.title : undefined}
+									value={values.title}
+									onChange={handleChange}
+									onBlur={handleBlur}
+									disabled={isSubmitting}
+								/>
+								<CustomDropdown
+									id='documentType'
+									name='documentType'
+									options={documentTypes}
+									optionLabel='name'
+									optionValue='id'
+									label='Document type'
+									onChange={handleChange}
+									onBlur={handleBlur}
+									value={values.documentType}
+									error={touched.documentType && !!errors.documentType}
+									small={touched.documentType ? errors.documentType : undefined}
+									disabled={isSubmitting}
+									editable
+									panelFooterTemplate={({ options, value }) => (
+										<div className='px-3 py-2'>
+											{value === '' ? (
+												'No item selected'
+											) : options?.some(
+													(option) => option.id.toUpperCase() === value.toUpperCase()
+											  ) ? (
+												<>
+													<strong>{value.toUpperCase()}</strong> selected
+												</>
+											) : (
+												<>
+													<strong>{value.toUpperCase()}</strong> will be added
+												</>
+											)}
+										</div>
+									)}
+								/>
+								<div className='flex gap-3 items-center'>
+									<label htmlFor='isPrivate' className='header'>
+										Private
+									</label>
+									<InputSwitch
+										checked={values.isPrivate}
+										name='isPrivate'
+										id='isPrivate'
+										onChange={(e) => setFieldValue('isPrivate', e.value)}
+									/>
+								</div>
+								<TextareaWithLabel
+									label='Reason for importing'
+									wrapperClassName='w-full'
+									id='importReason'
+									name='importReason'
+									onChange={handleChange}
+									onBlur={handleBlur}
+									value={values.importReason}
+									error={touched.importReason && !!errors.importReason}
+									small={touched.importReason ? errors.importReason : undefined}
+									placeholder='Reason for importing'
+									disabled={isSubmitting}
+								/>
+								<TextareaWithLabel
+									label='Description'
+									wrapperClassName='w-full'
+									id='description'
+									name='description'
+									onChange={handleChange}
+									onBlur={handleBlur}
+									value={values.description}
+									error={touched.description && !!errors.description}
+									small={touched.description ? errors.description : undefined}
+									placeholder="Document's description"
+									disabled={isSubmitting}
+								/>
+							</InformationPanel>
 							<div className='flex flex-col gap-5 flex-1'>
-								<InformationPanel header='Document information'>
-									<InputWithLabel
-										name='title'
-										id='title'
-										label='Title'
-										error={touched.title && !!errors.title}
-										small={touched.title ? errors.title : undefined}
-										value={values.title}
-										onChange={handleChange}
-										onBlur={handleBlur}
-										disabled={isSubmitting}
-									/>
-									<CustomDropdown
-										id='documentType'
-										name='documentType'
-										options={documentTypes}
-										optionLabel='name'
-										optionValue='id'
-										label='Document type'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.documentType}
-										error={touched.documentType && !!errors.documentType}
-										small={touched.documentType ? errors.documentType : undefined}
-										disabled={isSubmitting}
-										editable
-										panelFooterTemplate={({ options, value }) => (
-											<div className='px-3 py-2'>
-												{value === '' ? (
-													'No item selected'
-												) : options?.some(
-														(option) => option.id.toUpperCase() === value.toUpperCase()
-												  ) ? (
-													<>
-														<strong>{value.toUpperCase()}</strong> selected
-													</>
-												) : (
-													<>
-														<strong>{value.toUpperCase()}</strong> will be added
-													</>
-												)}
-											</div>
-										)}
-									/>
-									<div className='flex gap-3 items-center'>
-										<label htmlFor='isPrivate' className='header'>
-											Private
-										</label>
-										<InputSwitch
-											checked={values.isPrivate}
-											name='isPrivate'
-											id='isPrivate'
-											onChange={(e) => setFieldValue('isPrivate', e.value)}
-										/>
-									</div>
-									<TextareaWithLabel
-										label='Reason for importing'
-										wrapperClassName='w-full'
-										id='importReason'
-										name='importReason'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.importReason}
-										error={touched.importReason && !!errors.importReason}
-										small={touched.importReason ? errors.importReason : undefined}
-										placeholder='Reason for importing'
-										disabled={isSubmitting}
-									/>
-									<TextareaWithLabel
-										label='Description'
-										wrapperClassName='w-full'
-										id='description'
-										name='description'
-										onChange={handleChange}
-										onBlur={handleBlur}
-										value={values.description}
-										error={touched.description && !!errors.description}
-										small={touched.description ? errors.description : undefined}
-										placeholder="Document's description"
-										disabled={isSubmitting}
-									/>
+								<InformationPanel header='Digital' className='gap-0'>
+									{file && (
+										<div className='flex items-center justify-between gap-3 mt-5'>
+											<div className='overflow-hidden text-ellipsis flex-1'>{file.name}</div> (
+											{fileSizeFormatter(file.size)})
+										</div>
+									)}
+									<FileInput file={file} setFiles={setFile} />
 								</InformationPanel>
-								<InformationPanel className='flex-1 h-max overflow-y-auto' header='Availability'>
+								<InformationPanel header='Availability'>
 									<CustomDropdown
 										id='roomId'
 										name='roomId'

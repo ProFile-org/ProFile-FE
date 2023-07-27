@@ -88,6 +88,7 @@ const AdminRoomDetailPage = () => {
 				isAvailable: !isAvailable,
 			});
 			queryClient.invalidateQueries('rooms');
+			window.location.reload();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			setError(axiosError.response?.data.message || 'Bad request');
@@ -170,6 +171,7 @@ const AdminRoomDetailPage = () => {
 										value={roomId}
 										readOnly
 										sideComponent={<Status type='room' item={room.data} />}
+										disabled={editMode}
 									/>
 									<InputWithLabel
 										label='Locker name'
@@ -252,7 +254,7 @@ const AdminRoomDetailPage = () => {
 										/>
 										{editMode ? (
 											<Button
-												label='Cancelled'
+												label='Cancel'
 												severity='danger'
 												type='button'
 												className='h-11 rounded-lg '

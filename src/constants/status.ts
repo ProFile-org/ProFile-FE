@@ -5,8 +5,8 @@ export const REQUEST_STATUS = {
 	Cancelled: { status: 'Cancelled', color: 'bg-orange-500' },
 	CheckedOut: { status: 'CheckedOut', color: 'bg-blue-500' },
 	Returned: { status: 'Returned', color: 'bg-primary' },
-	Lost: { status: 'Lost', color: 'bg-black' },
-	NotProcessable: { status: 'NotProcessable', color: 'bg-black' },
+	Lost: { status: 'Lost', color: 'bg-indigo-950' },
+	NotProcessable: { status: 'NotProcessable', color: 'bg-white text-black' },
 	Overdue: { status: 'Overdue', color: 'bg-red-500' },
 };
 
