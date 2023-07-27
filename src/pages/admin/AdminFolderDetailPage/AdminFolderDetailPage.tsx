@@ -96,7 +96,8 @@ const AdminFolderDetailPage = () => {
 				capacity,
 				isAvailable: !isAvailable,
 			});
-			queryClient.invalidateQueries('folders');
+			queryClient.invalidateQueries(['folders']);
+			window.location.reload();
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			setError(axiosError.response?.data.message || 'Bad request');
@@ -185,6 +186,7 @@ const AdminFolderDetailPage = () => {
 									value={folderId}
 									readOnly
 									sideComponent={<Status item={folder.data} type='folder' />}
+									disabled={editMode}
 								/>
 								<InputWithLabel
 									label='Folder name'
@@ -259,7 +261,7 @@ const AdminFolderDetailPage = () => {
 									/>
 									{editMode ? (
 										<Button
-											label='Cancelled'
+											label='Cancel'
 											severity='danger'
 											type='button'
 											className='h-11 rounded-lg flex-1'

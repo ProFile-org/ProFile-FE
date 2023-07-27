@@ -56,10 +56,10 @@ const AdminStaffPage = () => {
 					<Column field='count' header='No.' />
 					<Column field='user.username' header='Username' sortable />
 					<Column
-						field='room.department.name'
+						field='user.department.name'
 						header='Department'
 						sortable
-						body={(staff) => <>{staff.room?.department?.name || 'N/A'}</>}
+						body={(staff) => <>{staff.user.department?.name || 'N/A'}</>}
 					/>
 					<Column
 						field='room.name'

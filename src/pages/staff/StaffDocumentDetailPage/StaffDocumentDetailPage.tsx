@@ -225,7 +225,7 @@ const StaffDocumentDetailPage = () => {
 								<div className='flex flex-col gap-5 flex-1'>
 									{editMode ? (
 										<Button
-											label='Cancelled'
+											label='Cancel'
 											severity='danger'
 											className='h-11 rounded-lg'
 											type='button'

@@ -110,6 +110,7 @@ const StaffImportDetailPage = () => {
 		try {
 			await axiosClient.put(`/documents/import-requests/checkin/${documentId}`);
 			navigate(`${AUTH_ROUTES.DOCUMENTS}/${documentId}`);
+			queryClient.invalidateQueries('imports');
 		} catch (error) {
 			console.log(error);
 		}

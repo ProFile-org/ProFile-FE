@@ -26,7 +26,9 @@ const DetailInfo = ({
 			</div>
 			{showInfo && (
 				<>
-					<h3 className='text-xl font-semibold whitespace-nowrap'>{showInfo.name}</h3>
+					<h3 className='text-xl font-semibold whitespace-nowrap text-ellipsis overflow-hidden max-w-[200px]'>
+						{showInfo.name}
+					</h3>
 					<div className='flex items-center justify-center mt-3 bg-neutral-700 p-3 rounded-lg'>
 						<i
 							className={clsx(

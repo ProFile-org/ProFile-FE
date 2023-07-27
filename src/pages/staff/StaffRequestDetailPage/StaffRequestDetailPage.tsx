@@ -5,6 +5,7 @@ import Overlay from '@/components/Overlay/Overlay.component';
 import { SkeletonPage } from '@/components/Skeleton';
 import { AUTH_ROUTES } from '@/constants/routes';
 import { REQUEST_STATUS } from '@/constants/status';
+import useQueryParams from '@/hooks/useQueryParams';
 import {
 	BaseResponse,
 	GetDocumentByIdResponse,
@@ -16,22 +17,24 @@ import { AxiosError } from 'axios';
 import clsx from 'clsx';
 import { PrimeIcons } from 'primereact/api';
 import { Button } from 'primereact/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Navigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
 const NO_ACTIONS = [
 	REQUEST_STATUS.Cancelled.status,
 	REQUEST_STATUS.NotProcessable.status,
 	REQUEST_STATUS.Returned.status,
-	REQUEST_STATUS.Lost.status,
 ];
 
 const StaffRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
+	const query = useQueryParams();
+	const mode = query.get('mode');
+	const naviate = useNavigate();
 	const [error, setError] = useState('');
-	const [showModal, setShowModal] = useState('');
+	const [showModal, setShowModal] = useState(mode === 'checkout' ? 'checkout' : '');
 	const [reason, setReason] = useState('');
 	const { data, refetch } = useQuery(
 		['requests', requestId],
@@ -60,6 +63,14 @@ const StaffRequestDetailPage = () => {
 		}
 	);
 
+	useEffect(() => {
+		if (document?.data.status !== REQUEST_STATUS.Approved.status) {
+			setShowModal('');
+			// clear mode query from url
+			naviate(`${AUTH_ROUTES.REQUESTS}/${requestId}`);
+		}
+	}, [document, naviate, requestId]);
+
 	if (!requestId) return <Navigate to={AUTH_ROUTES.REQUESTS} />;
 
 	if (!data || !document || !employee || isLoading || isEmployeeLoading) return <SkeletonPage />;
@@ -84,6 +95,8 @@ const StaffRequestDetailPage = () => {
 				decision: 'approve',
 			});
 			await refetch();
+			setShowModal('');
+			setReason('');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const message = axiosError.response?.data.message || 'Bad request';
@@ -99,6 +112,8 @@ const StaffRequestDetailPage = () => {
 				decision: 'reject',
 			});
 			await refetch();
+			setShowModal('');
+			setReason('');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const message = axiosError.response?.data.message || 'Bad request';
@@ -111,6 +126,7 @@ const StaffRequestDetailPage = () => {
 		try {
 			await axiosClient.post(`/documents/borrows/checkout/${requestId}`);
 			await refetch();
+			setShowModal('');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const message = axiosError.response?.data.message || 'Bad request';
@@ -123,6 +139,22 @@ const StaffRequestDetailPage = () => {
 		try {
 			await axiosClient.post(`/documents/borrows/lost/${requestId}`);
 			await refetch();
+			setShowModal('');
+			setReason('');
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			const message = axiosError.response?.data.message || 'Bad request';
+			console.log(error);
+			setError(message);
+		}
+	};
+
+	const onFound = async () => {
+		try {
+			await axiosClient.post(`/documents/borrows/found/${requestId}`);
+			await refetch();
+			setShowModal('');
+			setReason('');
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
 			const message = axiosError.response?.data.message || 'Bad request';
@@ -159,16 +191,27 @@ const StaffRequestDetailPage = () => {
 				</InformationPanel>
 				<InformationPanel>
 					<div className='flex flex-row gap-4'>
-						{NO_ACTIONS.indexOf(status) !== -1 ? null : status ===
-								REQUEST_STATUS.CheckedOut.status || status === REQUEST_STATUS.Overdue.status ? (
+						{NO_ACTIONS.indexOf(status) !== -1 ? null : status === REQUEST_STATUS.Lost.status ? (
+							<Button
+								label='Marked as found'
+								className='h-11 rounded-lg flex-1'
+								severity='danger'
+								onClick={() => setShowModal('found')}
+							/>
+						) : status === REQUEST_STATUS.CheckedOut.status ||
+						  status === REQUEST_STATUS.Overdue.status ? (
 							<Button
 								label='Marked as lost'
 								className='h-11 rounded-lg flex-1'
 								severity='danger'
-								onClick={onLost}
+								onClick={() => setShowModal('lost')}
 							/>
 						) : status === REQUEST_STATUS.Approved.status ? (
-							<Button label='Checkout' className='h-11 rounded-lg flex-1' onClick={onCheckout} />
+							<Button
+								label='Checkout'
+								className='h-11 rounded-lg flex-1'
+								onClick={() => setShowModal('checkout')}
+							/>
 						) : (
 							<>
 								<Button
@@ -199,13 +242,22 @@ const StaffRequestDetailPage = () => {
 				</InformationPanel>
 			</div>
 			{showModal && (
-				<Overlay onExit={() => setShowModal('')} className='flex items-center justify-center'>
+				<Overlay
+					onExit={() => {
+						setReason('');
+						setShowModal('');
+					}}
+					className='flex items-center justify-center'
+				>
 					<div className='bg-neutral-800 p-5 rounded-lg' onClick={(e) => e.stopPropagation()}>
 						<div className='flex justify-between items-center'>
 							<div className='title'>Confirmation</div>
 							<i
 								className={clsx(PrimeIcons.TIMES, 'hover:text-red-500 cursor-pointer text-lg')}
-								onClick={() => setShowModal('')}
+								onClick={() => {
+									setReason('');
+									setShowModal('');
+								}}
 							/>
 						</div>
 						<div className='text-lg mt-5 title'>
@@ -213,31 +265,55 @@ const StaffRequestDetailPage = () => {
 								? 'Are you sure you want to approve this request?'
 								: showModal === 'reject'
 								? 'Are you sure you want to reject this request?'
+								: showModal === 'checkout'
+								? 'Are you sure you want to checkout this document?'
+								: showModal === 'lost'
+								? 'Are you sure you want to mark this document as lost?'
+								: showModal === 'found'
+								? 'Are you sure you want to mark this document as found?'
 								: 'Choose the folder to assign this document to'}
 						</div>
-						<InputWithLabel
-							// label={`Reason for ${showModal === 'approve' ? 'approve' : 'reject'}`}
-							label=''
-							wrapperClassName='mt-1'
-							value={reason}
-							onChange={(e) => setReason(e.target.value)}
-							placeholder='Enter your reason here'
-						/>
+						{showModal !== 'checkout' && showModal !== 'found' && (
+							<InputWithLabel
+								// label={`Reason for ${showModal === 'approve' ? 'approve' : 'reject'}`}
+								label=''
+								wrapperClassName='mt-1'
+								value={reason}
+								onChange={(e) => setReason(e.target.value)}
+								placeholder='Enter your reason here'
+							/>
+						)}
 						<div className='flex items-center gap-5 mt-5 justify-end'>
 							<Button
 								label='Cancel'
 								outlined
 								severity='danger'
 								className='!text-white !border-red-500'
-								onClick={() => setShowModal('')}
+								onClick={() => {
+									setReason('');
+									setShowModal('');
+								}}
 							/>
 							<Button
 								label={
-									showModal === 'approve' ? 'Approve' : showModal === 'reject' ? 'Reject' : 'Assign'
+									showModal === 'approve'
+										? 'Approve'
+										: showModal === 'reject'
+										? 'Reject'
+										: showModal === 'checkout'
+										? 'Checkout'
+										: showModal === 'lost'
+										? 'Mark as lost'
+										: showModal === 'found'
+										? 'Mark as found'
+										: 'Assign'
 								}
 								onClick={() => {
 									if (showModal === 'approve') onApprove();
 									else if (showModal === 'reject') onReject();
+									else if (showModal === 'checkout') onCheckout();
+									else if (showModal === 'lost') onLost();
+									else if (showModal === 'found') onFound();
 								}}
 							/>
 						</div>

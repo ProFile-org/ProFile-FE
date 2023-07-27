@@ -322,9 +322,9 @@ const EmpDrivePage = () => {
 									<>
 										<h2 className='title'>Folders</h2>
 										<div
-											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
+											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5 place-items-center'
 											style={{
-												gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+												gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
 											}}
 										>
 											{folders.map((folder) => (
@@ -348,9 +348,9 @@ const EmpDrivePage = () => {
 									<>
 										<h2 className='title'>Files</h2>
 										<div
-											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5'
+											className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-5 place-items-center'
 											style={{
-												gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+												gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
 											}}
 										>
 											{files.map((file) => (
@@ -370,7 +370,7 @@ const EmpDrivePage = () => {
 									</>
 								)}
 							</div>
-								<DetailInfo showInfo={showInfo}  setShowInfo={setShowInfo}/>
+							<DetailInfo showInfo={showInfo} setShowInfo={setShowInfo} />
 						</div>
 
 						<ContextMenu ref={globalCm} model={items} />

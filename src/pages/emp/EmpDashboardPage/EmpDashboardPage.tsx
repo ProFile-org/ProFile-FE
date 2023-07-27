@@ -109,7 +109,7 @@ const EmpDashboardPage = () => {
 					[...Array(3)].map((_, index) => <SkeletonCard key={index} />)
 				) : imports?.data.items.length ? (
 					imports.data.items.map((request) => (
-						<InfoCard key={request.id} url={`${AUTH_ROUTES.REQUESTS}/${request.id}`}>
+						<InfoCard key={request.id} url={`${AUTH_ROUTES.IMPORT_MANAGE}/${request.id}`}>
 							<div className='flex items-center gap-3'>
 								<h4 className='font-bold text-xl group-hover:text-primary transition-colors'>
 									{request.document.title}

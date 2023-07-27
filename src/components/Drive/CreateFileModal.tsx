@@ -23,7 +23,7 @@ const CreateFileModal = ({
 			onSubmit={onCreateFile}
 			onClick={(e) => e.stopPropagation()}
 		>
-			<h2 className='title'>Creating folder</h2>
+			<h2 className='title'>Uploading file</h2>
 			<InputWithLabel
 				wrapperClassName='mt-5'
 				label='File name'

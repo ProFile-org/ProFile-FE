@@ -32,11 +32,11 @@ const File = ({
 						<i
 							className={clsx(
 								PrimeIcons.FILE,
-								'text-[100px] group-hover:text-primary transition-colors'
+								'text-[80px] group-hover:text-primary transition-colors'
 							)}
 						/>
 					</div>
-					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words'>
+					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words line-clamp-2'>
 						{file.name}
 					</h3>
 				</div>

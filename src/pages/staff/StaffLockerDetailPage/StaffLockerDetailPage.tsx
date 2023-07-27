@@ -249,7 +249,7 @@ const StaffLockerDetailPage = () => {
 										/>
 										{editMode ? (
 											<Button
-												label='Cancelled'
+												label='Cancel'
 												severity='danger'
 												type='button'
 												className='h-11 rounded-lg flex-1'

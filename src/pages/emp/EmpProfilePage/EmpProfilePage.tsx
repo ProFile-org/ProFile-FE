@@ -167,6 +167,7 @@ const EmpProfilePage = () => {
 								id='position'
 								value={position}
 								readOnly
+								disabled={editMode}
 							/>
 						</InformationPanel>
 					</div>
@@ -180,7 +181,7 @@ const EmpProfilePage = () => {
 							<div className='flex flex-col gap-5 flex-1'>
 								{editMode && (
 									<Button
-										label='Cancelled'
+										label='Cancel'
 										severity='danger'
 										className='h-11 rounded-lg'
 										type='button'

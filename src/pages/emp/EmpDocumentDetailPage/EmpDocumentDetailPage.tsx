@@ -27,6 +27,9 @@ import clsx from 'clsx';
 import { AuthContext } from '@/context/authContext';
 import { InputSwitch } from 'primereact/inputswitch';
 import CustomDropdown from '@/components/Dropdown/Dropdown.component';
+import { REQUEST_STATUS } from '@/constants/status';
+
+const NO_BORROW = [REQUEST_STATUS.Lost.status, REQUEST_STATUS.NotProcessable.status];
 
 const EmpDocumentDetailPage = () => {
 	const { documentId = '' } = useParams<{ documentId: string }>();
@@ -90,11 +93,11 @@ const EmpDocumentDetailPage = () => {
 	if (
 		(axiosError as AxiosError)?.response?.status === 404 ||
 		!data ||
-		(data.data.importer.id !== user?.id && (data.data.isPrivate && perms.employeeId !== user?.id))
+		(data.data.importer.id !== user?.id && data.data.isPrivate && perms.employeeId !== user?.id)
 	)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
-	const { title, importer, isPrivate } = data.data;
+	const { title, importer, isPrivate, status } = data.data;
 
 	const folder = data.data.folder || {
 		id: '',
@@ -199,6 +202,7 @@ const EmpDocumentDetailPage = () => {
 										wrapperClassName='flex-1'
 										value={`${values.importer.firstName} ${values.importer.lastName}`}
 										readOnly
+										disabled={editMode}
 									/>
 									<InputWithLabel
 										label='Department'
@@ -206,6 +210,7 @@ const EmpDocumentDetailPage = () => {
 										// value={department || 'this should be department'}
 										value={values.department.name}
 										readOnly
+										disabled={editMode}
 									/>
 								</InformationPanel>
 								<InformationPanel header='Document information'>
@@ -215,6 +220,7 @@ const EmpDocumentDetailPage = () => {
 										value={values.id}
 										readOnly
 										sideComponent={<Status item={values} type='document' />}
+										disabled={editMode}
 									/>
 									<InputWithLabel
 										label='Title'
@@ -272,12 +278,14 @@ const EmpDocumentDetailPage = () => {
 											readOnly
 											value={values.folder.locker.name}
 											wrapperClassName='flex-1'
+											disabled={editMode}
 										/>
 										<InputWithLabel
 											label='Folder'
 											readOnly
 											value={values.folder.name}
 											wrapperClassName='flex-1'
+											disabled={editMode}
 										/>
 									</div>
 								</InformationPanel>
@@ -292,7 +300,7 @@ const EmpDocumentDetailPage = () => {
 									<div className='flex flex-col gap-5 flex-1'>
 										{editMode ? (
 											<Button
-												label='Cancelled'
+												label='Cancel'
 												severity='danger'
 												className='h-11 rounded-lg'
 												type='button'
@@ -314,15 +322,16 @@ const EmpDocumentDetailPage = () => {
 												/>
 											)
 										)}
-										{(!isPrivate || permission?.data.canBorrow) && (
-											<Link to={`${AUTH_ROUTES.NEW_REQUEST}?id=${documentId}`} className='w-full'>
-												<Button
-													label='Request'
-													className='h-11 rounded-lg w-full'
-													severity='success'
-												/>
-											</Link>
-										)}
+										{(!isPrivate || permission?.data.canBorrow) &&
+											NO_BORROW.indexOf(status) === -1 && (
+												<Link to={`${AUTH_ROUTES.NEW_REQUEST}?id=${documentId}`} className='w-full'>
+													<Button
+														label='Request'
+														className='h-11 rounded-lg w-full'
+														severity='success'
+													/>
+												</Link>
+											)}
 										{importer.id === user?.id && (
 											<>
 												<Button

@@ -6,7 +6,12 @@ import Overlay from '@/components/Overlay/Overlay.component';
 import QrScanner from '@/components/QrScanner/QrScanner.component';
 import { AUTH_ROUTES } from '@/constants/routes';
 import useQueryParams from '@/hooks/useQueryParams';
-import { BaseResponse, GetDocumentByIdResponse, PostRequestResponse } from '@/types/response';
+import {
+	BaseResponse,
+	GetDocumentByIdResponse,
+	GetPermissionResponse,
+	PostRequestResponse,
+} from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { AxiosError } from 'axios';
 import { Formik, FormikHelpers } from 'formik';
@@ -52,6 +57,10 @@ const EmpRequestCreatePage = () => {
 		return await new Promise<GetDocumentByIdResponse | null>((resolve) => {
 			timeout.current = setTimeout(async () => {
 				try {
+					const { data: borrow } = await axiosClient.get<GetPermissionResponse>(
+						`/documents/${id}/permissions`
+					);
+					if (!borrow.data.canBorrow) resolve(null);
 					const { data } = await axiosClient.get<GetDocumentByIdResponse>(`/documents/${id}`);
 					resolve(data);
 				} catch (error) {
@@ -122,7 +131,7 @@ const EmpRequestCreatePage = () => {
 		<div className='flex gap-5'>
 			<Formik initialValues={initialValues} onSubmit={onSubmit} validate={validate}>
 				{({
-					isSubmitting,
+					// isSubmitting,
 					values,
 					touched,
 					errors,
@@ -140,11 +149,10 @@ const EmpRequestCreatePage = () => {
 						handleIdChange(result, setFieldError);
 						setOpenScan(false);
 					};
-					console.log(errors);
 					return (
 						<>
-							<form onSubmit={handleSubmit} className='flex flex-col gap-5'>
-								<InformationPanel header='Document information'>
+							<form onSubmit={handleSubmit} className='flex md:flex-row flex-col gap-5 w-full'>
+								<InformationPanel header='Document information' className='flex-1'>
 									<InputWithLabel
 										label='ID'
 										value={values.id || ''}
@@ -157,15 +165,15 @@ const EmpRequestCreatePage = () => {
 										onBlur={handleBlur}
 										error={!!errors.id}
 										small={errors.id || undefined}
-										sideComponent={
-											<Button
-												label='Scan'
-												className='self-end bg-primary rounded-lg h-11'
-												type='button'
-												onClick={() => setOpenScan(true)}
-												disabled={isSubmitting}
-											/>
-										}
+										// sideComponent={
+										// 	<Button
+										// 		label='Scan'
+										// 		className='self-end bg-primary rounded-lg h-11'
+										// 		type='button'
+										// 		onClick={() => setOpenScan(true)}
+										// 		disabled={isSubmitting}
+										// 	/>
+										// }
 									/>
 									<InputWithLabel
 										label='Title'
@@ -200,7 +208,7 @@ const EmpRequestCreatePage = () => {
 										/>
 									</div>
 								</InformationPanel>
-								<InformationPanel header='Borrow information'>
+								<InformationPanel header='Borrow information' className='flex-1 h-max'>
 									<TextareaWithLabel
 										label='Reason'
 										value={values.reason}
@@ -225,6 +233,7 @@ const EmpRequestCreatePage = () => {
 											onBlur={handleBlur}
 											error={touched.dates && !!errors.dates}
 											small={touched.dates ? (errors.dates as string) : undefined}
+											minDate={new Date(new Date().setDate(new Date().getDate() + 1))}
 										/>
 									</div>
 									<Button

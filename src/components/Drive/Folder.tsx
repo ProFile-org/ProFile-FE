@@ -61,14 +61,14 @@ const Folder = ({
 							<i
 								className={clsx(
 									PrimeIcons.FOLDER_OPEN,
-									'text-[100px] group-hover:text-primary transition-colors'
+									'text-[80px] group-hover:text-primary transition-colors'
 								)}
 							/>
 						) : (
 							<i
 								className={clsx(
 									PrimeIcons.FOLDER,
-									'text-[100px] group-hover:text-primary transition-colors'
+									'text-[80px] group-hover:text-primary transition-colors'
 								)}
 							/>
 						)}

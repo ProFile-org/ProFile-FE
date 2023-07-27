@@ -22,7 +22,7 @@ const MobileSideBar: FC<IMobileSideBarProps> = ({ setOpen, open }) => {
 			/>
 			<nav
 				className={clsx(
-					'flex flex-col gap-5 basis-2/12 transition-all lg:hidden bg-neutral-900 h-full fixed top-0 pl-3 pr-5 pt-[78px] z-10',
+					'flex flex-col gap-5 basis-2/12 transition-all lg:hidden bg-neutral-900 h-full fixed top-0 pl-3 pr-5 pt-[78px] z-10 overflow-y-auto',
 					open ? 'left-0' : '-left-full'
 				)}
 				style={{

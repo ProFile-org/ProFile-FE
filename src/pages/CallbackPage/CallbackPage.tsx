@@ -43,12 +43,11 @@ const ResetPage = () => {
 
 	const onSubmit = async (values: FormValues) => {
 		try {
-			const response = await axiosClient.post('/auth/reset-password', {
+			await axiosClient.post('/auth/reset-password', {
 				newPassword: values.password,
 				confirmPassword: values.confirmPassword,
 				token,
 			});
-			console.log(response);
 			navigate(UNAUTH_ROUTES.AUTH, {
 				replace: true,
 			});
