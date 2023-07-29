@@ -3,7 +3,7 @@ import InputWithLabel from '../InputWithLabel/InputWithLabel.component';
 import FileInput from '../FileInput/FileInput.component';
 import { Button } from 'primereact/button';
 import { fileSizeFormatter } from '@/utils/formatter';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 const CreateFileModal = ({
 	onCreateFile,
@@ -16,7 +16,7 @@ const CreateFileModal = ({
 	setFile: (value: File) => void;
 	file: File | null;
 }) => {
-	const ref = useRef<HTMLInputElement>(null);
+	const [name, setName] = useState('');
 	return (
 		<form
 			className='bg-neutral-800 rounded-lg p-5 w-[50vw]'
@@ -29,15 +29,15 @@ const CreateFileModal = ({
 				label='File name'
 				id='fileName'
 				name='fileName'
-				ref={ref}
+				value={name}
+				onChange={(e) => setName(e.target.value)}
 			/>
 			<FileInput
 				name='file'
 				id='file'
 				setFiles={(f) => {
 					setFile(f);
-					if (!ref.current) return;
-					ref.current.value = f.name;
+					setName(f.name);
 				}}
 			/>
 			{file && (
@@ -53,7 +53,7 @@ const CreateFileModal = ({
 					severity='danger'
 					outlined
 				/>
-				<Button label='Create' className='h-11 rounded-lg' />
+				<Button label='Create' className='h-11 rounded-lg' disabled={!file || !name} />
 			</div>
 		</form>
 	);

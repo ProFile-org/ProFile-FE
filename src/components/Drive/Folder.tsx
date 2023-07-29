@@ -48,14 +48,14 @@ const Folder = ({
 		<>
 			<div
 				onClick={handleDoubleClick}
-				className={clsx('group w-full cursor-pointer max-w-[160px]')}
+				className={clsx('group w-full cursor-pointer max-w-[160px] h-full')}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 				onContextMenu={(e) => {
 					onContextMenu(folder.id, e, 'folder');
 				}}
 			>
-				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900'>
+				<div className='flex flex-col items-center p-3 rounded-lg bg-neutral-900 h-full'>
 					<div className='p-3 bg-neutral-800 rounded-lg transition-colors aspect-square w-full flex items-center justify-center'>
 						{hover ? (
 							<i
@@ -73,7 +73,7 @@ const Folder = ({
 							/>
 						)}
 					</div>
-					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words'>
+					<h3 className='text-center text-lg font-medium mt-2 max-w-full break-words line-clamp-2'>
 						{folder.name}
 					</h3>
 				</div>

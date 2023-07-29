@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { AUTH_ROUTES } from '@/constants/routes';
@@ -5,17 +6,17 @@ import {
 	BaseResponse,
 	GetDocumentByIdResponse,
 	GetPermissionResponse,
+	GetPermissionsResponse,
 	GetUsersResponse,
 } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import { Button } from 'primereact/button';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, FormEvent } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import TextareaWithLabel from '@/components/InputWithLabel/TextareaWithLabel.component';
-// import ImagePreviewer from '@/components/ImagePreviewer/ImagePreviewer.component';
 import { Formik, FormikHelpers } from 'formik';
 import { SkeletonPage } from '@/components/Skeleton';
 import Status from '@/components/Status/Status.component';
@@ -23,11 +24,12 @@ import { AxiosError } from 'axios';
 import ErrorTemplate from '@/components/ErrorTemplate/ErrorTemplate.component';
 import Overlay from '@/components/Overlay/Overlay.component';
 import { PrimeIcons } from 'primereact/api';
-import clsx from 'clsx';
 import { AuthContext } from '@/context/authContext';
 import { InputSwitch } from 'primereact/inputswitch';
 import CustomDropdown from '@/components/Dropdown/Dropdown.component';
 import { REQUEST_STATUS } from '@/constants/status';
+import { IUser } from '@/types/item';
+import { REFETCH_CONFIG } from '@/constants/config';
 
 const NO_BORROW = [REQUEST_STATUS.Lost.status, REQUEST_STATUS.NotProcessable.status];
 
@@ -38,13 +40,6 @@ const EmpDocumentDetailPage = () => {
 	const [showModal, setShowModal] = useState(false);
 	const queryClient = useQueryClient();
 	const { user } = useContext(AuthContext);
-	const [perms, setPerms] = useState<GetPermissionResponse['data']>({
-		canRead: false,
-		canBorrow: false,
-		documentId: '',
-		employeeId: '',
-	});
-	const [error, setError] = useState('');
 
 	const {
 		data,
@@ -58,7 +53,8 @@ const EmpDocumentDetailPage = () => {
 	const { data: permission } = useQuery(
 		['documents', documentId, user?.id],
 		async () =>
-			(await axiosClient.get<GetPermissionResponse>(`/documents/${documentId}/permissions`)).data
+			(await axiosClient.get<GetPermissionResponse>(`/documents/${documentId}/permissions`)).data,
+		REFETCH_CONFIG
 	);
 
 	const { data: users } = useQuery(
@@ -73,6 +69,18 @@ const EmpDocumentDetailPage = () => {
 			).data
 	);
 
+	const { data: sharedUsers } = useQuery(
+		['documents', documentId, 'shared'],
+		async () =>
+			(
+				await axiosClient.get<GetPermissionsResponse>(`/documents/${documentId}/shared-users`, {
+					params: {
+						pageSize: 100,
+					},
+				})
+			).data
+	);
+
 	useEffect(() => {
 		const renderQr = async () => {
 			const { id } = data?.data || { id: '' };
@@ -80,11 +88,6 @@ const EmpDocumentDetailPage = () => {
 			const qrCode = await QRCode.toDataURL(id);
 			setQr(qrCode);
 		};
-		const updatePerms = async () => {
-			if (!permission?.data) return;
-			setPerms(permission.data);
-		};
-		updatePerms();
 		renderQr();
 	}, [data, permission]);
 
@@ -93,7 +96,9 @@ const EmpDocumentDetailPage = () => {
 	if (
 		(axiosError as AxiosError)?.response?.status === 404 ||
 		!data ||
-		(data.data.importer.id !== user?.id && data.data.isPrivate && perms.employeeId !== user?.id)
+		(data.data.importer.id !== user?.id &&
+			data.data.isPrivate &&
+			permission?.data.canRead === false)
 	)
 		return <ErrorTemplate code={404} message='Document not found' url={AUTH_ROUTES.DOCUMENTS} />;
 
@@ -141,6 +146,29 @@ const EmpDocumentDetailPage = () => {
 
 		return errors;
 	};
+	const onShare = async (
+		e: React.FormEvent<HTMLFormElement>,
+		perms: {
+			userId: string;
+			expiryDate?: Date;
+			canRead: boolean;
+			canBorrow: boolean;
+		}
+	) => {
+		e.preventDefault();
+		try {
+			await axiosClient.post(`/documents/${documentId}/permissions`, {
+				...perms,
+				expiryDate:
+					perms.expiryDate?.toISOString() ||
+					new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+			});
+			queryClient.invalidateQueries(['documents', documentId]);
+			setShowModal(false);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<>
@@ -150,17 +178,13 @@ const EmpDocumentDetailPage = () => {
 						{lockerId && (
 							<>
 								<span>/</span>
-								<Link to={`${AUTH_ROUTES.LOCKERS}/${lockerId}`} className='link-underlined'>
-									{lockerName}
-								</Link>
+								<span className='link-underlined'>{lockerName}</span>
 							</>
 						)}
 						{folderId && (
 							<>
 								<span>/</span>
-								<Link to={`${AUTH_ROUTES.FOLDERS}/${folderId}`} className='link-underlined'>
-									{folderName}
-								</Link>
+								<span className='link-underlined'>{folderName}</span>
 							</>
 						)}
 						<span>/</span>
@@ -359,17 +383,11 @@ const EmpDocumentDetailPage = () => {
 										</Link>
 									</div>
 								</InformationPanel>
-								{/* <InformationPanel header='Digital copies' className='h-max'>
-									<ImagePreviewer
-										readOnly
-										images={[
-											'https://picsum.photos/200/300',
-											'https://picsum.photos/200/301',
-											'https://picsum.photos/200/302',
-										]}
-									/>
-								</InformationPanel>
-								<InformationPanel header='History' className='flex-1'></InformationPanel> */}
+								{data.data.fileId && permission?.data.canBorrow && (
+									<InformationPanel header='Attached file'>
+										<Button label='Download attached file' className='h-11 rounded-lg bg-primary' />
+									</InformationPanel>
+								)}
 							</div>
 						</form>
 					)}
@@ -379,108 +397,26 @@ const EmpDocumentDetailPage = () => {
 				<Overlay
 					className='flex items-center justify-center'
 					onExit={() => {
-						setPerms((prev) => ({
-							...prev,
-							...permission?.data,
-						}));
 						setShowModal(false);
-						setError('');
 					}}
 				>
-					<div className='bg-neutral-800 p-5 rounded-lg' onClick={(e) => e.stopPropagation()}>
-						<div className='flex justify-between items-center'>
-							<div className='title'>Sharing permission</div>
-							<i
-								className={clsx(PrimeIcons.TIMES, 'hover:text-red-500 cursor-pointer text-lg')}
-								onClick={() => {
-									setPerms((prev) => ({
-										...prev,
-										...permission?.data,
-									}));
-									setShowModal(false);
-									setError('');
-								}}
-							/>
-						</div>
-						<div className='mt-3'>
-							<div className='mt-3'>
-								<CustomDropdown
-									label='Employee'
-									options={users?.data.items.filter((u) => user?.id !== u.id)}
-									value={perms.employeeId}
-									optionLabel='email'
-									optionValue='id'
-									onChange={(e) => {
-										setError('');
-										setPerms((prev) => ({ ...prev, employeeId: e.target.value }));
-									}}
-									onBlur={() => perms.employeeId && setError('')}
-								/>
-							</div>
-							<div className='grid gap-5 grid-cols-4 mt-5'>
-								<div>Can read: </div>
-								<InputSwitch
-									checked={perms.canRead}
-									name='canRead'
-									id='canRead'
-									onChange={(e) =>
-										setPerms((prev) => ({
-											...prev,
-											canRead: e.value as boolean,
-											canBorrow: e.value ? prev.canBorrow : false,
-										}))
-									}
-								/>
-								<div>Can borrow: </div>
-								<InputSwitch
-									checked={perms.canBorrow}
-									name='canBorrow'
-									id='canBorrow'
-									onChange={(e) => setPerms((prev) => ({ ...prev, canBorrow: e.value as boolean }))}
-									disabled={!perms.canRead}
-								/>
-							</div>
-						</div>
-						{error && <div className='text-red-500 mt-3'>{error}</div>}
-						<div className='flex justify-end mt-3'>
-							<Button
-								label='Cancel'
-								severity='danger'
-								className='mt-5 h-11 rounded-base mr-5'
-								onClick={() => {
-									setPerms((prev) => ({
-										...prev,
-										...permission?.data,
-									}));
-									setShowModal(false);
-									setError('');
-								}}
-							/>
-							<Button
-								label='Submit'
-								className='mt-5 h-11 rounded-base'
-								onClick={async () => {
-									try {
-										await axiosClient.post(`/documents/${documentId}/permissions`, {
-											userId: perms.employeeId,
-											canRead: perms.canRead,
-											canBorrow: perms.canBorrow,
-											expiryDate: new Date(
-												new Date().setDate(new Date().getDate() + 7)
-											).toISOString(),
-										});
-										queryClient.invalidateQueries(['documents', documentId, user?.id]);
-										setError('');
-										setShowModal(false);
-									} catch (error) {
-										const axiosError = error as AxiosError<BaseResponse>;
-										const msg = axiosError.response?.data.message || 'Bad request';
-										setError(msg);
-									}
-								}}
-							/>
-						</div>
-					</div>
+					<ShareModal
+						sharedUsers={
+							sharedUsers?.data.items.map((user) => ({ ...user, ...user.employee })) || []
+						}
+						users={
+							users?.data.items.filter(
+								(x) =>
+									!sharedUsers?.data.items.find((u) => x.id === u.employee.id) &&
+									// Themselves
+									x.id !== user?.id
+							) || []
+						}
+						handleClose={() => {
+							setShowModal(false);
+						}}
+						onShare={onShare}
+					/>
 				</Overlay>
 			)}
 		</>
@@ -488,3 +424,167 @@ const EmpDocumentDetailPage = () => {
 };
 
 export default EmpDocumentDetailPage;
+
+type UserWithPermission = { canRead: boolean; canBorrow: boolean; employee: IUser };
+
+const ShareModal = ({
+	onShare,
+	handleClose,
+	users,
+	sharedUsers,
+}: {
+	onShare: (
+		e: FormEvent<HTMLFormElement>,
+		perms: { userId: string; canBorrow: boolean; canRead: boolean; expiryDate?: Date }
+	) => void;
+	handleClose: () => void;
+	users: IUser[];
+	sharedUsers: UserWithPermission[];
+}) => {
+	const [shareModal, setShareModal] = useState(false);
+	const [selectedUser, setSelectedUser] = useState<UserWithPermission | null>(null);
+	const [selectedId, setSelectedId] = useState<string>('');
+	const [edit, setEdit] = useState<boolean>(false);
+	console.log(sharedUsers);
+	return (
+		<>
+			<form
+				className='bg-neutral-800 rounded-lg p-5 w-[50vw]'
+				onSubmit={(e) => e.preventDefault()}
+				onClick={(e) => e.stopPropagation()}
+			>
+				<h2 className='title'>Changing permission</h2>
+				{sharedUsers.map((user) => (
+					<div className='flex items-center mt-5' key={user.employee.id}>
+						<div>{user.employee.email}</div>
+						<div className='ml-auto'>
+							<Button
+								type='button'
+								label='Change'
+								className='h-11 rounded-lg bg-primary'
+								onClick={() => {
+									setShareModal(true);
+									setSelectedUser(user);
+									setSelectedId(user.employee.id);
+									setEdit(true);
+								}}
+							/>
+						</div>
+					</div>
+				))}
+				<Button
+					label='Add user'
+					className='h-11 rounded-lg bg-primary w-full mt-5 btn-outlined items-center justify-center'
+					onClick={() => {
+						setShareModal(true);
+						setEdit(false);
+					}}
+					outlined
+					icon={PrimeIcons.PLUS}
+					type='button'
+				/>
+				<div className='flex justify-end mt-5'>
+					<Button
+						type='button'
+						label='Close'
+						className='h-11 rounded-lg bg-primary'
+						onClick={() => {
+							handleClose();
+							setShareModal(false);
+							setSelectedUser(null);
+							setSelectedId('');
+							setEdit(false);
+						}}
+					/>
+				</div>
+			</form>
+			{shareModal && (
+				<Overlay
+					onClick={(e) => e.stopPropagation()}
+					onExit={() => {
+						setShareModal(false);
+						setSelectedUser(null);
+						setSelectedId('');
+						setEdit(false);
+					}}
+					className='flex items-center justify-center'
+				>
+					<form
+						onSubmit={(e) =>
+							onShare(e, {
+								userId: selectedId,
+								canBorrow: selectedUser?.canBorrow || false,
+								canRead: selectedUser?.canRead || false,
+							})
+						}
+						onClick={(e) => e.stopPropagation()}
+						className='bg-neutral-800 rounded-lg p-5 w-[50vw]'
+					>
+						<h2 className='title mb-5'>Edit permission</h2>
+						{edit ? (
+							<InputWithLabel label='User' value={selectedUser?.employee.email} readOnly />
+						) : (
+							<CustomDropdown
+								options={users}
+								optionLabel='email'
+								optionValue='id'
+								value={selectedId}
+								onChange={(e) => {
+									const user = users.find((user) => user.id === e.value);
+									setSelectedId(e.value);
+									setSelectedUser(
+										user ? { employee: user, canBorrow: false, canRead: false } : null
+									);
+								}}
+								label='User'
+							/>
+						)}
+						<div className='grid grid-cols-4 mt-5'>
+							<div>Can view</div>
+							<InputSwitch
+								checked={selectedUser?.canRead || false}
+								onChange={(e) =>
+									setSelectedUser((user) =>
+										user
+											? {
+													...user,
+													canRead: e.value as boolean,
+													canBorrow: e.value ? user.canBorrow : false,
+											  }
+											: null
+									)
+								}
+								disabled={!selectedUser}
+							/>
+							<div>Can borrow</div>
+							<InputSwitch
+								checked={selectedUser?.canBorrow || false}
+								onChange={(e) =>
+									setSelectedUser((user) =>
+										user ? { ...user, canBorrow: e.value as boolean } : null
+									)
+								}
+								disabled={!selectedUser || !selectedUser.canRead}
+							/>
+						</div>
+						<div className='flex justify-end mt-5'>
+							<Button
+								label='Cancel'
+								className='h-11 rounded-lg mr-3 btn-outlined !border-red-600'
+								onClick={() => {
+									setShareModal(false);
+									setSelectedUser(null);
+									setSelectedId('');
+									setEdit(false);
+								}}
+								severity='danger'
+								outlined
+							/>
+							<Button label='Share' className='h-11 rounded-lg' disabled={!selectedId} />
+						</div>
+					</form>
+				</Overlay>
+			)}
+		</>
+	);
+};

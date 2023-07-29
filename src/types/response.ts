@@ -90,6 +90,8 @@ export type GetImportsResponse = BaseResponse<{ items: IImportRequest[] } & Pagi
 
 export type GetPermissionResponse = BaseResponse<IPermission>;
 
+export type GetPermissionsResponse = BaseResponse<{ items: IPermission[] } & PaginationResponse>;
+
 export type GetDriveResponse = BaseResponse<{ items: IDrive[] } & PaginationResponse>;
 
 export type GetDriveByIDResponse = BaseResponse<IDrive>;

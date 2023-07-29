@@ -23,6 +23,7 @@ export interface IDocument {
 	folder: IFolder;
 	status: DOCUMENT_STATUS_KEY;
 	isPrivate: boolean;
+	fileId: string | null;
 }
 
 export interface IRoom {
@@ -118,6 +119,7 @@ export interface IPermission {
 	canBorrow: boolean;
 	employeeId: string;
 	documentId: string;
+	employee: IUser;
 }
 
 export interface IDrive {

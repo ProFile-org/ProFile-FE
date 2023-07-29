@@ -155,11 +155,13 @@ const ShareModal = ({
 								onClick={() => {
 									setShareModal(false);
 									setSelectedUser(null);
+									setSelectedId('');
+									setEdit(false);
 								}}
 								severity='danger'
 								outlined
 							/>
-							<Button label='Create' className='h-11 rounded-lg' />
+							<Button label='Share' className='h-11 rounded-lg' disabled={!selectedId} />
 						</div>
 					</form>
 				</Overlay>

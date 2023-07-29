@@ -1,9 +1,11 @@
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
 import { UNAUTH_ROUTES } from '@/constants/routes';
+import { BaseResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
+import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import { Button } from 'primereact/button';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router';
 
 const initialValues = {
@@ -16,7 +18,8 @@ type FormValues = typeof initialValues;
 const ResetPage = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const token = location.state;
+	const token = location.state || new URLSearchParams(window.location.search).get('token');
+	const [error, setError] = useState('');
 
 	useEffect(() => {
 		window.history.replaceState({}, '');
@@ -53,6 +56,7 @@ const ResetPage = () => {
 			});
 		} catch (error) {
 			console.log(error);
+			setError((error as AxiosError<BaseResponse>).response?.data.message || 'Bad request');
 		}
 	};
 
@@ -87,6 +91,9 @@ const ResetPage = () => {
 						error={touched.confirmPassword && !!errors.confirmPassword}
 						small={touched.confirmPassword ? errors.confirmPassword : undefined}
 					/>
+					{error && (
+						<div className='bg-red-300 border-red-500 border-2 rounded-lg px-3 py-2 mt-5'>{error}</div>
+					)}
 					<Button label='Submit' type='submit' className='bg-primary h-11 mt-5 rounded-lg w-full' />
 				</form>
 			)}

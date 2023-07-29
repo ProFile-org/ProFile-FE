@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import InputWithLabel from '../InputWithLabel/InputWithLabel.component';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
 const CreateFolderModal = ({
 	onCreateFolder,
@@ -9,6 +9,7 @@ const CreateFolderModal = ({
 	onCreateFolder: (e: FormEvent<HTMLFormElement>) => void;
 	handleClose: () => void;
 }) => {
+	const [name, setName] = useState('');
 	return (
 		<form
 			className='bg-neutral-800 rounded-lg p-5 w-[50vw]'
@@ -21,6 +22,8 @@ const CreateFolderModal = ({
 				label='Folder name'
 				id='folderName'
 				name='folderName'
+				value={name}
+				onChange={(e) => setName(e.target.value)}
 			/>
 			<div className='flex justify-end'>
 				<Button
@@ -30,7 +33,7 @@ const CreateFolderModal = ({
 					severity='danger'
 					outlined
 				/>
-				<Button label='Create' className='mt-5 h-11 rounded-lg' />
+				<Button label='Create' className='mt-5 h-11 rounded-lg' disabled={!name} />
 			</div>
 		</form>
 	);

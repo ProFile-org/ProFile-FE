@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import InputWithLabel from '../InputWithLabel/InputWithLabel.component';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
 const RenameModal = ({
 	onRename,
@@ -9,6 +9,8 @@ const RenameModal = ({
 	onRename: (e: FormEvent<HTMLFormElement>) => void;
 	handleClose: () => void;
 }) => {
+	const [newName, setNewName] = useState('');
+
 	return (
 		<form
 			className='bg-neutral-800 rounded-lg p-5 w-[50vw]'
@@ -16,7 +18,14 @@ const RenameModal = ({
 			onClick={(e) => e.stopPropagation()}
 		>
 			<h2 className='title'>Renaming</h2>
-			<InputWithLabel wrapperClassName='mt-5' label='New name' id='newName' name='newName' />
+			<InputWithLabel
+				wrapperClassName='mt-5'
+				label='New name'
+				id='newName'
+				name='newName'
+				value={newName}
+				onChange={(e) => setNewName(e.target.value)}
+			/>
 			<div className='flex justify-end mt-5'>
 				<Button
 					label='Cancel'
@@ -25,7 +34,7 @@ const RenameModal = ({
 					severity='danger'
 					outlined
 				/>
-				<Button label='Create' className='h-11 rounded-lg' />
+				<Button label='Create' className='h-11 rounded-lg' disabled={!newName} />
 			</div>
 		</form>
 	);
