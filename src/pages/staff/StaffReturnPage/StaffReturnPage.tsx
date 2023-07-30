@@ -1,5 +1,6 @@
 import InformationPanel from '@/components/InformationPanel/InformationPanel.component';
 import InputWithLabel from '@/components/InputWithLabel/InputWithLabel.component';
+import Overlay from '@/components/Overlay/Overlay.component';
 import QrScanner from '@/components/QrScanner/QrScanner.component';
 import { AUTH_ROUTES } from '@/constants/routes';
 import {
@@ -31,6 +32,7 @@ const StaffReturnsPage = () => {
 	const [openScan, setOpenScan] = useState(false);
 	const [values, setValues] = useState(initialValues);
 	const [error, setError] = useState('');
+	const [modalOpen, setModalOpen] = useState(false);
 
 	const { borrowerDepartment, borrowerId, borrowerName, folder, documentId, locker, title, types } =
 		values;
@@ -65,7 +67,7 @@ const StaffReturnsPage = () => {
 				folder: document.data.folder.name,
 				borrowerId: employee.data.id,
 				borrowerName: `${employee.data.lastName} ${employee.data.firstName}`,
-				// borrowerDepartment: employee.data.department.name,
+				borrowerDepartment: employee?.data?.department?.name || 'N/A',
 			}));
 		} catch (error) {
 			const axiosError = error as AxiosError<BaseResponse>;
@@ -144,7 +146,7 @@ const StaffReturnsPage = () => {
 							label='Approve'
 							className='h-11 rounded-lg flex-1'
 							disabled={!documentId}
-							onClick={onApprove}
+							onClick={() => setModalOpen(true)}
 						/>
 						<Button
 							label='Reject'
@@ -155,8 +157,26 @@ const StaffReturnsPage = () => {
 						/>
 					</div>
 				)}
-				{error && <div className='text-red-500'>{error}</div>}
+
+				{error && <div className='tex-red-500'>{error}</div>}
 			</InformationPanel>
+			{modalOpen && (
+				<Overlay onExit={() => setModalOpen(false)} className='flex justify-center items-center'>
+					<div className='bg-neutral-800 rounded-lg p-5 w-[50vw]'>
+						<h2 className='title'>Confirmation</h2>
+						<div className='mt-2'>Are you sure you want to approve returning this item?</div>
+						<div className='flex w-full justify-end mt-5'>
+							<Button
+								label='Cancel'
+								className='h-11 rounded-lg mr-3'
+								severity='danger'
+								onClick={() => setModalOpen(false)}
+							/>
+							<Button label='Approve' className='h-11 rounded-lg' onClick={onApprove} />
+						</div>
+					</div>
+				</Overlay>
+			)}
 		</div>
 	);
 };

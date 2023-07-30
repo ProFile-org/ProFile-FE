@@ -420,12 +420,12 @@ const EmpDrivePage = () => {
 					{modal === 'delete' && (
 						<div className='bg-neutral-800 rounded-lg p-5 w-[50vw]'>
 							<h2 className='title'>Changing permission</h2>
-							<div>Are you sure you want to delete this item?</div>
-							<div className='flex w-full justify-end'>
+							<div className='mt-2'>Are you sure you want to delete this item?</div>
+							<div className='flex w-full justify-end mt-5'>
 								<Button label='Cancel' className='h-11 rounded-lg mr-3' onClick={closeModals} />
 								<Button
 									label='Delete'
-									className='h-11 rounded-lg mr-3 btn-outlined !border-red-600'
+									className='h-11 rounded-lg btn-outlined !border-red-600'
 									onClick={onDelete}
 									severity='danger'
 									outlined
