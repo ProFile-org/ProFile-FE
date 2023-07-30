@@ -10,6 +10,7 @@ import Status from '@/components/Status/Status.component';
 import { AUTH_ROUTES } from '@/constants/routes';
 import { AuthContext } from '@/context/authContext';
 import useEmptyContainers from '@/hooks/useEmptyContainers';
+import { IUser } from '@/types/item';
 import { GetImportByIdResponse } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
 import clsx from 'clsx';
@@ -65,6 +66,9 @@ const StaffImportDetailPage = () => {
 		status: importStatus,
 	} = importRequest.data;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const issuer = ((importRequest.data.document as any).issuer as IUser) || {};
+
 	const onApprove = async () => {
 		if (!reason) return;
 		try {
@@ -118,23 +122,33 @@ const StaffImportDetailPage = () => {
 
 	return (
 		<div className='flex gap-5 flex-col lg:flex-row'>
-			<InformationPanel header='Document information' className='flex-1 h-max'>
-				<InputWithLabel
-					label='Title'
-					value={title}
-					readOnly
-					sideComponent={<Status type='document' item={importRequest.data.document} />}
-				/>
-				<InputWithLabel label='Document type' value={documentType} readOnly />
-				<InputWithLabel label='Private' value={isPrivate ? 'PRIVATE' : 'PUBLIC'} readOnly />
-				<TextareaWithLabel label='Description' value={description} readOnly />
-				{folder && (
-					<div className='flex gap-5 flex-col lg:flex-row'>
-						<InputWithLabel label='Folder' value={folder.name} readOnly />
-						<InputWithLabel label='Locker' value={folder.locker.name} readOnly />
-					</div>
-				)}
-			</InformationPanel>
+			<div className='flex flex-col gap-5 flex-1'>
+				<InformationPanel header='Document information' className='flex-1 h-max'>
+					<InputWithLabel
+						label='Title'
+						value={title}
+						readOnly
+						sideComponent={<Status type='document' item={importRequest.data.document} />}
+					/>
+					<InputWithLabel label='Document type' value={documentType} readOnly />
+					<InputWithLabel label='Private' value={isPrivate ? 'PRIVATE' : 'PUBLIC'} readOnly />
+					<TextareaWithLabel label='Description' value={description} readOnly />
+					{folder && (
+						<div className='flex gap-5 flex-col lg:flex-row'>
+							<InputWithLabel label='Folder' value={folder.name} readOnly />
+							<InputWithLabel label='Locker' value={folder.locker.name} readOnly />
+						</div>
+					)}
+				</InformationPanel>
+				<InformationPanel header='Importer information' className='flex-1 h-max'>
+					<InputWithLabel
+						label='Name'
+						value={`${issuer?.firstName} ${issuer?.lastName}`}
+						readOnly
+					/>
+					<InputWithLabel label='Email' value={issuer?.email || 'N/A'} readOnly />
+				</InformationPanel>
+			</div>
 			<div className='flex flex-col gap-5 flex-1'>
 				<InformationPanel>
 					{importStatus === 'Pending' && (
@@ -283,6 +297,7 @@ const StaffImportDetailPage = () => {
 								label={
 									showModal === 'approve' ? 'Confirm' : showModal === 'reject' ? 'Reject' : 'Assign'
 								}
+								disabled={!reason && (showModal === 'approve' || showModal === 'reject')}
 								onClick={() => {
 									if (showModal === 'approve') onApprove();
 									else if (showModal === 'reject') onReject();

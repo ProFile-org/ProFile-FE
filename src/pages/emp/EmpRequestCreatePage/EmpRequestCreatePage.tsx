@@ -57,11 +57,18 @@ const EmpRequestCreatePage = () => {
 		return await new Promise<GetDocumentByIdResponse | null>((resolve) => {
 			timeout.current = setTimeout(async () => {
 				try {
-					const { data: borrow } = await axiosClient.get<GetPermissionResponse>(
-						`/documents/${id}/permissions`
-					);
-					if (!borrow.data.canBorrow) resolve(null);
 					const { data } = await axiosClient.get<GetDocumentByIdResponse>(`/documents/${id}`);
+
+					if (data.data.isPrivate) {
+						const { data: borrow } = await axiosClient.get<GetPermissionResponse>(
+							`/documents/${id}/permissions`
+						);
+						if (borrow.data.canBorrow) {
+							resolve(data);
+						} else {
+							navigate(AUTH_ROUTES.DOCUMENTS);
+						}
+					}
 					resolve(data);
 				} catch (error) {
 					resolve(null);

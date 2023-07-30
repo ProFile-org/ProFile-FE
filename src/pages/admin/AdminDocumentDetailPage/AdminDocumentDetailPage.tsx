@@ -282,17 +282,6 @@ const AdminDocumentDetailPage = () => {
 									</Link>
 								</div>
 							</InformationPanel>
-							{/* <InformationPanel header='Digital copies' className='h-max'>
-								<ImagePreviewer
-									readOnly
-									images={[
-										'https://picsum.photos/200/300',
-										'https://picsum.photos/200/301',
-										'https://picsum.photos/200/302',
-									]}
-								/>
-							</InformationPanel>
-							<InformationPanel header='History' className='flex-1'></InformationPanel> */}
 						</div>
 					</form>
 				)}

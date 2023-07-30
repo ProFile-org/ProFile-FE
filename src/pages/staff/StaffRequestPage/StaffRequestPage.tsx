@@ -10,21 +10,18 @@ import { IBorrowRequest } from '@/types/item';
 import { dateFormatter } from '@/utils/formatter';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
-import { InputText } from 'primereact/inputtext';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useState } from 'react';
 import { OnResultFunction } from 'react-qr-reader';
 import { useNavigate } from 'react-router';
 
 const StaffRequestPage = () => {
 	const { user } = useContext(AuthContext);
-	const query = useRef('');
 	const [openScan, setOpenScan] = useState(false);
 	const navigate = useNavigate();
 
-	const { getPaginatedTableProps, refetch } = usePagination<IBorrowRequest>({
+	const { getPaginatedTableProps } = usePagination<IBorrowRequest>({
 		key: 'requests',
 		url: `/documents/borrows?roomId=${user?.roomId}`,
-		query: query.current,
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });
@@ -43,22 +40,12 @@ const StaffRequestPage = () => {
 		<>
 			<div className='flex flex-col gap-5'>
 				<h2 className='header'>Pending requests</h2>
-				<div className='card w-full py-3 flex justify-between'>
-					<form
-						className='flex h-11 gap-3'
-						onSubmit={async (e) => {
-							e.preventDefault();
-							await refetch();
-						}}
-					>
-						<InputText
-							className='input'
-							placeholder='document a'
-							onChange={(e) => (query.current = e.target.value)}
-						/>
-						<Button label='Search' name='search' id='search' className='px-3 rounded-lg' />
-					</form>
-					<Button label='Scan' className='px-3 h-11 rounded-lg' onClick={() => setOpenScan(true)} />
+				<div className='card py-3'>
+					<Button
+						className='h-11 rounded-lg'
+						onClick={() => setOpenScan(true)}
+						label='Scan QR code'
+					/>
 				</div>
 				<div className='card'>
 					<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>

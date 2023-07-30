@@ -112,6 +112,7 @@ const AdminDepartmentDetailPage = lazy(
 	() => import('@/pages/admin/AdminDepartmentDetailPage/AdminDepartmentDetailPage')
 );
 const AdminLogPage = lazy(() => import('@/pages/admin/AdminLogPage/AdminLogPage'));
+// const AdminDataPage = lazy(() => import('@/pages/admin/AdminDataPage/AdminDataPage'));
 
 export const ROLE_MAPPER = {
 	[AUTH_ROUTES.HOME]: {
@@ -248,4 +249,7 @@ export const ROLE_MAPPER = {
 	[AUTH_ROUTES.DIGITAL]: {
 		employee: () => <Navigate to={AUTH_ROUTES.DRIVE} replace />,
 	},
+	// [AUTH_ROUTES.DATA]: {
+	// 	admin: () => <AdminDataPage />,
+	// },
 };

@@ -4,6 +4,9 @@ import { PrimeIcons } from 'primereact/api';
 import { MouseEvent } from 'react';
 
 const IconMapper = (type: string) => {
+	if (!type) {
+		return <i className={clsx(PrimeIcons.FILE, 'text-[80px]')} />;
+	}
 	if (type.includes('wordprocessingml')) {
 		return (
 			<svg xmlns='http://www.w3.org/2000/svg' height='80px' viewBox='0 0 384 512'>

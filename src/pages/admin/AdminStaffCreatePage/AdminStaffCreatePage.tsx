@@ -60,6 +60,17 @@ const AdminStaffCreatePage = () => {
 		}
 	};
 
+	const onRemove = async (values: FormValues) => {
+		try {
+			await axiosClient.put(`/staffs/${values.staffId}`);
+			navigate(AUTH_ROUTES.STAFFS_MANAGE);
+		} catch (error) {
+			const axiosError = error as AxiosError<BaseResponse>;
+			console.error(error);
+			setError(axiosError.response?.data.message || 'Bad request');
+		}
+	};
+
 	const validate = (values: FormValues) => {
 		const error = {} as { [key in keyof FormValues]: string };
 		Object.entries(values).forEach(([key, value]) => {
@@ -106,7 +117,16 @@ const AdminStaffCreatePage = () => {
 							value={values.roomId}
 						/>
 						{error && <div className='text-red-500'>{error}</div>}
-						<Button label='Submit' type='submit' className='bg-primary h-11' />
+						<div className='flex gap-5 w-full'>
+							<Button label='Submit' type='submit' className='bg-primary h-11 flex-1' />
+							<Button
+								label='Remove'
+								type='button'
+								outlined
+								className='bg-primary btn-outlined h-11 flex-1'
+								onClick={() => onRemove(values)}
+							/>
+						</div>
 					</InformationPanel>
 				</form>
 			)}

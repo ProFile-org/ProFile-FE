@@ -220,12 +220,6 @@ const StaffFolderDetailPage = () => {
 									/>
 								)}
 							</InformationPanel>
-							<InformationPanel header='History'>
-								<Table>
-									<Column field='id' header='ID' />
-									<Column field='name' header='Name' />
-								</Table>
-							</InformationPanel>
 						</div>
 						<div className='flex flex-col gap-5 flex-1'>
 							<InformationPanel>

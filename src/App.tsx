@@ -5,6 +5,7 @@ import SignInPage from '@/pages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar.component';
 import RoleGuard from './pages/Guards/RoleGuard';
 import ResetPage from './pages/CallbackPage/CallbackPage';
+import ErrorTemplate from './components/ErrorTemplate/ErrorTemplate.component';
 
 function App() {
 	return (
@@ -39,7 +40,12 @@ function App() {
 				{Object.entries(AUTH_ROUTES).map(([key, value]) => (
 					<Route key={key} path={value} element={<RoleGuard route={value} />} />
 				))}
-				<Route path='*' element={<div>Not Found</div>} />
+				<Route
+					path='*'
+					element={
+						<ErrorTemplate code={404} message='Page not found' btnText='Return home' url='/' />
+					}
+				/>
 			</Route>
 		</Routes>
 	);

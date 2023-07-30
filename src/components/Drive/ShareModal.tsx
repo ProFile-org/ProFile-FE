@@ -28,7 +28,6 @@ const ShareModal = ({
 	const [selectedUser, setSelectedUser] = useState<UserWithPermission | null>(null);
 	const [selectedId, setSelectedId] = useState<string>('');
 	const [edit, setEdit] = useState<boolean>(false);
-	console.log(sharedUsers);
 	return (
 		<>
 			<form

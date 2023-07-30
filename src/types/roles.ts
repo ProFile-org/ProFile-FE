@@ -22,6 +22,11 @@ export const SIDEBAR_ROLES: { [key: string]: IItem[] } = {
 			path: AUTH_ROUTES.LOGS,
 			icon: PrimeIcons.FILE,
 		},
+		// {
+		// 	label: 'Data',
+		// 	path: AUTH_ROUTES.DATA,
+		// 	icon: PrimeIcons.DATABASE,
+		// },
 		{
 			type: 'group',
 			label: 'Departments',

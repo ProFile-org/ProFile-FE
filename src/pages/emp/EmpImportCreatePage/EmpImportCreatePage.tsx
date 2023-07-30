@@ -56,7 +56,12 @@ const EmpImportPage = () => {
 			formData.append('file', file as File);
 			const res = await axiosClient.post(
 				`/documents/${result.data.data.document.id}/file`,
-				formData
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				}
 			);
 			console.log(res);
 			navigate(`${AUTH_ROUTES.IMPORT_MANAGE}/${result.data.data.id}`);

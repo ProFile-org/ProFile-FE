@@ -5,7 +5,7 @@ import { AUTH_ROUTES } from '@/constants/routes';
 import {
 	BaseResponse,
 	GetDocumentByIdResponse,
-	GetRequestsResponse,
+	GetRequestByIdResponse,
 	GetUserByIdResponse,
 } from '@/types/response';
 import axiosClient from '@/utils/axiosClient';
@@ -35,11 +35,11 @@ const StaffReturnsPage = () => {
 	const { borrowerDepartment, borrowerId, borrowerName, folder, documentId, locker, title, types } =
 		values;
 
-	const getDocumentsById = async (documentId: string) => {
-		if (!documentId) return;
+	const getDocumentsById = async (requestId: string) => {
+		if (!requestId) return;
 		try {
-			const { data } = await axiosClient.get<GetRequestsResponse>(
-				`/documents/borrows/${documentId}`,
+			const { data } = await axiosClient.get<GetRequestByIdResponse>(
+				`/documents/borrows/${requestId}`,
 				{
 					params: {
 						status: 'checkedout,overdue',
@@ -50,12 +50,11 @@ const StaffReturnsPage = () => {
 					},
 				}
 			);
-			const request = data.data.items[0];
 			const { data: document } = await axiosClient.get<GetDocumentByIdResponse>(
-				`/documents/${documentId}`
+				`/documents/${data.data.documentId}`
 			);
 			const { data: employee } = await axiosClient.get<GetUserByIdResponse>(
-				`/users/${request.borrowerId}`
+				`/users/${data.data.borrowerId}`
 			);
 			setValues((prev) => ({
 				...prev,
@@ -148,7 +147,7 @@ const StaffReturnsPage = () => {
 							onClick={onApprove}
 						/>
 						<Button
-							label='Deny'
+							label='Reject'
 							severity='danger'
 							className='h-11 rounded-lg flex-1'
 							disabled={!documentId}

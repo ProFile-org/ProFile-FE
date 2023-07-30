@@ -38,6 +38,7 @@ export const AUTH_ROUTES = {
 	IMPORT_MANAGE: '/import/manage',
 	IMPORT: '/import',
 	PROFILE: '/profile',
+	// DATA: '/data',
 };
 
 export const UNAUTH_ROUTES = {

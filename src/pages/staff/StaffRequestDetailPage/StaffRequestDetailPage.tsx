@@ -223,7 +223,7 @@ const StaffRequestDetailPage = () => {
 								/>
 								{status === REQUEST_STATUS.Rejected.status ? null : (
 									<Button
-										label='Deny'
+										label='Reject'
 										severity='danger'
 										className='h-11 rounded-lg flex-1'
 										onClick={() => {
@@ -273,7 +273,7 @@ const StaffRequestDetailPage = () => {
 								? 'Are you sure you want to mark this document as found?'
 								: 'Choose the folder to assign this document to'}
 						</div>
-						{showModal !== 'checkout' && showModal !== 'found' && (
+						{showModal !== 'checkout' && showModal !== 'found' && showModal !== 'lost' && (
 							<InputWithLabel
 								// label={`Reason for ${showModal === 'approve' ? 'approve' : 'reject'}`}
 								label=''

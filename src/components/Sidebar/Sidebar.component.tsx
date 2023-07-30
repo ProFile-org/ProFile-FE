@@ -12,7 +12,7 @@ const Sidebar = ({ open = false }) => {
 	return (
 		<nav
 			className={clsx(
-				'lg:flex flex-col gap-5 transition-all hidden lg:fixed overflow-y-auto max-h-[80vh]',
+				'lg:flex flex-col gap-5 transition-all hidden lg:fixed overflow-y-auto max-h-[calc(100vh_-_120px)]',
 				open ? 'w-[200px] mr-5 sm:mr-8 opacity-100' : 'w-0 overflow-hidden opacity-0'
 			)}
 		>

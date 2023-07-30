@@ -170,6 +170,14 @@ const EmpDocumentDetailPage = () => {
 		}
 	};
 
+	const onDownload = async () => {
+		try {
+			window.open(`${import.meta.env.VITE_API_ENDPOINT}/documents/${documentId}/file`, '_blank');
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return (
 		<>
 			<div className='flex flex-col gap-5'>
@@ -208,19 +216,6 @@ const EmpDocumentDetailPage = () => {
 						<form className='flex gap-5 md:flex-row flex-col' onSubmit={handleSubmit}>
 							<div className='flex flex-col gap-5 flex-1'>
 								<InformationPanel header='Employee information'>
-									{/* <div className='flex gap-3'>
-										<InputWithLabel
-											label='ID'
-											wrapperClassName='flex-1'
-											readOnly
-											value={values.importer.id}
-										/>
-										<Button
-											label='Detail'
-											className='self-end bg-primary rounded-lg h-11'
-											type='button'
-										/>
-									</div> */}
 									<InputWithLabel
 										label='Name'
 										wrapperClassName='flex-1'
@@ -231,7 +226,6 @@ const EmpDocumentDetailPage = () => {
 									<InputWithLabel
 										label='Department'
 										wrapperClassName='flex-1'
-										// value={department || 'this should be department'}
 										value={values.department.name}
 										readOnly
 										disabled={editMode}
@@ -385,7 +379,11 @@ const EmpDocumentDetailPage = () => {
 								</InformationPanel>
 								{data.data.fileId && permission?.data.canBorrow && (
 									<InformationPanel header='Attached file'>
-										<Button label='Download attached file' className='h-11 rounded-lg bg-primary' />
+										<Button
+											label='Download attached file'
+											className='h-11 rounded-lg bg-primary'
+											onClick={onDownload}
+										/>
 									</InformationPanel>
 								)}
 							</div>

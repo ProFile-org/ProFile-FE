@@ -39,6 +39,7 @@ type InitialValues = {
 const EmpRequestDetailPage = () => {
 	const { requestId } = useParams<{ requestId: string }>();
 	const [qr, setQr] = useState('');
+	const [docQr, setDocQr] = useState('');
 	const { data, refetch: refetchRequest } = useQuery(
 		['requests', requestId],
 		async () =>
@@ -52,13 +53,15 @@ const EmpRequestDetailPage = () => {
 
 	useEffect(() => {
 		const renderQr = async () => {
-			const { documentId } = data?.data || { documentId: '' };
-			if (!documentId) return;
-			const qrCode = await QRCode.toDataURL(documentId);
+			const documentId = data?.data.documentId || '';
+			if (!requestId || !documentId) return;
+			const qrCode = await QRCode.toDataURL(requestId);
+			const docQr = await QRCode.toDataURL(documentId);
 			setQr(qrCode);
+			setDocQr(docQr);
 		};
 		renderQr();
-	}, [data]);
+	}, [data, requestId]);
 
 	const { documentId } = data ? data.data : { documentId: '' };
 
@@ -219,8 +222,15 @@ const EmpRequestDetailPage = () => {
 					</div>
 					<div className='flex flex-col gap-5 w-full md:w-1/3'>
 						<InformationPanel>
+							<h2 className='text-lg font-bold'>Request ID</h2>
 							{qr ? (
 								<img src={qr} className='rounded-lg aspect-square' />
+							) : (
+								<div className='aspect-square bg-neutral-600 animate-pulse rounded-lg' />
+							)}
+							<h2 className='text-lg font-bold'>Document ID</h2>
+							{qr ? (
+								<img src={docQr} className='rounded-lg aspect-square' />
 							) : (
 								<div className='aspect-square bg-neutral-600 animate-pulse rounded-lg' />
 							)}

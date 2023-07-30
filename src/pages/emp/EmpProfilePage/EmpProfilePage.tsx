@@ -165,7 +165,7 @@ const EmpProfilePage = () => {
 								label='Position'
 								name='position'
 								id='position'
-								value={position}
+								value={position || 'N/A'}
 								readOnly
 								disabled={editMode}
 							/>

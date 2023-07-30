@@ -29,7 +29,6 @@ const Breadcrumbs = ({
 			) : (
 				pathArr.map((item, index) => {
 					const link = item ? pathArr.slice(0, index + 1).join('/') : '/';
-					console.log(item);
 					return (
 						<Fragment key={link}>
 							{!shared || link !== '/' ? <span>/</span> : null}

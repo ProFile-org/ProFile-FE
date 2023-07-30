@@ -4,18 +4,12 @@ import useNavigateSelect from '@/hooks/useNavigateSelect';
 import usePagination from '@/hooks/usePagination';
 import { IBorrowRequest } from '@/types/item';
 import { dateFormatter } from '@/utils/formatter';
-import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
-import { InputText } from 'primereact/inputtext';
-import { useRef } from 'react';
 
 const AdminRequestPage = () => {
-	const query = useRef('');
-
-	const { getPaginatedTableProps, refetch } = usePagination<IBorrowRequest>({
+	const { getPaginatedTableProps } = usePagination<IBorrowRequest>({
 		key: 'requests',
 		url: '/documents/borrows',
-		query: query.current,
 	});
 
 	const { getNavigateOnSelectProps } = useNavigateSelect({ route: 'REQUESTS' });
@@ -23,22 +17,6 @@ const AdminRequestPage = () => {
 	return (
 		<div className='flex flex-col gap-5'>
 			<h2 className='header'>Pending requests</h2>
-			<div className='card w-full py-3 flex justify-between'>
-				<form
-					className='flex h-11 gap-3'
-					onSubmit={async (e) => {
-						e.preventDefault();
-						await refetch();
-					}}
-				>
-					<InputText
-						className='input'
-						placeholder='document a'
-						onChange={(e) => (query.current = e.target.value)}
-					/>
-					<Button label='Search' name='search' id='search' className='px-3 rounded-lg' />
-				</form>
-			</div>
 			<div className='card'>
 				<Table sortMode='single' {...getNavigateOnSelectProps()} {...getPaginatedTableProps()}>
 					<Column field='count' header='No.' />

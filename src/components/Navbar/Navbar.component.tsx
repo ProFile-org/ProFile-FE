@@ -33,7 +33,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<div>
+			<div className='sticky top-0 z-10 bg-[#121212] shadow-sm'>
 				<Layout>
 					<div className='flex py-3 justify-between items-center'>
 						<div className='flex gap-3'>

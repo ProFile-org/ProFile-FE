@@ -13,6 +13,8 @@ import { Link } from 'react-router-dom';
 import useNavigateSelect from '@/hooks/useNavigateSelect';
 import { Column } from 'primereact/column';
 import Table from '@/components/Table/Table.component';
+import usePagination from '@/hooks/usePagination';
+import { IRoom } from '@/types/item';
 
 const AdminDepartmentDetailPage = () => {
 	const { departmentId } = useParams<{ departmentId: string }>();
@@ -29,6 +31,11 @@ const AdminDepartmentDetailPage = () => {
 		async () =>
 			(await axiosClient.get<GetDepartmentByIdResponse>(`/departments/${departmentId}`)).data
 	);
+
+	const { dataWithId: rooms } = usePagination<IRoom>({
+		key: ['departments', 'rooms', departmentId || ''],
+		url: `/departments/${departmentId}/rooms`,
+	});
 
 	if (isLoading) return <SkeletonPage />;
 
@@ -74,7 +81,7 @@ const AdminDepartmentDetailPage = () => {
 				</InformationPanel>
 				<InformationPanel header='Rooms' className='flex-1'>
 					<Table
-						value={[]}
+						value={rooms || []}
 						loading={isLoading}
 						lazy
 						selectionMode='single'
