@@ -78,7 +78,7 @@ const SignInForm = () => {
 					error: 'You have not been assigned a room yet, please contact admin for more information',
 				});
 			} else {
-				const token = axiosError.response?.data.data.token;
+				const token = axiosError.response?.data.data?.token || '';
 				if (token) {
 					navigate(`/reset`, {
 						state: token,
