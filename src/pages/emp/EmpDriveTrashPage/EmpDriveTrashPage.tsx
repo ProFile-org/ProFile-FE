@@ -95,6 +95,8 @@ const EmpDriveTrashPage = () => {
 					accept: onRestore,
 					rejectClassName:
 						'!border-red-500 text-white bg-transparent hover:!bg-[#fff3] transition-colors',
+					acceptLabel: 'Restore',
+					rejectLabel: 'Cancel',
 				});
 			},
 		},
@@ -109,6 +111,8 @@ const EmpDriveTrashPage = () => {
 					accept: onDelete,
 					rejectClassName:
 						'!border-red-500 text-white bg-transparent hover:!bg-[#fff3] transition-colors',
+					acceptLabel: 'Delete',
+					rejectLabel: 'Cancel',
 				});
 			},
 		},

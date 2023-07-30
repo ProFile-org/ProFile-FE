@@ -29,6 +29,7 @@ import { AuthContext } from '@/context/authContext';
 import Spinner from '@/components/Spinner/Spinner.component';
 import { REFETCH_CONFIG } from '@/constants/config';
 import { IDrive } from '@/types/item';
+import { Button } from 'primereact/button';
 
 const EmpDrivePage = () => {
 	const query = useRef('');
@@ -176,11 +177,13 @@ const EmpDrivePage = () => {
 					icon: PrimeIcons.DOWNLOAD,
 					command: onDownload,
 				},
-				{
-					label: 'Delete',
-					icon: PrimeIcons.TRASH,
-					command: onDelete,
-				},
+				// {
+				// 	label: 'Delete',
+				// 	icon: PrimeIcons.TRASH,
+				// 	command: () => {
+				// 		setModal('delete');
+				// 	},
+				// },
 		  ]
 		: [
 				{
@@ -206,11 +209,13 @@ const EmpDrivePage = () => {
 						setModal('rename-file');
 					},
 				},
-				{
-					label: 'Delete',
-					icon: PrimeIcons.TRASH,
-					command: onDelete,
-				},
+				// {
+				// 	label: 'Delete',
+				// 	icon: PrimeIcons.TRASH,
+				// 	command: () => {
+				// 		setModal('delete');
+				// 	},
+				// },
 		  ]
 		: [];
 
@@ -471,6 +476,22 @@ const EmpDrivePage = () => {
 							onShare={onShare}
 							handleClose={closeModals}
 						/>
+					)}
+					{modal === 'delete' && (
+						<div className='bg-neutral-800 rounded-lg p-5 w-[50vw]'>
+							<h2 className='title'>Changing permission</h2>
+							<div>Are you sure you want to delete this item?</div>
+							<div className='flex w-full justify-end'>
+								<Button label='Cancel' className='h-11 rounded-lg mr-3' onClick={closeModals} />
+								<Button
+									label='Delete'
+									className='h-11 rounded-lg mr-3 btn-outlined !border-red-600'
+									onClick={onDelete}
+									severity='danger'
+									outlined
+								/>
+							</div>
+						</div>
 					)}
 				</Overlay>
 			)}
